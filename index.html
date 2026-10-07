@@ -1,0 +1,3564 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+RAAS Simulator v4.3.2
+</title>
+
+
+<style>
+
+
+body{
+
+font-family:Arial,sans-serif;
+
+background:#f3f3f3;
+
+margin:0;
+
+text-align:center;
+
+}
+
+
+
+h1{
+
+margin:15px 0 5px;
+
+}
+
+
+p{
+
+margin:5px;
+
+}
+
+
+
+/* =====================
+   메인 영역
+===================== */
+
+
+.main{
+
+
+width:1100px;
+
+margin:15px auto;
+
+display:grid;
+
+grid-template-columns:150px 900px;
+
+gap:20px;
+
+}
+
+
+
+
+
+
+
+/* =====================
+   조작 패널
+===================== */
+
+
+.controls{
+
+
+background:white;
+
+border:2px solid #333;
+
+padding:8px;
+
+display:flex;
+
+flex-direction:column;
+
+gap:8px;
+
+}
+
+
+
+button,select{
+
+
+width:130px;
+
+padding:7px;
+
+font-size:13px;
+
+}
+
+
+
+
+
+
+/* =====================
+   Canvas
+===================== */
+
+
+canvas{
+
+
+background:white;
+
+border:2px solid #333;
+
+}
+
+
+
+
+
+
+
+/* =====================
+   생리 변수
+===================== */
+
+
+.physiologyPanel{
+
+
+width:1100px;
+
+margin:10px auto;
+
+background:white;
+
+border:2px solid #333;
+
+padding:10px;
+
+box-sizing:border-box;
+
+}
+
+
+
+
+
+.physiologyPanel h3{
+
+
+margin:0 0 8px;
+
+border-bottom:1px solid #999;
+
+padding-bottom:5px;
+
+}
+
+
+
+
+
+.variableGrid{
+
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:10px;
+
+}
+
+
+
+
+
+.variableBox{
+
+
+border:1px solid #777;
+
+background:#fafafa;
+
+padding:8px;
+
+min-height:95px;
+
+text-align:left;
+
+}
+
+
+
+
+
+.variableBox h4{
+
+
+margin:0 0 5px;
+
+text-align:center;
+
+}
+
+
+
+
+
+.variableValue{
+
+
+font-size:13px;
+
+line-height:1.4;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+
+
+
+<body>
+
+
+
+
+<h1>
+RAAS Simulator v4.3.2
+</h1>
+
+
+
+
+<p>
+RAAS + Drug + Physiological Variables
+</p>
+
+
+
+
+
+
+
+
+<div class="main">
+
+
+
+<div class="controls">
+
+
+
+<select id="drugSelect">
+
+
+<option value="none">
+약물 없음
+</option>
+
+
+<option value="acei">
+ACE inhibitor
+</option>
+
+
+<option value="aldo">
+Aldosterone antagonist
+</option>
+
+
+<option value="arb">
+ARB
+</option>
+
+
+<option value="beta">
+β blocker
+</option>
+
+
+<option value="loop">
+Loop diuretic
+</option>
+
+
+<option value="thiazide">
+Thiazide diuretic
+</option>
+
+
+</select>
+
+
+
+
+
+
+<button onclick="applyDrug()">
+
+💊 약물 적용
+
+</button>
+
+
+
+
+
+
+<button onclick="previousStep()">
+
+◀ 이전 단계
+
+</button>
+
+
+
+
+
+
+<button onclick="nextStep()">
+
+▶ 다음 단계
+
+</button>
+
+
+
+
+
+
+<button onclick="resetProgress()">
+
+🔄 진행 초기화
+
+</button>
+
+
+
+
+
+
+<button onclick="removeDrug()">
+
+💉 약물 제거
+
+</button>
+
+
+
+
+
+
+<button onclick="resetAll()">
+
+⚠ 전체 초기화
+
+</button>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<canvas id="canvas"
+
+width="900"
+
+height="380">
+
+</canvas>
+
+
+
+
+
+
+</div>
+<div class="physiologyPanel">
+
+
+<h3>
+생리 변수
+</h3>
+
+
+
+
+<div class="variableGrid">
+
+
+
+
+
+
+<div class="variableBox">
+
+<h4>
+혈압
+</h4>
+
+
+<div id="bpInfo"
+
+class="variableValue">
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="variableBox">
+
+<h4>
+Na⁺
+</h4>
+
+
+<div id="naInfo"
+
+class="variableValue">
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="variableBox">
+
+<h4>
+혈액량
+</h4>
+
+
+<div id="volumeInfo"
+
+class="variableValue">
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="variableBox">
+
+<h4>
+GFR
+</h4>
+
+
+<div id="gfrInfo"
+
+class="variableValue">
+
+</div>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<script>
+
+
+
+// =============================
+// 기본 생리 변수
+// =============================
+
+
+const initialPhysiology={
+
+
+    bp:120,
+
+
+    sodium:140,
+
+
+    volume:100,
+
+
+    gfr:120
+
+
+
+};
+
+
+
+
+
+
+
+
+// =============================
+// 생리 상태
+// =============================
+
+
+let physiology={
+
+
+
+    baseline:{...initialPhysiology},
+
+
+
+    current:{...initialPhysiology},
+
+
+
+
+
+    raasEffect:{
+
+
+        bp:0,
+
+
+        sodium:0,
+
+
+        volume:0,
+
+
+        gfr:0
+
+
+    },
+
+
+
+
+
+    drugEffect:{
+
+
+        bp:0,
+
+
+        sodium:0,
+
+
+        volume:0,
+
+
+        gfr:0
+
+
+    },
+
+
+
+
+
+    effect:{
+
+
+        bp:0,
+
+
+        sodium:0,
+
+
+        volume:0,
+
+
+        gfr:0
+
+
+    }
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// Simulation State
+// =============================
+
+
+const state={
+
+
+
+
+    currentStep:-1,
+
+
+
+    maxReachedStep:-1,
+
+
+
+    selectedDrug:"none",
+
+
+
+    appliedDrug:"none",
+
+
+
+    drugAppliedStep:null,
+
+
+
+    limitStep:8
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// RAAS 단계
+// =============================
+
+
+const stages=[
+
+
+"혈압 감소",
+
+
+"Renin",
+
+
+"Angiotensin I",
+
+
+"ACE",
+
+
+"Angiotensin II",
+
+
+"AT1 receptor",
+
+
+"Aldosterone",
+
+
+"Na⁺ / Water",
+
+
+"혈압 회복"
+
+
+
+];
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// 단계 설명
+// =============================
+
+
+const stageInfo=[
+
+
+
+"혈압 저하 또는 신장 관류 감소가 RAAS 활성화를 시작합니다.",
+
+
+
+"신장의 JG cell에서 Renin이 분비됩니다.",
+
+
+
+"Renin에 의해 Angiotensin I이 생성됩니다.",
+
+
+
+"ACE는 Angiotensin I을 Angiotensin II로 변환합니다.",
+
+
+
+"Angiotensin II는 혈관수축과 Aldosterone 분비를 촉진합니다.",
+
+
+
+"AT1 receptor를 통해 Angiotensin II의 작용이 발생합니다.",
+
+
+
+"Aldosterone은 Na⁺ 재흡수와 수분 보유를 증가시킵니다.",
+
+
+
+"Na⁺와 Water 증가로 혈액량이 증가하고 혈압 회복에 기여합니다.",
+
+
+
+"RAAS 활성화 결과 혈압이 정상화됩니다."
+
+
+
+];
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// 약물 데이터 v4.3.2
+// =============================
+
+
+const drugData={
+
+
+
+none:{
+
+
+    name:"약물 없음",
+
+
+    blockStep:null,
+
+
+    example:"",
+
+
+    effect:""
+
+
+
+},
+
+
+
+
+
+acei:{
+
+
+
+    name:"ACE inhibitor",
+
+
+
+    blockStep:3,
+
+
+
+    example:"Enalapril, Lisinopril",
+
+
+
+    effect:"ACE 차단 → Ang II 생성 감소"
+
+
+
+},
+
+
+
+
+
+aldo:{
+
+
+
+    name:"Aldosterone antagonist",
+
+
+
+    blockStep:6,
+
+
+
+    example:"Spironolactone, Eplerenone",
+
+
+
+    effect:"Aldosterone receptor 차단 → Na⁺ / Water 보유 감소"
+
+
+
+},
+
+
+
+
+
+arb:{
+
+
+
+    name:"ARB",
+
+
+
+    blockStep:5,
+
+
+
+    example:"Losartan, Valsartan",
+
+
+
+    effect:"AT1 receptor 차단 → Ang II 작용 억제"
+
+
+
+},
+
+
+
+
+
+beta:{
+
+
+
+    name:"β blocker",
+
+
+
+    blockStep:1,
+
+
+
+    example:"Metoprolol, Atenolol",
+
+
+
+    effect:"Renin 분비 감소"
+
+
+
+},
+
+
+
+
+
+loop:{
+
+
+
+    name:"Loop diuretic",
+
+
+
+    blockStep:7,
+
+
+
+    example:"Furosemide",
+
+
+
+    effect:"Na⁺ / Water 재흡수 감소"
+
+
+
+},
+
+
+
+
+
+thiazide:{
+
+
+
+    name:"Thiazide diuretic",
+
+
+
+    blockStep:7,
+
+
+
+    example:"Hydrochlorothiazide",
+
+
+
+    effect:"Na⁺ 재흡수 감소 → 체액 감소"
+
+
+
+}
+
+
+
+
+
+};
+
+
+
+
+
+
+
+// =============================
+// Canvas
+// =============================
+
+
+const canvas=document.getElementById("canvas");
+
+
+const ctx=canvas.getContext("2d");
+
+
+
+
+// =============================
+// 단계 효과 계산
+// =============================
+
+
+function getStageEffect(step){
+
+
+
+    let effect={
+
+
+        bp:0,
+
+
+        sodium:0,
+
+
+        volume:0,
+
+
+        gfr:0
+
+
+
+    };
+
+
+
+
+
+
+
+
+    switch(step){
+
+
+
+
+
+        // Angiotensin II 생성
+
+        case 4:
+
+
+
+            effect.bp+=10;
+
+
+
+            break;
+
+
+
+
+
+
+
+
+        // Aldosterone
+
+        case 6:
+
+
+
+            effect.sodium+=5;
+
+
+            effect.volume+=10;
+
+
+
+            break;
+
+
+
+
+
+
+
+
+        // Na / Water 증가 이후
+
+        case 7:
+
+
+
+            effect.bp+=5;
+
+
+
+            break;
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+    return effect;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// 약물 차단 여부
+// =============================
+
+
+function isStepBlocked(step){
+
+
+
+    if(state.appliedDrug==="none"){
+
+
+        return false;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    const drug=
+
+
+    drugData[state.appliedDrug];
+
+
+
+
+
+
+
+
+
+    if(drug.blockStep===null){
+
+
+        return false;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    if(
+
+
+        state.drugAppliedStep!==null
+
+
+        &&
+
+
+        step>drug.blockStep
+
+
+        &&
+
+
+        step>=state.drugAppliedStep
+
+
+
+    ){
+
+
+
+        return true;
+
+
+
+    }
+
+
+
+
+
+
+
+
+    return false;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// 생리 계산 엔진
+// =============================
+
+
+function calculatePhysiology(){
+
+
+
+
+
+
+
+    physiology.raasEffect={
+
+
+        bp:0,
+
+
+        sodium:0,
+
+
+        volume:0,
+
+
+        gfr:0
+
+
+    };
+
+
+
+
+
+
+
+
+
+    physiology.drugEffect={
+
+
+        bp:0,
+
+
+        sodium:0,
+
+
+        volume:0,
+
+
+        gfr:0
+
+
+    };
+
+
+
+
+
+
+
+
+
+    physiology.effect={
+
+
+        bp:0,
+
+
+        sodium:0,
+
+
+        volume:0,
+
+
+        gfr:0
+
+
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+    // =========================
+    // RAAS 영향 계산
+    // =========================
+
+
+    for(
+
+
+        let i=0;
+
+
+        i<=state.maxReachedStep;
+
+
+        i++
+
+
+
+    ){
+
+
+
+
+
+        if(!isStepBlocked(i)){
+
+
+
+            let stageEffect=
+
+
+            getStageEffect(i);
+
+
+
+
+
+
+
+
+
+            physiology.raasEffect.bp
+
+
+            +=
+
+
+            stageEffect.bp;
+
+
+
+
+
+
+
+
+
+            physiology.raasEffect.sodium
+
+
+            +=
+
+
+            stageEffect.sodium;
+
+
+
+
+
+
+
+
+
+            physiology.raasEffect.volume
+
+
+            +=
+
+
+            stageEffect.volume;
+
+
+
+
+
+
+
+
+
+            physiology.raasEffect.gfr
+
+
+            +=
+
+
+            stageEffect.gfr;
+
+
+
+
+
+        }
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // =========================
+    // 약물 효과 계산
+    // =========================
+
+
+    switch(state.appliedDrug){
+
+
+
+
+
+
+
+        case "acei":
+
+
+
+            physiology.drugEffect.bp-=15;
+
+
+            physiology.drugEffect.sodium-=3;
+
+
+
+            break;
+
+
+
+
+
+
+
+
+
+        case "aldo":
+
+
+
+            physiology.drugEffect.sodium-=5;
+
+
+            physiology.drugEffect.volume-=10;
+
+
+            physiology.drugEffect.bp-=5;
+
+
+
+            break;
+
+
+
+
+
+
+
+
+
+        case "arb":
+
+
+
+            physiology.drugEffect.bp-=15;
+
+
+
+            break;
+
+
+
+
+
+
+
+
+
+        case "loop":
+
+
+
+            physiology.drugEffect.volume-=15;
+
+
+            physiology.drugEffect.sodium-=5;
+
+
+            physiology.drugEffect.bp-=10;
+
+
+
+            break;
+
+
+
+
+
+
+
+
+
+        case "thiazide":
+
+
+
+            physiology.drugEffect.volume-=10;
+
+
+            physiology.drugEffect.sodium-=3;
+
+
+            physiology.drugEffect.bp-=5;
+
+
+
+            break;
+
+
+
+
+
+
+
+
+
+        case "beta":
+
+
+
+            physiology.drugEffect.bp-=8;
+
+
+
+            break;
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    // =========================
+    // 최종 효과 합산
+    // =========================
+
+
+    Object.keys(initialPhysiology)
+
+    .forEach(key=>{
+
+
+
+
+
+        physiology.effect[key]
+
+
+        =
+
+
+        physiology.raasEffect[key]
+
+
+        +
+
+
+        physiology.drugEffect[key];
+
+
+
+
+
+
+
+
+
+        physiology.current[key]
+
+
+        =
+
+
+        physiology.baseline[key]
+
+
+        +
+
+
+        physiology.effect[key];
+
+
+
+
+
+
+
+
+    });
+
+
+
+
+
+
+}
+
+
+
+// =============================
+// Canvas 그리기
+// =============================
+
+
+function draw(){
+
+
+
+ctx.clearRect(
+
+0,
+
+0,
+
+canvas.width,
+
+canvas.height
+
+);
+
+
+
+
+
+
+
+
+const drug=
+
+
+drugData[state.appliedDrug];
+
+
+
+
+
+
+
+
+
+
+
+
+// =========================
+// RAAS pathway
+// =========================
+
+
+stages.forEach((stage,index)=>{
+
+
+
+
+
+let x=35+(index*95);
+
+
+let y=55;
+
+
+
+
+
+
+
+
+let color="#eeeeee";
+
+
+// 진행 완료 단계
+if(index<=state.maxReachedStep){
+
+    color="#ff9999";
+
+}
+
+
+// 현재 선택 단계
+if(index===state.currentStep){
+
+    color="#99ccff";
+
+}
+
+
+// 약물 작용 위치 최우선
+if(
+state.appliedDrug!=="none"
+&&
+drug.blockStep===index
+
+){
+
+    color="#ffe066";
+
+}
+
+
+
+
+
+
+
+
+
+ctx.fillStyle=color;
+
+
+ctx.fillRect(
+
+
+x,
+
+
+y,
+
+
+85,
+
+
+70
+
+
+);
+
+
+
+
+
+
+
+
+ctx.strokeStyle="#333";
+
+
+ctx.strokeRect(
+
+
+x,
+
+
+y,
+
+
+85,
+
+
+70
+
+
+);
+
+
+
+
+
+
+
+
+ctx.fillStyle="black";
+
+
+ctx.font="12px Arial";
+
+
+
+ctx.fillText(
+
+
+stage,
+
+
+x+5,
+
+
+y+40
+
+
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+if(index<stages.length-1){
+
+
+
+
+
+ctx.beginPath();
+
+
+
+
+ctx.moveTo(
+
+
+x+85,
+
+
+y+35
+
+
+);
+
+
+
+
+ctx.lineTo(
+
+
+x+95,
+
+
+y+35
+
+
+);
+
+
+
+
+ctx.stroke();
+
+
+
+
+}
+
+
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+// =========================
+// 현재 상태 영역
+// =========================
+
+
+ctx.beginPath();
+
+
+ctx.moveTo(
+
+
+30,
+
+
+250
+
+
+);
+
+
+
+ctx.lineTo(
+
+
+870,
+
+
+250
+
+
+);
+
+
+
+ctx.stroke();
+
+
+
+
+
+
+
+
+
+ctx.fillStyle="black";
+
+
+ctx.font="14px Arial";
+
+
+
+
+
+
+
+
+
+let currentStage;
+
+
+
+
+
+
+
+
+
+
+
+if(state.currentStep===-1){
+
+
+
+currentStage="RAAS 시작 전";
+
+
+
+}
+
+else{
+
+
+
+currentStage=stages[state.currentStep];
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+ctx.fillText(
+
+
+
+"현재 단계 : "
+
+
+
++
+
+
+
+currentStage,
+
+
+
+40,
+
+
+
+285
+
+
+
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =========================
+// 약물 표시
+// =========================
+
+
+let drugText;
+
+
+
+
+
+
+
+
+if(state.appliedDrug==="none"){
+
+
+
+drugText="약물 없음";
+
+
+
+}
+
+else{
+
+
+
+drugText=
+
+
+
+drug.name
+
+
+
++
+
+
+
+" (대표 약물: "
+
+
+
++
+
+
+
+drug.example
+
+
+
++
+
+
+
+")";
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+ctx.fillText(
+
+
+
+
+
+"적용 약물 : "
+
+
+
+
+
++
+
+
+
+
+
+drugText,
+
+
+
+40,
+
+
+
+315
+
+
+
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if(state.appliedDrug!=="none"){
+
+
+
+ctx.font="12px Arial";
+
+
+
+ctx.fillText(
+
+
+
+
+
+"작용 : "
+
+
+
+
+
++
+
+
+
+
+
+drug.effect,
+
+
+
+
+
+40,
+
+
+
+340
+
+
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let description;
+
+
+
+
+
+
+
+
+
+if(state.currentStep===-1){
+
+
+
+description=
+
+
+
+"다음 단계 버튼을 눌러 RAAS 진행을 시작하세요.";
+
+
+
+}
+
+else{
+
+
+
+description=
+
+
+
+stageInfo[state.currentStep];
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+ctx.font="12px Arial";
+
+
+
+ctx.fillText(
+
+
+
+
+
+"단계 설명 : "
+
+
+
+
+
++
+
+
+
+
+
+description,
+
+
+
+40,
+
+
+
+365
+
+
+
+);
+
+
+
+
+
+}
+
+
+
+// =============================
+// 다음 단계
+// =============================
+
+
+function nextStep(){
+
+
+
+    let next=
+
+
+    state.currentStep+1;
+
+
+
+
+
+
+
+
+
+    if(next>=stages.length){
+
+
+        return;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    if(next>state.limitStep){
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    state.currentStep=next;
+
+
+
+
+
+
+
+
+
+    if(next>state.maxReachedStep){
+
+
+
+        state.maxReachedStep=next;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    calculatePhysiology();
+
+
+    draw();
+
+
+    updateInfo();
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// 이전 단계
+// =============================
+
+
+function previousStep(){
+
+
+
+    if(state.currentStep<=-1){
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+    state.currentStep--;
+
+
+
+
+
+
+
+
+
+    draw();
+
+
+    updateInfo();
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// 약물 적용
+// =============================
+
+
+function applyDrug(){
+
+
+
+    state.selectedDrug=
+
+
+    document.getElementById("drugSelect").value;
+
+
+
+
+
+
+
+
+
+    state.appliedDrug=
+
+
+    state.selectedDrug;
+
+
+
+
+
+
+
+
+
+
+
+
+    const drug=
+
+
+    drugData[state.appliedDrug];
+
+
+
+
+
+
+
+
+
+
+
+
+
+    if(state.appliedDrug!=="none"){
+
+
+
+        state.drugAppliedStep=
+
+
+        state.currentStep;
+
+
+
+
+
+
+
+
+
+
+
+        state.limitStep=
+
+
+        drug.blockStep;
+
+
+
+    }
+
+    else{
+
+
+
+        state.drugAppliedStep=null;
+
+
+
+        state.limitStep=8;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    calculatePhysiology();
+
+
+    draw();
+
+
+    updateInfo();
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// 약물 제거
+// =============================
+
+
+function removeDrug(){
+
+
+
+    state.appliedDrug="none";
+
+
+
+
+
+
+    state.drugAppliedStep=null;
+
+
+
+
+
+
+    state.limitStep=8;
+
+
+
+
+
+
+
+
+
+
+
+
+
+    calculatePhysiology();
+
+
+    draw();
+
+
+    updateInfo();
+
+
+
+
+
+}
+
+
+
+// =============================
+// 진행 초기화
+// =============================
+
+
+function resetProgress(){
+
+
+
+    state.currentStep=-1;
+
+
+    state.maxReachedStep=-1;
+
+
+
+
+
+
+
+
+
+    calculatePhysiology();
+
+
+    draw();
+
+
+    updateInfo();
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// 전체 초기화
+// =============================
+
+
+function resetAll(){
+
+
+
+    state.currentStep=-1;
+
+
+    state.maxReachedStep=-1;
+
+
+
+
+
+
+
+
+
+    state.selectedDrug="none";
+
+
+
+    state.appliedDrug="none";
+
+
+
+    state.drugAppliedStep=null;
+
+
+
+    state.limitStep=8;
+
+
+
+
+
+
+
+
+
+
+
+
+    document.getElementById("drugSelect").value="none";
+
+
+
+
+
+
+
+
+
+
+
+
+
+    calculatePhysiology();
+
+
+    draw();
+
+
+    updateInfo();
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// 변화량 표시
+// =============================
+
+
+function formatChange(value,unit=""){
+
+
+
+    if(value>0){
+
+
+
+        return "+"+value+unit+" ↑";
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    if(value<0){
+
+
+
+        return value+unit+" ↓";
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    return "0"+unit;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================
+// 영향 표시
+// =============================
+
+
+function formatInfluence(value){
+
+
+
+    if(value>0){
+
+
+
+        return "+"+value;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    if(value<0){
+
+
+
+        return value;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    return "0";
+
+
+
+}
+
+
+
+// =============================
+// 생리 변수 업데이트
+// =============================
+
+
+function updateInfo(){
+
+
+
+
+
+
+
+
+document.getElementById("bpInfo").innerHTML=
+
+
+
+
+
+"기본 : "
+
+
+
++
+
+
+
+physiology.baseline.bp
+
+
+
++
+
+
+
+" mmHg<br>"
+
+
+
++
+
+
+
+"변화 : "
+
+
+
++
+
+
+
+formatChange(
+
+
+
+physiology.effect.bp,
+
+
+
+" mmHg"
+
+
+
+)
+
+
+
++
+
+
+
+" (RAAS 영향 "
+
+
+
++
+
+
+
+formatInfluence(
+
+
+
+physiology.raasEffect.bp
+
+
+
+)
+
+
+
++
+
+
+
+" / 약물 영향 "
+
+
+
++
+
+
+
+formatInfluence(
+
+
+
+physiology.drugEffect.bp
+
+
+
+)
+
+
+
++
+
+
+
+")"
+
+
+
++
+
+
+
+"<br><b>현재 : "
+
+
+
++
+
+
+
+physiology.current.bp
+
+
+
++
+
+
+
+" mmHg</b>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.getElementById("naInfo").innerHTML=
+
+
+
+
+
+"기본 : "
+
+
+
++
+
+
+
+physiology.baseline.sodium
+
+
+
++
+
+
+
+" mmol/L<br>"
+
+
+
++
+
+
+
+"변화 : "
+
+
+
++
+
+
+
+formatChange(
+
+
+
+physiology.effect.sodium,
+
+
+
+" mmol/L"
+
+
+
+)
+
+
+
++
+
+
+
+" (RAAS 영향 "
+
+
+
++
+
+
+
+formatInfluence(
+
+
+
+physiology.raasEffect.sodium
+
+
+
+)
+
+
+
++
+
+
+
+" / 약물 영향 "
+
+
+
++
+
+
+
+formatInfluence(
+
+
+
+physiology.drugEffect.sodium
+
+
+
+)
+
+
+
++
+
+
+
+")"
+
+
+
++
+
+
+
+"<br><b>현재 : "
+
+
+
++
+
+
+
+physiology.current.sodium
+
+
+
++
+
+
+
+" mmol/L</b>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.getElementById("volumeInfo").innerHTML=
+
+
+
+
+
+"기본 : "
+
+
+
++
+
+
+
+physiology.baseline.volume
+
+
+
++
+
+
+
+" %<br>"
+
+
+
++
+
+
+
+"변화 : "
+
+
+
++
+
+
+
+formatChange(
+
+
+
+physiology.effect.volume,
+
+
+
+" %"
+
+
+
+)
+
+
+
++
+
+
+
+" (RAAS 영향 "
+
+
+
++
+
+
+
+formatInfluence(
+
+
+
+physiology.raasEffect.volume
+
+
+
+)
+
+
+
++
+
+
+
+" / 약물 영향 "
+
+
+
++
+
+
+
+formatInfluence(
+
+
+
+physiology.drugEffect.volume
+
+
+
+)
+
+
+
++
+
+
+
+")"
+
+
+
++
+
+
+
+"<br><b>현재 : "
+
+
+
++
+
+
+
+physiology.current.volume
+
+
+
++
+
+
+
+" %</b>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.getElementById("gfrInfo").innerHTML=
+
+
+
+
+
+"기본 : "
+
+
+
++
+
+
+
+physiology.baseline.gfr
+
+
+
++
+
+
+
+" mL/min<br>"
+
+
+
++
+
+
+
+"변화 : "
+
+
+
++
+
+
+
+formatChange(
+
+
+
+physiology.effect.gfr,
+
+
+
+" mL/min"
+
+
+
+)
+
+
+
++
+
+
+
+" (RAAS 영향 "
+
+
+
++
+
+
+
+formatInfluence(
+
+
+
+physiology.raasEffect.gfr
+
+
+
+)
+
+
+
++
+
+
+
+" / 약물 영향 "
+
+
+
++
+
+
+
+formatInfluence(
+
+
+
+physiology.drugEffect.gfr
+
+
+
+)
+
+
+
++
+
+
+
+")"
+
+
+
++
+
+
+
+"<br><b>현재 : "
+
+
+
++
+
+
+
+physiology.current.gfr
+
+
+
++
+
+
+
+" mL/min</b>";
+
+
+
+
+
+
+
+
+}
+
+
+
+// =============================
+// 초기 실행
+// =============================
+
+
+calculatePhysiology();
+
+
+draw();
+
+
+updateInfo();
+
+
+
+
+
+
+
+</script>
+
+
+
+</body>
+
+
+</html>
