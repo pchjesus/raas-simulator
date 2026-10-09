@@ -936,6 +936,7 @@ const drugData={
         "blockStep": 3,
         "example": "Enalapril, Lisinopril",
         "effect": "ACE 차단 → Ang II 생성 감소",
+        "visualization": {"type":"link","afterStep":3,"mechanism":"Ang I → Ang II 전환 감소"},
         "physiologyEffect": {
             "bp": -15,
             "sodium": -3,
@@ -948,6 +949,7 @@ const drugData={
         "blockStep": 6,
         "example": "Spironolactone, Eplerenone",
         "effect": "Aldosterone receptor 차단 → Na⁺ / Water 보유 감소",
+        "visualization": {"type":"node","step":6,"mechanism":"Aldosterone 수용체 작용 억제"},
         "physiologyEffect": {
             "bp": -5,
             "sodium": -5,
@@ -960,6 +962,7 @@ const drugData={
         "blockStep": 5,
         "example": "Losartan, Valsartan",
         "effect": "AT1 receptor 차단 → Ang II 작용 억제",
+        "visualization": {"type":"link","afterStep":4,"mechanism":"Ang II의 AT1 수용체 작용 억제"},
         "physiologyEffect": {
             "bp": -15,
             "sodium": 0,
@@ -972,6 +975,7 @@ const drugData={
         "blockStep": 1,
         "example": "Metoprolol, Atenolol",
         "effect": "Renin 분비 감소",
+        "visualization": {"type":"node","step":1,"mechanism":"β1 매개 Renin 분비 감소"},
         "physiologyEffect": {
             "bp": -8,
             "sodium": 0,
@@ -984,6 +988,7 @@ const drugData={
         "blockStep": 7,
         "example": "Furosemide",
         "effect": "Na⁺ / Water 재흡수 감소",
+        "visualization": {"type":"node","step":7,"mechanism":"헨레고리 굵은 상행각(NKCC2) 억제"},
         "physiologyEffect": {
             "bp": -10,
             "sodium": -5,
@@ -996,6 +1001,7 @@ const drugData={
         "blockStep": 7,
         "example": "Hydrochlorothiazide",
         "effect": "Na⁺ 재흡수 감소 → 체액 감소",
+        "visualization": {"type":"node","step":7,"mechanism":"원위곡세뇨관(NCC) 억제"},
         "physiologyEffect": {
             "bp": -5,
             "sodium": -3,
