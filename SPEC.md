@@ -769,3 +769,27 @@ v4.5에서 `stageData[].effect`, `drugData[].physiologyEffect`, `blockStep`, `st
 - v4.7 모델과 맞지 않는 오래된 Canvas 약물 설명만 정정한다.
 - 재현 가능 회귀 테스트: `tests/regression-v4.7.1.cjs`와 기존 `tests/regression-v4.6.cjs`, `tests/regression-v4.7.cjs`.
 - 실 브라우저 시각·접근성·포커스 동작은 사용자 수동 확인 전까지 미검증.
+
+
+---
+
+# 27. RAAS 경로 시연 (v4.8)
+
+## 사용자 관찰 동작
+
+- 사용자가 명시적으로 `경로 시연`을 시작할 때만 1~9단계 순서로 이동한다. 자동 실행하지 않는다.
+- 재생 간격은 850ms. 재생/일시정지/이어보기/종료/완료 후 재시연을 지원한다.
+- Canvas의 진청색 점선 상자 테두리와 '시연' 표식, 실시간 진행 단계 텍스트가 시연 상태를 표현한다.
+- 초록색 테두리·'조회' 표식은 키보드/클릭 학습 선택을 나타내므로 시연과 다른 의미를 갖는다.
+- 화면 읽기를 위해 버튼 `aria-pressed`와 상태 `role=status` 사용.
+
+## 상태·생리 모델 보호
+
+- `flowDemo.index`는 9단계 시연 인덱스다. `flowDemo.timer`는 **한 번에 하나**만 유지하며 일시정지/완료/종료 시 제거한다.
+- `advanceFlowDemo()`, `toggleFlowDemo()`, `stopFlowDemo()`는 `draw()`만 호출한다. `nextStep()`, `refreshScreen()`, `calculatePhysiology()`, `updateInfo()`, `drawPhysiologyGraph()` 호출 금지.
+- `state.progress`, `state.drug`, `physiology`, `learningFocusIndex`, `getGraphSeries()` 값은 시연 조작으로 바뀌지 않는다.
+- 기존 `drawPathway()`, `drawDrugMechanism()`, `drawLearningSelection()`은 유지하고 `drawFlowDemo()` 레이어만 추가한다.
+- 약물별 기전, 900×380 Canvas 좌표/클릭 판정, 6종 약물 및 모든 초기화 규칙은 보존한다.
+- 약물을 적용한 채 9단계 시연을 할 수 있으나 이것은 실제 약동학적 흐름이나 임상 정량 예측을 뜻하지 않는다.
+
+검증: `tests/regression-v4.8.cjs` (모의 DOM/Canvas 및 결정적 타이머 테스트, 171항목). 실 브라우저 시각·포커스·모바일 테스트는 별도 필요.
