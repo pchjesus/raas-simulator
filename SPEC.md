@@ -752,3 +752,20 @@ v4.5에서 `stageData[].effect`, `drugData[].physiologyEffect`, `blockStep`, `st
 - 그래프 데이터는 저장되는 시계열이 아니며 약동학적·임상적 변화 예측으로 사용하지 않는다.
 
 검증: `tests/regression-v4.6.cjs`와 `tests/regression-v4.7.cjs`의 모의 DOM/Canvas 자동 검증. 실제 브라우저 시각·모바일·접근성 검증은 미실시.
+
+
+---
+
+# 26. 키보드·클릭 학습 대상 시각적 표시 (v4.7.1)
+
+- `learningFocusIndex`는 학습 조회 위치만 저장하는 별도 UI 상태로, RAAS 진행 상태 및 생리 계산과 무관하다.
+- `showStageLearning(index)` 호출 시 학습 정보 패널 갱신과 `draw()` 재렌더링을 수행하며, `calculatePhysiology()`, `refreshScreen()`, `drawPhysiologyGraph()`는 호출하지 않는다.
+- `drawLearningSelection()`은 경로 상자의 기존 배경색을 바꾸지 않고, 선택 상자 안쪽에 초록색 굵은 테두리와 상단 '조회' 표식을 그린다. 약물 기전 시각화 레이어와 별개다.
+- 마우스 클릭과 키보드 ←/→, Home/End, Enter/Space는 동일한 학습 조회를 수행한다.
+- Tab으로 Canvas에 포커스를 맞춘다. 방향키는 단계 선택과 상세 설명 패널 표시를 동시에 수행한다. Enter/Space는 같은 단계를 다시 표시한다.
+- Escape 또는 학습 패널의 닫기 버튼은 선택을 -1로 되돌리고, 학습 패널을 숨기고, 기본 학습 힌트를 복원하며, 선택 테두리를 제거한다. Canvas 포커스는 유지/복귀한다.
+- 선택 안내 텍스트는 Canvas 아래에 항상 보여야 하며, 상태 문구가 이를 덮어쓰지 않는다.
+- 클릭 위치 판정, 키보드 초점 CSS, 기존 단계 색상 우선순위, 약물 6종, v4.6 모델 및 v4.7 그래프 동작을 변경하지 않는다.
+- v4.7 모델과 맞지 않는 오래된 Canvas 약물 설명만 정정한다.
+- 재현 가능 회귀 테스트: `tests/regression-v4.7.1.cjs`와 기존 `tests/regression-v4.6.cjs`, `tests/regression-v4.7.cjs`.
+- 실 브라우저 시각·접근성·포커스 동작은 사용자 수동 확인 전까지 미검증.
