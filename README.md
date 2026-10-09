@@ -22,11 +22,11 @@ RAAS의 기본적인 생리적 흐름을 시각적으로 이해하고, 주요 �
 
 ## 2. 현재 버전
 
-**v4.3.2**
+**v4.3.3**
 
 현재 단계:
 
-**v4.3.3 구조 개선 진행 중 — 2/5 단계 구현 (안정 버전은 v4.3.2)**
+**v4.3.3 구조 개선 완료 (5/5 단계) — 자동 회귀 검증 완료, 실제 브라우저 육안 검증 별도 필요**
 
 ---
 
@@ -44,7 +44,11 @@ RAAS-Simulator/
 ├── index.html
 ├── README.md
 ├── SPEC.md
-└── DEVLOG.md
+├── DEVLOG.md
+├── AGENTS.md
+└── backups/
+    ├── v4.3.2.html
+    └── v4.3.3.html
 ```
 
 ---
@@ -150,11 +154,11 @@ RAAS 영향
 
 ## 6. 현재 구조의 핵심 개념
 
-### currentStep
+### state.progress.currentStep
 
 사용자가 현재 보고 있는 단계를 의미한다.
 
-### maxReachedStep
+### state.progress.maxReachedStep
 
 사용자가 실제로 진행하여 도달한 가장 높은 단계를 의미한다.
 
@@ -246,6 +250,14 @@ RAAS 활성화
 ### DEVLOG.md
 
 버전별 개발 과정과 변경 사항, 문제점, 보류 사항 및 향후 방향을 기록한다.
+
+### AGENTS.md
+
+AI 및 Codex가 기존 기능과 테스트 원칙을 유지하면서 작업하도록 안내한다.
+
+### backups/
+
+검증된 버전의 `index.html` 스냅샷을 보관한다.
 
 `SPEC.md`는 현재의 규칙을 나타내며, `DEVLOG.md`는 과거의 개발 과정을 기록한다.
 

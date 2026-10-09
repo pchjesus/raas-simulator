@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v4.3.2
+RAAS Simulator v4.3.3
 </title>
 
 
@@ -242,7 +242,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v4.3.2
+RAAS Simulator v4.3.3
 </h1>
 
 
@@ -551,96 +551,20 @@ const initialPhysiology={
 
 
 // =============================
-// 생리 상태
+// 생리 상태: 각 효과 객체는 독립적으로 생성한다.
 // =============================
 
+function createZeroEffect(){
+    return {bp:0,sodium:0,volume:0,gfr:0};
+}
 
 let physiology={
-
-
-
     baseline:{...initialPhysiology},
-
-
-
     current:{...initialPhysiology},
-
-
-
-
-
-    raasEffect:{
-
-
-        bp:0,
-
-
-        sodium:0,
-
-
-        volume:0,
-
-
-        gfr:0
-
-
-    },
-
-
-
-
-
-    drugEffect:{
-
-
-        bp:0,
-
-
-        sodium:0,
-
-
-        volume:0,
-
-
-        gfr:0
-
-
-    },
-
-
-
-
-
-    effect:{
-
-
-        bp:0,
-
-
-        sodium:0,
-
-
-        volume:0,
-
-
-        gfr:0
-
-
-    }
-
-
-
+    raasEffect:createZeroEffect(),
+    drugEffect:createZeroEffect(),
+    effect:createZeroEffect()
 };
-
-
-
-
-
-
-
-
-
-
 
 
 // =============================
@@ -650,32 +574,17 @@ let physiology={
 
 const state={
 
+    progress:{
+        currentStep:-1,
+        maxReachedStep:-1
+    },
 
-
-
-    currentStep:-1,
-
-
-
-    maxReachedStep:-1,
-
-
-
-    selectedDrug:"none",
-
-
-
-    appliedDrug:"none",
-
-
-
-    drugAppliedStep:null,
-
-
-
-    limitStep:8
-
-
+    drug:{
+        selectedDrug:"none",
+        appliedDrug:"none",
+        drugAppliedStep:null,
+        limitStep:8
+    }
 
 };
 
@@ -920,7 +829,7 @@ function isStepBlocked(step){
 
 
 
-    if(state.appliedDrug==="none"){
+    if(state.drug.appliedDrug==="none"){
 
 
         return false;
@@ -939,7 +848,7 @@ function isStepBlocked(step){
     const drug=
 
 
-    drugData[state.appliedDrug];
+    drugData[state.drug.appliedDrug];
 
 
 
@@ -968,7 +877,7 @@ function isStepBlocked(step){
     if(
 
 
-        state.drugAppliedStep!==null
+        state.drug.drugAppliedStep!==null
 
 
         &&
@@ -980,7 +889,7 @@ function isStepBlocked(step){
         &&
 
 
-        step>=state.drugAppliedStep
+        step>=state.drug.drugAppliedStep
 
 
 
@@ -1031,22 +940,7 @@ function calculatePhysiology(){
 
 
 
-    physiology.raasEffect={
-
-
-        bp:0,
-
-
-        sodium:0,
-
-
-        volume:0,
-
-
-        gfr:0
-
-
-    };
+    physiology.raasEffect=createZeroEffect();
 
 
 
@@ -1056,22 +950,7 @@ function calculatePhysiology(){
 
 
 
-    physiology.drugEffect={
-
-
-        bp:0,
-
-
-        sodium:0,
-
-
-        volume:0,
-
-
-        gfr:0
-
-
-    };
+    physiology.drugEffect=createZeroEffect();
 
 
 
@@ -1081,22 +960,7 @@ function calculatePhysiology(){
 
 
 
-    physiology.effect={
-
-
-        bp:0,
-
-
-        sodium:0,
-
-
-        volume:0,
-
-
-        gfr:0
-
-
-    };
+    physiology.effect=createZeroEffect();
 
 
 
@@ -1120,7 +984,7 @@ function calculatePhysiology(){
         let i=0;
 
 
-        i<=state.maxReachedStep;
+        i<=state.progress.maxReachedStep;
 
 
         i++
@@ -1221,7 +1085,7 @@ function calculatePhysiology(){
     // 약물 효과 계산 (데이터 기반)
     // =========================
 
-    const drugEffects=drugData[state.appliedDrug].physiologyEffect;
+    const drugEffects=drugData[state.drug.appliedDrug].physiologyEffect;
 
     Object.keys(initialPhysiology).forEach(key=>{
 
@@ -1310,27 +1174,46 @@ function calculatePhysiology(){
 
 
 // =============================
+// Canvas 스타일 공통 상수
+// =============================
+
+const STAGE_COLORS={
+    inactive:"#eeeeee",
+    completed:"#ff9999",
+    current:"#99ccff",
+    drug:"#ffe066"
+};
+
+const CANVAS_STYLES={
+    border:"#333",
+    text:"black",
+    pathwayFont:"12px Arial",
+    statusFont:"14px Arial"
+};
+
+
+// =============================
 // Canvas 단계 색상 결정
 // 약물 위치 > 현재 단계 > 진행 완료 > 미진행
 // =============================
 
 function getStageColor(index){
 
-    const drug=drugData[state.appliedDrug];
+    const drug=drugData[state.drug.appliedDrug];
 
-    if(state.appliedDrug!=="none" && drug.blockStep===index){
-        return "#ffe066";
+    if(state.drug.appliedDrug!=="none" && drug.blockStep===index){
+        return STAGE_COLORS.drug;
     }
 
-    if(index===state.currentStep){
-        return "#99ccff";
+    if(index===state.progress.currentStep){
+        return STAGE_COLORS.current;
     }
 
-    if(index<=state.maxReachedStep){
-        return "#ff9999";
+    if(index<=state.progress.maxReachedStep){
+        return STAGE_COLORS.completed;
     }
 
-    return "#eeeeee";
+    return STAGE_COLORS.inactive;
 }
 
 
@@ -1348,11 +1231,11 @@ function drawPathway(){
         ctx.fillStyle=getStageColor(index);
         ctx.fillRect(x,y,85,70);
 
-        ctx.strokeStyle="#333";
+        ctx.strokeStyle=CANVAS_STYLES.border;
         ctx.strokeRect(x,y,85,70);
 
-        ctx.fillStyle="black";
-        ctx.font="12px Arial";
+        ctx.fillStyle=CANVAS_STYLES.text;
+        ctx.font=CANVAS_STYLES.pathwayFont;
         ctx.fillText(stage.name,x+5,y+40);
 
         if(index<stageData.length-1){
@@ -1380,16 +1263,16 @@ function drawStatus(){
     ctx.lineTo(870,250);
     ctx.stroke();
 
-    ctx.fillStyle="black";
-    ctx.font="14px Arial";
+    ctx.fillStyle=CANVAS_STYLES.text;
+    ctx.font=CANVAS_STYLES.statusFont;
 
     let currentStage;
 
-    if(state.currentStep===-1){
+    if(state.progress.currentStep===-1){
         currentStage="RAAS 시작 전";
     }
     else{
-        currentStage=stageData[state.currentStep].name;
+        currentStage=stageData[state.progress.currentStep].name;
     }
 
     ctx.fillText("현재 단계 : "+currentStage,40,285);
@@ -1403,11 +1286,11 @@ function drawStatus(){
 
 function drawDrugInfo(){
 
-    const drug=drugData[state.appliedDrug];
+    const drug=drugData[state.drug.appliedDrug];
 
     let drugText;
 
-    if(state.appliedDrug==="none"){
+    if(state.drug.appliedDrug==="none"){
         drugText="약물 없음";
     }
     else{
@@ -1416,9 +1299,9 @@ function drawDrugInfo(){
 
     ctx.fillText("적용 약물 : "+drugText,40,315);
 
-    if(state.appliedDrug!=="none"){
+    if(state.drug.appliedDrug!=="none"){
 
-        ctx.font="12px Arial";
+        ctx.font=CANVAS_STYLES.pathwayFont;
         ctx.fillText("작용 : "+drug.effect,40,340);
 
     }
@@ -1434,14 +1317,14 @@ function drawDescription(){
 
     let description;
 
-    if(state.currentStep===-1){
+    if(state.progress.currentStep===-1){
         description="다음 단계 버튼을 눌러 RAAS 진행을 시작하세요.";
     }
     else{
-        description=stageData[state.currentStep].description;
+        description=stageData[state.progress.currentStep].description;
     }
 
-    ctx.font="12px Arial";
+    ctx.font=CANVAS_STYLES.pathwayFont;
     ctx.fillText("단계 설명 : "+description,40,365);
 
 }
@@ -1464,6 +1347,22 @@ function draw(){
 
 
 // =============================
+// 화면 갱신: 이전 단계 탐색은 재계산 없이 표시만 갱신한다.
+// =============================
+
+function refreshScreen(recalculate=true){
+
+    if(recalculate){
+        calculatePhysiology();
+    }
+
+    draw();
+    updateInfo();
+
+}
+
+
+// =============================
 // 다음 단계
 // =============================
 
@@ -1475,7 +1374,7 @@ function nextStep(){
     let next=
 
 
-    state.currentStep+1;
+    state.progress.currentStep+1;
 
 
 
@@ -1501,7 +1400,7 @@ function nextStep(){
 
 
 
-    if(next>state.limitStep){
+    if(next>state.drug.limitStep){
 
 
 
@@ -1519,7 +1418,7 @@ function nextStep(){
 
 
 
-    state.currentStep=next;
+    state.progress.currentStep=next;
 
 
 
@@ -1529,11 +1428,11 @@ function nextStep(){
 
 
 
-    if(next>state.maxReachedStep){
+    if(next>state.progress.maxReachedStep){
 
 
 
-        state.maxReachedStep=next;
+        state.progress.maxReachedStep=next;
 
 
 
@@ -1547,13 +1446,7 @@ function nextStep(){
 
 
 
-    calculatePhysiology();
-
-
-    draw();
-
-
-    updateInfo();
+    refreshScreen();
 
 
 
@@ -1580,7 +1473,7 @@ function previousStep(){
 
 
 
-    if(state.currentStep<=-1){
+    if(state.progress.currentStep<=-1){
 
 
 
@@ -1600,7 +1493,7 @@ function previousStep(){
 
 
 
-    state.currentStep--;
+    state.progress.currentStep--;
 
 
 
@@ -1610,10 +1503,7 @@ function previousStep(){
 
 
 
-    draw();
-
-
-    updateInfo();
+    refreshScreen(false);
 
 
 
@@ -1642,7 +1532,7 @@ function applyDrug(){
 
 
 
-    state.selectedDrug=
+    state.drug.selectedDrug=
 
 
     document.getElementById("drugSelect").value;
@@ -1655,10 +1545,10 @@ function applyDrug(){
 
 
 
-    state.appliedDrug=
+    state.drug.appliedDrug=
 
 
-    state.selectedDrug;
+    state.drug.selectedDrug;
 
 
 
@@ -1674,7 +1564,7 @@ function applyDrug(){
     const drug=
 
 
-    drugData[state.appliedDrug];
+    drugData[state.drug.appliedDrug];
 
 
 
@@ -1688,18 +1578,14 @@ function applyDrug(){
 
 
 
-    if(state.appliedDrug!=="none"){
+    if(state.drug.appliedDrug!=="none"){
 
 
 
-        state.drugAppliedStep=
+        state.drug.drugAppliedStep=
 
 
-        state.currentStep;
-
-
-
-
+        state.progress.currentStep;
 
 
 
@@ -1707,7 +1593,11 @@ function applyDrug(){
 
 
 
-        state.limitStep=
+
+
+
+
+        state.drug.limitStep=
 
 
         drug.blockStep;
@@ -1720,11 +1610,11 @@ function applyDrug(){
 
 
 
-        state.drugAppliedStep=null;
+        state.drug.drugAppliedStep=null;
 
 
 
-        state.limitStep=8;
+        state.drug.limitStep=8;
 
 
 
@@ -1741,13 +1631,7 @@ function applyDrug(){
 
 
 
-    calculatePhysiology();
-
-
-    draw();
-
-
-    updateInfo();
+    refreshScreen();
 
 
 
@@ -1776,21 +1660,21 @@ function removeDrug(){
 
 
 
-    state.appliedDrug="none";
+    state.drug.appliedDrug="none";
 
 
 
 
 
 
-    state.drugAppliedStep=null;
+    state.drug.drugAppliedStep=null;
 
 
 
 
 
 
-    state.limitStep=8;
+    state.drug.limitStep=8;
 
 
 
@@ -1804,13 +1688,7 @@ function removeDrug(){
 
 
 
-    calculatePhysiology();
-
-
-    draw();
-
-
-    updateInfo();
+    refreshScreen();
 
 
 
@@ -1829,26 +1707,20 @@ function resetProgress(){
 
 
 
-    state.currentStep=-1;
+    state.progress.currentStep=-1;
 
 
-    state.maxReachedStep=-1;
-
-
-
+    state.progress.maxReachedStep=-1;
 
 
 
 
 
 
-    calculatePhysiology();
 
 
-    draw();
 
-
-    updateInfo();
+    refreshScreen();
 
 
 
@@ -1876,32 +1748,32 @@ function resetAll(){
 
 
 
-    state.currentStep=-1;
+    state.progress.currentStep=-1;
 
 
-    state.maxReachedStep=-1;
-
-
-
+    state.progress.maxReachedStep=-1;
 
 
 
 
 
 
-    state.selectedDrug="none";
 
 
 
-    state.appliedDrug="none";
+    state.drug.selectedDrug="none";
 
 
 
-    state.drugAppliedStep=null;
+    state.drug.appliedDrug="none";
 
 
 
-    state.limitStep=8;
+    state.drug.drugAppliedStep=null;
+
+
+
+    state.drug.limitStep=8;
 
 
 
@@ -1928,13 +1800,7 @@ function resetAll(){
 
 
 
-    calculatePhysiology();
-
-
-    draw();
-
-
-    updateInfo();
+    refreshScreen();
 
 
 
@@ -2672,13 +2538,7 @@ physiology.current.gfr
 // =============================
 
 
-calculatePhysiology();
-
-
-draw();
-
-
-updateInfo();
+refreshScreen();
 
 
 
