@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v4.6
+RAAS Simulator v4.7
 </title>
 
 
@@ -359,6 +359,14 @@ line-height:1.4;
     margin-top:12px;
 }
 
+/* v4.7 graph: below existing physiology cards; pathway canvas unchanged */
+.model-graph{margin-top:18px;padding-top:14px;border-top:1px solid #bbb;text-align:left}
+.model-graph-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.model-graph-header h3{border:0;margin:0;padding:0}
+.model-graph-header label{font-size:13px}
+.model-graph-header select{width:185px}
+.model-graph canvas{max-width:100%;height:auto;background:white;border:1px solid #ddd;box-sizing:border-box}
+.model-graph-note{font-size:12px;line-height:1.55;color:#444;margin:7px 0}
 </style>
 
 
@@ -374,7 +382,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v4.6
+RAAS Simulator v4.7
 </h1>
 
 
@@ -663,6 +671,22 @@ class="variableValue">
 </div>
 
 
+<section class="model-graph" aria-labelledby="modelGraphTitle">
+  <div class="model-graph-header">
+    <h3 id="modelGraphTitle">RAAS 단계별 생리 변화 비교</h3>
+    <label for="graphVariable">비교 변수
+      <select id="graphVariable">
+        <option value="bp">혈압 (mmHg)</option>
+        <option value="sodium">Na⁺ (mmol/L)</option>
+        <option value="volume">혈액량 (%)</option>
+        <option value="gfr">GFR (mL/min)</option>
+      </select>
+    </label>
+  </div>
+  <canvas id="physiologyGraph" width="1000" height="290" role="img" aria-label="RAAS의 9단계별 가상 생리 변화 비교 그래프입니다."></canvas>
+  <p class="model-graph-note">파랑: 약물 없음 / 보라: 적용 약물 가정 / 세로 점선: 최대 진행 단계.
+  단계별 가상 계산값이며 실제 시간 경과나 환자의 약물 반응을 나타내지 않습니다.</p>
+</section>
 </div>
 
 
@@ -685,9 +709,9 @@ class="variableValue">
 
         <h3>1. 기본 조작</h3>
         <ul>
-            <li><strong>다음 단계:</strong> RAAS 경로를 한 단계 진행합니다. 약물이 적용된 경우 특정 단계 이후의 진행이 제한될 수 있습니다.</li>
+            <li><strong>다음 단계:</strong> RAAS 경로를 한 단계 진행합니다. 약물을 적용해도 9단계를 모두 탐색할 수 있습니다.</li>
             <li><strong>이전 단계:</strong> 표시 중인 단계를 한 단계 되돌립니다. 이미 도달한 최대 단계와 생리 효과는 되돌리지 않습니다.</li>
-            <li><strong>진행 초기화:</strong> RAAS 진행 기록만 초기화합니다. 적용된 약물과 진행 제한은 그대로 유지됩니다.</li>
+            <li><strong>진행 초기화:</strong> RAAS 진행 기록만 초기화합니다. 적용된 약물은 그대로 유지됩니다.</li>
             <li><strong>전체 초기화:</strong> 진행 기록과 적용 약물을 모두 초기화하고 약물 선택창도 ‘약물 없음’으로 되돌립니다.</li>
         </ul>
 
@@ -707,7 +731,7 @@ class="variableValue">
             <li>약물 작용 위치가 노란색으로 표시되며 생리 변수에 교육용 약물 효과가 반영됩니다.</li>
             <li>v4.6부터 약물 적용 후에도 <strong>마지막 9단계까지 탐색</strong>할 수 있습니다. 약물로 억제되는 교육용 RAAS 기여 효과만 제외하고 약물 고정 효과는 별도로 계산합니다.</li>
             <li>보라색 사선은 전환·수용체 작용의 억제, 보라색 원형 표식은 특정 표적 작용의 억제를 뜻합니다. 시뮬레이터에서 일부 단계의 수치 기여가 제외되더라도 생리적 경로가 완전히 중단되거나 약효가 100%라는 뜻은 아닙니다. 이뇨제의 신세뇨관 표적은 간략한 Na⁺/Water 단계에 요약해 표시합니다.</li>
-            <li><strong>약물 제거:</strong> 적용 효과와 진행 제한을 해제합니다. 약물 선택창의 선택 항목과 이전 진행 기록은 유지됩니다.</li>
+            <li><strong>약물 제거:</strong> 적용 효과와 시뮬레이션의 약물 효과를 해제합니다. 약물 선택창의 선택 항목과 이전 진행 기록은 유지됩니다.</li>
         </ul>
 
         <h3>4. 생리 변수 읽는 방법</h3>
@@ -1350,6 +1374,7 @@ function refreshScreen(recalculate=true){
 
     draw();
     updateInfo();
+    drawPhysiologyGraph();
 
 }
 
@@ -2687,6 +2712,73 @@ stageDetailCloseButton.addEventListener("click",()=>{
 
 
 // =============================
+// v4.7 — pure derived graph; does not mutate simulation/learning state
+const graphCanvas=document.getElementById("physiologyGraph");
+const graphCtx=graphCanvas.getContext("2d");
+const graphVariable=document.getElementById("graphVariable");
+const GRAPH_LABELS={
+    bp:"혈압 (mmHg)",sodium:"Na⁺ (mmol/L)",
+    volume:"혈액량 (%)",gfr:"GFR (mL/min)"
+};
+const GRAPH_STAGE_LABELS=[
+    "BP 감소","Renin","Ang I","ACE","Ang II",
+    "AT1","Aldo","Na⁺/Water","BP 회복"
+];
+function getGraphSeries(key,drugId=state.drug.appliedDrug){
+    return {
+        normal:stageData.map((_,i)=>calculatePhysiologyAtStep(i,"none").current[key]),
+        treated:stageData.map((_,i)=>calculatePhysiologyAtStep(i,drugId).current[key])
+    };
+}
+function drawPhysiologyGraph(){
+    const key=graphVariable.value,drugId=state.drug.appliedDrug;
+    const lines=getGraphSeries(key,drugId),ctx=graphCtx;
+    const values=lines.normal.concat(drugId==="none"?[]:lines.treated);
+    const min=Math.min(...values),max=Math.max(...values);
+    const pad=Math.max((max-min)*0.14,1);
+    const lower=min-pad,upper=max+pad;
+    const left=80,right=960,top=44,bottom=222;
+    const X=i=>left+(right-left)*i/8;
+    const Y=y=>bottom-(y-lower)*(bottom-top)/(upper-lower);
+    ctx.clearRect(0,0,graphCanvas.width,graphCanvas.height);
+    ctx.save();ctx.font="13px Arial";ctx.fillStyle="#222";
+    ctx.fillText(GRAPH_LABELS[key],14,22);
+    for(let i=0;i<=4;i++){
+        const tick=lower+(upper-lower)*i/4,y=Y(tick);
+        ctx.lineWidth=1;ctx.strokeStyle="#ddd";
+        ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke();
+        ctx.fillStyle="#333";ctx.fillText(String(Number(tick.toFixed(1))),25,y+4);
+    }
+    GRAPH_STAGE_LABELS.forEach((name,i)=>{
+        ctx.fillStyle="#333";ctx.fillText(name,X(i)-Math.min(name.length*3,27),246);
+        ctx.fillText(String(i+1),X(i)-3,267);
+    });
+    if(state.progress.maxReachedStep>=0){
+        const m=X(state.progress.maxReachedStep);
+        ctx.save();ctx.strokeStyle="#666";ctx.setLineDash([4,5]);
+        ctx.beginPath();ctx.moveTo(m,top);ctx.lineTo(m,bottom);ctx.stroke();ctx.restore();
+    }
+    function drawLine(series,color,dashed){
+        ctx.save();ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=2.5;
+        ctx.setLineDash(dashed?[7,4]:[]);
+        ctx.beginPath();
+        series.forEach((y,i)=>{if(i===0)ctx.moveTo(X(i),Y(y));else ctx.lineTo(X(i),Y(y));});
+        ctx.stroke();ctx.setLineDash([]);
+        series.forEach((y,i)=>{ctx.beginPath();ctx.arc(X(i),Y(y),3,0,Math.PI*2);ctx.fill();});
+        ctx.restore();
+    }
+    drawLine(lines.normal,"#2866ad",false);
+    if(drugId!=="none")drawLine(lines.treated,"#843d89",true);
+    ctx.fillStyle="#2866ad";ctx.fillRect(560,12,16,3);
+    ctx.fillStyle="#222";ctx.fillText("약물 없음",582,18);
+    if(drugId!=="none"){
+        ctx.fillStyle="#843d89";ctx.fillRect(680,12,16,3);
+        ctx.fillStyle="#222";ctx.fillText(drugData[drugId].name,702,18);
+    }
+    ctx.restore();
+}
+graphVariable.addEventListener("change",drawPhysiologyGraph);
+
 // 초기 실행
 // =============================
 
