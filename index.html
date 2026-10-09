@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v4.5
+RAAS Simulator v4.6
 </title>
 
 
@@ -374,7 +374,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v4.5
+RAAS Simulator v4.6
 </h1>
 
 
@@ -705,8 +705,8 @@ class="variableValue">
         <ul>
             <li>선택창에서 ACE inhibitor, Aldosterone antagonist, ARB, β blocker, Loop diuretic, Thiazide diuretic 중 하나를 고르고 <strong>약물 적용</strong>을 누릅니다.</li>
             <li>약물 작용 위치가 노란색으로 표시되며 생리 변수에 교육용 약물 효과가 반영됩니다.</li>
-            <li>현재 모델에서는 약물을 적용하면 작용 단계 이후로 <strong>다음 단계 진행 자체가 제한</strong>될 수 있습니다.</li>
-            <li>보라색 사선은 전환·수용체 작용의 억제, 보라색 원형 표식은 특정 표적 작용의 억제를 뜻합니다. 후속 RAAS 과정이 모두 완전히 중단된다는 의미는 아닙니다. 이뇨제의 신세뇨관 표적은 간략한 Na⁺/Water 단계에 요약해 표시합니다.</li>
+            <li>v4.6부터 약물 적용 후에도 <strong>마지막 9단계까지 탐색</strong>할 수 있습니다. 약물로 억제되는 교육용 RAAS 기여 효과만 제외하고 약물 고정 효과는 별도로 계산합니다.</li>
+            <li>보라색 사선은 전환·수용체 작용의 억제, 보라색 원형 표식은 특정 표적 작용의 억제를 뜻합니다. 시뮬레이터에서 일부 단계의 수치 기여가 제외되더라도 생리적 경로가 완전히 중단되거나 약효가 100%라는 뜻은 아닙니다. 이뇨제의 신세뇨관 표적은 간략한 Na⁺/Water 단계에 요약해 표시합니다.</li>
             <li><strong>약물 제거:</strong> 적용 효과와 진행 제한을 해제합니다. 약물 선택창의 선택 항목과 이전 진행 기록은 유지됩니다.</li>
         </ul>
 
@@ -924,6 +924,7 @@ const drugData={
     "none": {
         "name": "약물 없음",
         "blockStep": null,
+        "suppressedRaasSteps": [],
         "example": "",
         "effect": "",
         "physiologyEffect": {
@@ -936,6 +937,7 @@ const drugData={
     "acei": {
         "name": "ACE inhibitor",
         "blockStep": 3,
+        "suppressedRaasSteps": [4,6,7],
         "example": "Enalapril, Lisinopril",
         "effect": "ACE 차단 → Ang II 생성 감소",
         "visualization": {"type":"link","afterStep":3,"mechanism":"Ang I → Ang II 전환 감소"},
@@ -949,6 +951,7 @@ const drugData={
     "aldo": {
         "name": "Aldosterone antagonist",
         "blockStep": 6,
+        "suppressedRaasSteps": [6,7],
         "example": "Spironolactone, Eplerenone",
         "effect": "Aldosterone receptor 차단 → Na⁺ / Water 보유 감소",
         "visualization": {"type":"node","step":6,"mechanism":"Aldosterone 수용체 작용 억제"},
@@ -962,6 +965,7 @@ const drugData={
     "arb": {
         "name": "ARB",
         "blockStep": 5,
+        "suppressedRaasSteps": [4,6,7],
         "example": "Losartan, Valsartan",
         "effect": "AT1 receptor 차단 → Ang II 작용 억제",
         "visualization": {"type":"link","afterStep":4,"mechanism":"Ang II의 AT1 수용체 작용 억제"},
@@ -975,6 +979,7 @@ const drugData={
     "beta": {
         "name": "β blocker",
         "blockStep": 1,
+        "suppressedRaasSteps": [4,6,7],
         "example": "Metoprolol, Atenolol",
         "effect": "Renin 분비 감소",
         "visualization": {"type":"node","step":1,"mechanism":"β1 매개 Renin 분비 감소"},
@@ -988,6 +993,7 @@ const drugData={
     "loop": {
         "name": "Loop diuretic",
         "blockStep": 7,
+        "suppressedRaasSteps": [7],
         "example": "Furosemide",
         "effect": "Na⁺ / Water 재흡수 감소",
         "visualization": {"type":"node","step":7,"mechanism":"헨레고리 굵은 상행각(NKCC2) 억제"},
@@ -1001,6 +1007,7 @@ const drugData={
     "thiazide": {
         "name": "Thiazide diuretic",
         "blockStep": 7,
+        "suppressedRaasSteps": [7],
         "example": "Hydrochlorothiazide",
         "effect": "Na⁺ 재흡수 감소 → 체액 감소",
         "visualization": {"type":"node","step":7,"mechanism":"원위곡세뇨관(NCC) 억제"},
@@ -1049,358 +1056,48 @@ const ctx=canvas.getContext("2d");
 // =============================
 
 
-function isStepBlocked(step){
-
-
-
-    if(state.drug.appliedDrug==="none"){
-
-
-        return false;
-
-
-    }
-
-
-
-
-
-
-
-
-
-    const drug=
-
-
-    drugData[state.drug.appliedDrug];
-
-
-
-
-
-
-
-
-
-    if(drug.blockStep===null){
-
-
-        return false;
-
-
-    }
-
-
-
-
-
-
-
-
-
-    if(
-
-
-        state.drug.drugAppliedStep!==null
-
-
-        &&
-
-
-        step>drug.blockStep
-
-
-        &&
-
-
-        step>=state.drug.drugAppliedStep
-
-
-
-    ){
-
-
-
-        return true;
-
-
-
-    }
-
-
-
-
-
-
-
-
-    return false;
-
-
-
+// v4.6: 진행 단계와 약물의 교육용 생리 효과 기여도 억제를 분리.
+// suppressedRaasSteps는 생리 경로 완전 정지/100% 억제를 의미하지 않음.
+function isStepBlocked(step,drugId=state.drug.appliedDrug){
+    return drugData[drugId].suppressedRaasSteps.includes(step);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-// =============================
-// 생리 계산 엔진
-// =============================
-
+// 단계별 가상 결과 계산: 상태나 UI를 변경하지 않는 순수 함수.
+// 실제 시간 경과/약동학이 아닌 현재 약물 가정 하의 재평가 결과.
+function calculatePhysiologyAtStep(reachedStep,drugId="none"){
+    const result={
+        baseline:{...initialPhysiology},
+        current:{...initialPhysiology},
+        raasEffect:createZeroEffect(),
+        drugEffect:createZeroEffect(),
+        effect:createZeroEffect()
+    };
+    const last=Math.max(-1,Math.min(stageData.length-1,reachedStep));
+    const drug=drugData[drugId];
+    for(let i=0;i<=last;i++){
+        if(isStepBlocked(i,drugId))continue;
+        const stageEffect=stageData[i].effect;
+        Object.keys(initialPhysiology).forEach(key=>{
+            result.raasEffect[key]+=stageEffect[key];
+        });
+    }
+    Object.keys(initialPhysiology).forEach(key=>{
+        result.drugEffect[key]=drug.physiologyEffect[key];
+        result.effect[key]=result.raasEffect[key]+result.drugEffect[key];
+        result.current[key]=result.baseline[key]+result.effect[key];
+    });
+    return result;
+}
 
 function calculatePhysiology(){
-
-
-
-
-
-
-
-    physiology.raasEffect=createZeroEffect();
-
-
-
-
-
-
-
-
-
-    physiology.drugEffect=createZeroEffect();
-
-
-
-
-
-
-
-
-
-    physiology.effect=createZeroEffect();
-
-
-
-
-
-
-
-
-
-
-
-
-    // =========================
-    // RAAS 영향 계산
-    // =========================
-
-
-    for(
-
-
-        let i=0;
-
-
-        i<=state.progress.maxReachedStep;
-
-
-        i++
-
-
-
-    ){
-
-
-
-
-
-        if(!isStepBlocked(i)){
-
-
-
-            let stageEffect=
-
-
-            stageData[i].effect;
-
-
-
-
-
-
-
-
-
-            physiology.raasEffect.bp
-
-
-            +=
-
-
-            stageEffect.bp;
-
-
-
-
-
-
-
-
-
-            physiology.raasEffect.sodium
-
-
-            +=
-
-
-            stageEffect.sodium;
-
-
-
-
-
-
-
-
-
-            physiology.raasEffect.volume
-
-
-            +=
-
-
-            stageEffect.volume;
-
-
-
-
-
-
-
-
-
-            physiology.raasEffect.gfr
-
-
-            +=
-
-
-            stageEffect.gfr;
-
-
-
-
-
-        }
-
-
-
-
-
-    }
-    // =========================
-    // 약물 효과 계산 (데이터 기반)
-    // =========================
-
-    const drugEffects=drugData[state.drug.appliedDrug].physiologyEffect;
-
-    Object.keys(initialPhysiology).forEach(key=>{
-
-        physiology.drugEffect[key]=drugEffects[key];
-
-    });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // =========================
-    // 최종 효과 합산
-    // =========================
-
-
-    Object.keys(initialPhysiology)
-
-    .forEach(key=>{
-
-
-
-
-
-        physiology.effect[key]
-
-
-        =
-
-
-        physiology.raasEffect[key]
-
-
-        +
-
-
-        physiology.drugEffect[key];
-
-
-
-
-
-
-
-
-
-        physiology.current[key]
-
-
-        =
-
-
-        physiology.baseline[key]
-
-
-        +
-
-
-        physiology.effect[key];
-
-
-
-
-
-
-
-
-    });
-
-
-
-
-
-
+    physiology=calculatePhysiologyAtStep(
+        state.progress.maxReachedStep,state.drug.appliedDrug
+    );
 }
-
-
 
 // =============================
 // Canvas 스타일 공통 상수
 // =============================
-
 const STAGE_COLORS={
     inactive:"#eeeeee",
     completed:"#ff9999",
@@ -1695,24 +1392,6 @@ function nextStep(){
 
 
 
-    if(next>state.drug.limitStep){
-
-
-
-        return;
-
-
-
-    }
-
-
-
-
-
-
-
-
-
     state.progress.currentStep=next;
 
 
@@ -1892,10 +1571,7 @@ function applyDrug(){
 
 
 
-        state.drug.limitStep=
-
-
-        drug.blockStep;
+        state.drug.limitStep=8; // v4.6 compatibility field: no progression restriction
 
 
 
