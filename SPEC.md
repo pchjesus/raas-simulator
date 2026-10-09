@@ -324,7 +324,7 @@ drugAppliedStep
 limitStep
 ```
 
-현재 구현에서 약물 적용 후 다음 단계 진행을 제한하기 위해 사용되는 값.
+v4.6 이전의 진행 제한에 사용된 필드. 현재는 8을 유지하는 호환성 필드이며 다음 단계 탐색을 제한하지 않는다.
 
 ---
 
@@ -342,27 +342,26 @@ limitStep
 
 ---
 
-# 10. 현재 약물 차단 모델
+# 10. 현재 약물 생리 기여 억제 모델 (v4.6 이후)
 
-현재 구현에서는 약물 적용 시 `blockStep` 이후의 일부 단계가 계산상 차단될 수 있다.
+약물 적용은 단계 진행을 멈추지 않는다. `nextStep()`은 약물 투여 여부와 관계없이 0~8단계 이동을 허용한다.
 
-현재 `isStepBlocked()`는 약물 적용 시점과 blockStep을 함께 고려한다.
+`drugData[].suppressedRaasSteps`에 지정된 단계의 교육용 수치 기여만 제외한다. 약물 자체의 `physiologyEffect`는 기존 수치 그대로 별도 가산된다. `calculatePhysiologyAtStep(reachedStep,drugId)`가 순수 계산을 담당하고 `calculatePhysiology()`는 기존 `physiology` 객체를 유지한 채 갱신한다.
 
-현재 구현은 다음과 같은 교육용 모델을 사용한다.
+| 약물 | 수치 기여 제외 단계 | 설명 |
+|---|---|---|
+| ACE inhibitor | 4, 6, 7 | Ang II 생성 감소와 후속 기여 단순화 |
+| ARB | 4, 6, 7 | AT1 관련 생리 효과 감소의 단순화 |
+| β blocker | 4, 6, 7 | Renin 분비 감소에 따른 후속 기여 단순화 |
+| Aldosterone antagonist | 6, 7 | 수용체 작용·염분 수분 보유 관련 효과 |
+| Loop diuretic | 7 | 신세뇨관 Na⁺/Water 기여 감소 |
+| Thiazide diuretic | 7 | 신세뇨관 Na⁺/Water 기여 감소 |
 
-```text
-약물 적용
-↓
-작용 위치
-↓
-그 이후 일부 단계의 RAAS 효과 제한
-```
+이는 **현재 교육용 모델에서 특정 수치 기여를 제외**한다는 뜻이지, 실제 생리적 경로가 완전히 중단되거나 약물에 100% 반응한다는 뜻은 아니다. 약물 적용 시점부터 실제로 일어난 변화를 시간 흐름에 따라 재구성하지도 않는다.
 
-다만 현재의 `limitStep` 구조는 약물 적용 후 실제 진행 자체를 제한한다는 별도의 설계상 한계를 가진다.
+`maxReachedStep`에 도달한 현 상태를 기준으로 현재 적용된 약물의 가상 효과를 재계산한다. `currentStep`을 이전 단계로 이동해도 `maxReachedStep`과 현재 생리값은 줄지 않는다. `drugAppliedStep`은 마지막 적용 시점을 기록하지만 현재 기여 억제 판정에는 사용되지 않는다.
 
-이 문제는 현재 SPEC의 동작 규칙을 임의로 변경하여 해결하지 않는다.
-
-향후 시뮬레이션 모델을 재설계할 때 별도로 검토한다.
+이 정책은 v4.5 이전의 `limitStep=blockStep` 기반 진행 제한을 대체한다. 과거 버전은 변경 없이 백업된다.
 
 ---
 
@@ -592,10 +591,9 @@ limitStep = 8
 다음 기능은 현재 구현된 것으로 간주하지 않는다.
 
 * 단계별 상세 팝업
-* 생리 변화 그래프
 * 임상 시나리오 모드
 * 모바일 전용 인터페이스
-* 약물 차단 로직의 재설계
+* 임상적으로 검증된 약동학·시간 경과·피드백 모델
 
 향후 버전에서 별도로 구현한다.
 
@@ -616,7 +614,7 @@ limitStep = 8
 
 1. 다음/이전 단계와 진행 초기화/전체 초기화의 차이.
 2. Canvas 색상과 우선순위(노랑 > 파랑 > 빨강 > 회색).
-3. 약물 적용·제거 및 현재 `limitStep` 기반 진행 제한.
+3. 약물 적용·제거 및 현재 단계 진행과 약물 생리 효과 억제의 분리.
 4. 기본값 + RAAS 효과 + 약물 효과 = 현재값.
 5. GFR이 현재 모델에서 변하지 않는 점 및 모든 표시 수치가 임상 예측값이 아니라는 주의사항.
 
@@ -641,7 +639,7 @@ limitStep = 8
 * 조회 대상과 실제 진행 상태 `state.progress.currentStep`/`maxReachedStep`는 서로 다른 개념이다.
 * 클릭으로 `nextStep()`, `previousStep()`, `refreshScreen()`이나 `calculatePhysiology()`를 실행하지 않는다.
 * 약물 상태 `state.drug` 및 `physiology`, Canvas 색상과 진행 기록은 조회 전후 동일해야 한다.
-* 적용된 약물의 진행 제한 밖에 있는 단계도 설명만 조회할 수 있다.
+* 실제 진행 기록과 무관하게 모든 9개 단계의 설명을 조회할 수 있다.
 
 ## 클릭 영역과 화면
 
@@ -728,3 +726,29 @@ v4.5에서 `stageData[].effect`, `drugData[].physiologyEffect`, `blockStep`, `st
 `tests/regression-v4.5.cjs`를 통해 이전 v4.4 백업과 동일한 동작 시퀀스에서 상태, 약물, 생리 수치, UI 패널 및 Canvas 경로 명령을 비교한다. 6종 약물의 기전 표식과 단계·연결 구간을 별도로 확인한다.
 
 모의 DOM/Canvas 검증은 실제 브라우저 픽셀 출력, 클릭·터치 정밀도, 스크롤, 포커스, 네이티브 모달 접근성까지 보증하지 않는다.
+
+
+---
+
+# 24. 진행·생리 효과 분리 (v4.6)
+
+- 단계 진행: `nextStep()`은 약물 선택과 무관하게 최종 8단계까지 허용.
+- 상태: `currentStep`, `maxReachedStep` 의미 및 이전 단계 조회 기록 유지.
+- 생리 모델: `calculatePhysiologyAtStep(step,drugId)`는 `baseline`, `raasEffect`, `drugEffect`, `effect`, `current` 객체를 반환하는 순수 함수.
+- `calculatePhysiology()`는 기존 `physiology` 객체의 식별성을 유지하여 UI·다른 참조자의 상태를 깨지 않는다.
+- 계산 결과는 현재 적용 약물 가정에 따른 정적인 모델상 비교로, 약효 발현 속도나 이전 약물 잔류 효과를 반영하지 않는다.
+- 진행 초기화는 약물 유지, 전체 초기화는 진행·약물 모두 초기화. 약물 제거는 진행 기록 유지.
+- v4.5 이전의 수치 모델과 약물 사용 중 결과는 의도적으로 달라지며, 6종 약물 효과의 고정값은 수정하지 않는다.
+
+# 25. 생리 변수 비교 그래프 (v4.7)
+
+- 위치: 기존 생리 변수 패널 아래 별도 `physiologyGraph` Canvas. 기존 900×380 RAAS pathway Canvas는 변경 없음.
+- 시리즈: `getGraphSeries(key,drugId)`가 0~8단계의 무약물·현재 약물 가정 결과를 각각 9개 반환.
+- 계산 소스: `calculatePhysiologyAtStep()`만 활용하며 그래프 전용 별도 생리식을 만들지 않는다.
+- 변수 선택: `graphVariable`의 bp/sodium/volume/gfr. 선택 변경은 그래프만 재그리며 약물·진행·계산 상태를 변경하지 않는다.
+- 색상: 파랑 실선=무약물, 보라 점선=적용 약물 가정; 현재 약물이 없으면 중복 선은 그리지 않는다.
+- `maxReachedStep`을 세로 점선으로 표시한다. `currentStep` 되돌리기는 실제 최대 도달 이력을 바꾸지 않는다.
+- X축=RAAS 단계 인덱스(시간이 아님), Y축=선택 변수의 교육용 수치; GFR처럼 상수인 값에도 0이 아닌 안전한 축 범위를 보장한다.
+- 그래프 데이터는 저장되는 시계열이 아니며 약동학적·임상적 변화 예측으로 사용하지 않는다.
+
+검증: `tests/regression-v4.6.cjs`와 `tests/regression-v4.7.cjs`의 모의 DOM/Canvas 자동 검증. 실제 브라우저 시각·모바일·접근성 검증은 미실시.
