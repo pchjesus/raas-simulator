@@ -1271,6 +1271,32 @@ function drawDrugMechanism(){
     ctx.restore();
 }
 
+// v4.7.1 — 학습 중 선택 위치는 실제 진행 상태의 단계 색상과 별도 표시한다.
+function drawLearningSelection(){
+    if(learningFocusIndex<0 || learningFocusIndex>=stageData.length){
+        return;
+    }
+    const x=PATHWAY_LAYOUT.startX+
+        learningFocusIndex*PATHWAY_LAYOUT.spacing;
+    const y=PATHWAY_LAYOUT.y;
+    ctx.save();
+    ctx.strokeStyle="#11654b";
+    ctx.fillStyle="#11654b";
+    ctx.lineWidth=4;
+    // 기존 상자 안쪽에 굵은 테두리를 추가한다 (기존 배경색을 덮지 않음).
+    ctx.strokeRect(x+3,y+3,PATHWAY_LAYOUT.boxWidth-6,PATHWAY_LAYOUT.boxHeight-6);
+    // 색상만으로 의존하지 않도록 상자 위 삼각형과 레이블을 함께 표시한다.
+    ctx.font="bold 12px Arial";
+    ctx.fillText("조회",x+29,y-13);
+    ctx.beginPath();
+    ctx.moveTo(x+37,y-11);
+    ctx.lineTo(x+49,y-11);
+    ctx.lineTo(x+43,y-3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
 function drawStatus(){
 
     ctx.beginPath();
@@ -1355,6 +1381,7 @@ function draw(){
 
     drawPathway();
     drawDrugMechanism();
+    drawLearningSelection();
     drawStatus();
     drawDrugInfo();
     drawDescription();
@@ -2664,6 +2691,7 @@ function showStageLearning(index){
 
     stageDetailPanel.hidden=false;
     learningFocusIndex=index;
+    draw(); // 학습용 강조선만 다시 렌더링, 생리 계산·그래프 갱신 없음
     stageLearningHint.textContent=
         "학습 중: "+stage.name+" ("+(index+1)+"/"+stageData.length+") — 아래 상세 설명에서 확인하세요.";
 }
