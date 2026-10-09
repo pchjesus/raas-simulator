@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v4.3.4
+RAAS Simulator v4.4
 </title>
 
 
@@ -286,6 +286,79 @@ line-height:1.4;
     .help-legend{grid-template-columns:1fr;}
 }
 
+
+
+
+/* =====================
+   v4.4 단계 클릭 학습 (Canvas 크기는 그대로 유지)
+===================== */
+
+.canvas-learning-area{
+    width:900px;
+    text-align:left;
+}
+
+#canvas[tabindex]{
+    cursor:pointer;
+}
+
+#canvas:focus-visible{
+    outline:3px solid #2762a9;
+    outline-offset:2px;
+}
+
+.stage-learning-hint{
+    font-size:12px;
+    color:#454545;
+    margin:4px 0 0;
+    line-height:1.5;
+}
+
+.stage-detail-panel{
+    box-sizing:border-box;
+    width:900px;
+    border:2px solid #5679a6;
+    border-radius:8px;
+    background:#fff;
+    padding:12px 16px;
+    margin-top:10px;
+    font-size:14px;
+    line-height:1.6;
+}
+
+.stage-detail-panel[hidden]{
+    display:none;
+}
+
+.stage-detail-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:7px;
+}
+
+.stage-detail-header h3{
+    margin:0;
+    font-size:17px;
+}
+
+.stage-detail-close{
+    width:auto;
+    min-width:65px;
+    cursor:pointer;
+}
+
+.stage-detail-panel p{
+    text-align:left;
+    margin:5px 0 9px;
+}
+
+.stage-detail-section-title{
+    font-weight:bold;
+    margin-top:12px;
+}
+
 </style>
 
 
@@ -301,7 +374,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v4.3.4
+RAAS Simulator v4.4
 </h1>
 
 
@@ -449,13 +522,34 @@ Thiazide diuretic
 
 
 
+<div class="canvas-learning-area">
+
 <canvas id="canvas"
-
 width="900"
-
-height="380">
-
+height="380"
+tabindex="0"
+role="group"
+aria-label="RAAS 9개 단계: 클릭 또는 방향키로 단계별 학습 정보 보기"
+aria-describedby="stageLearningHint">
 </canvas>
+
+<p id="stageLearningHint" class="stage-learning-hint">RAAS 단계 상자를 클릭하면 설명을 볼 수 있습니다. 키보드는 Canvas에 포커스한 뒤 ←/→ 또는 Home/End로 단계 탐색, Enter로 확인하세요.</p>
+
+<section id="stageDetailPanel" class="stage-detail-panel" aria-labelledby="stageDetailTitle" aria-live="polite" hidden>
+  <div class="stage-detail-header">
+    <h3 id="stageDetailTitle"></h3>
+    <button id="stageDetailCloseButton" class="stage-detail-close" type="button">닫기</button>
+  </div>
+  <p id="stageDetailSummary"></p>
+  <p id="stageDetailLearning"></p>
+  <p class="stage-detail-section-title">이 단계에 정의된 생리 효과</p>
+  <p id="stageDetailEffect"></p>
+  <p class="stage-detail-section-title">연관 약물</p>
+  <p id="stageDetailDrugs"></p>
+  <p class="stage-learning-hint">이 설명은 단계 조회용이며 현재 진행 단계, 투여 상태 및 생리 계산 결과를 바꾸지 않습니다.</p>
+</section>
+
+</div>
 
 
 
@@ -725,7 +819,8 @@ const stageData=[
             "sodium": 0,
             "volume": 0,
             "gfr": 0
-        }
+        },
+        "learningDetail": "혈압 또는 신장 관류가 감소하면 신장의 레닌 분비가 자극될 수 있습니다. 이 항목은 RAAS 활성의 시작 조건을 설명하며, 현재 모델에서는 이 단계 자체에 수치 효과를 더하지 않습니다."
     },
     {
         "name": "Renin",
@@ -735,7 +830,8 @@ const stageData=[
             "sodium": 0,
             "volume": 0,
             "gfr": 0
-        }
+        },
+        "learningDetail": "레닌은 간에서 생성된 안지오텐시노겐을 안지오텐신 I으로 전환하는 효소입니다. β 차단제는 신장의 β1 아드레날린성 신호를 억제하여 레닌 분비를 줄이는 데 관여할 수 있습니다."
     },
     {
         "name": "Angiotensin I",
@@ -745,7 +841,8 @@ const stageData=[
             "sodium": 0,
             "volume": 0,
             "gfr": 0
-        }
+        },
+        "learningDetail": "안지오텐신 I은 레닌의 작용으로 생성되는 중간 물질입니다. ACE를 거쳐 안지오텐신 II로 전환되며, 이 단계에는 별도의 혈압·전해질 수치 변화가 설정되어 있지 않습니다."
     },
     {
         "name": "ACE",
@@ -755,7 +852,8 @@ const stageData=[
             "sodium": 0,
             "volume": 0,
             "gfr": 0
-        }
+        },
+        "learningDetail": "ACE(안지오텐신 전환효소)는 안지오텐신 I을 안지오텐신 II로 전환합니다. ACE 억제제는 이 전환 과정을 억제합니다."
     },
     {
         "name": "Angiotensin II",
@@ -765,7 +863,8 @@ const stageData=[
             "sodium": 0,
             "volume": 0,
             "gfr": 0
-        }
+        },
+        "learningDetail": "안지오텐신 II는 AT1 수용체 등을 통해 혈관 수축과 알도스테론 분비를 촉진합니다. 현재 교육용 모델은 이 단계에 혈압 증가 효과를 배정합니다."
     },
     {
         "name": "AT1 receptor",
@@ -775,7 +874,8 @@ const stageData=[
             "sodium": 0,
             "volume": 0,
             "gfr": 0
-        }
+        },
+        "learningDetail": "AT1 수용체는 안지오텐신 II의 혈관수축 및 알도스테론 관련 작용을 매개합니다. ARB는 이 수용체를 차단합니다."
     },
     {
         "name": "Aldosterone",
@@ -785,7 +885,8 @@ const stageData=[
             "sodium": 5,
             "volume": 10,
             "gfr": 0
-        }
+        },
+        "learningDetail": "알도스테론은 신장 원위 네프론에서 Na⁺ 재흡수와 수분 보유를 증가시키고 K⁺ 배설에도 관여합니다. 이 시뮬레이터는 K⁺ 농도를 별도 변수로 계산하지 않습니다."
     },
     {
         "name": "Na⁺ / Water",
@@ -795,7 +896,8 @@ const stageData=[
             "sodium": 0,
             "volume": 0,
             "gfr": 0
-        }
+        },
+        "learningDetail": "Na⁺와 수분 보유는 혈액량과 혈압 조절에 기여합니다. 루프 이뇨제와 티아지드계 이뇨제는 신세뇨관의 서로 다른 부위에서 Na⁺ 재흡수를 억제합니다."
     },
     {
         "name": "혈압 회복",
@@ -805,7 +907,8 @@ const stageData=[
             "sodium": 0,
             "volume": 0,
             "gfr": 0
-        }
+        },
+        "learningDetail": "RAAS는 떨어진 혈압을 보상하는 여러 기전 중 하나입니다. ‘혈압 회복’이라는 단계명은 교육용 요약이며, 실제 환자에서 혈압이 반드시 정상으로 돌아온다는 뜻은 아닙니다."
     }
 ];
 
@@ -1306,6 +1409,19 @@ const CANVAS_STYLES={
 
 
 // =============================
+// RAAS 단계 도형 좌표: 렌더링과 클릭 판정에서 공통 사용
+// =============================
+
+const PATHWAY_LAYOUT={
+    startX:35,
+    y:55,
+    spacing:95,
+    boxWidth:85,
+    boxHeight:70
+};
+
+
+// =============================
 // Canvas 단계 색상 결정
 // 약물 위치 > 현재 단계 > 진행 완료 > 미진행
 // =============================
@@ -1338,14 +1454,14 @@ function drawPathway(){
 
     stageData.forEach((stage,index)=>{
 
-        let x=35+(index*95);
-        let y=55;
+        let x=PATHWAY_LAYOUT.startX+(index*PATHWAY_LAYOUT.spacing);
+        let y=PATHWAY_LAYOUT.y;
 
         ctx.fillStyle=getStageColor(index);
-        ctx.fillRect(x,y,85,70);
+        ctx.fillRect(x,y,PATHWAY_LAYOUT.boxWidth,PATHWAY_LAYOUT.boxHeight);
 
         ctx.strokeStyle=CANVAS_STYLES.border;
-        ctx.strokeRect(x,y,85,70);
+        ctx.strokeRect(x,y,PATHWAY_LAYOUT.boxWidth,PATHWAY_LAYOUT.boxHeight);
 
         ctx.fillStyle=CANVAS_STYLES.text;
         ctx.font=CANVAS_STYLES.pathwayFont;
@@ -1354,8 +1470,8 @@ function drawPathway(){
         if(index<stageData.length-1){
 
             ctx.beginPath();
-            ctx.moveTo(x+85,y+35);
-            ctx.lineTo(x+95,y+35);
+            ctx.moveTo(x+PATHWAY_LAYOUT.boxWidth,y+35);
+            ctx.lineTo(x+PATHWAY_LAYOUT.spacing,y+35);
             ctx.stroke();
 
         }
@@ -2685,6 +2801,146 @@ helpDialog.addEventListener("click",(event)=>{
 helpDialog.addEventListener("close",()=>{
     // Esc, 바깥 클릭 및 닫기 버튼 모두 진입점으로 포커스 복귀.
     helpOpenButton.focus();
+});
+
+
+// =============================
+// v4.4 단계별 학습: 실제 RAAS 상태는 절대 변경하지 않음
+// =============================
+
+const stageDetailPanel=document.getElementById("stageDetailPanel");
+const stageDetailTitle=document.getElementById("stageDetailTitle");
+const stageDetailSummary=document.getElementById("stageDetailSummary");
+const stageDetailLearning=document.getElementById("stageDetailLearning");
+const stageDetailEffect=document.getElementById("stageDetailEffect");
+const stageDetailDrugs=document.getElementById("stageDetailDrugs");
+const stageDetailCloseButton=document.getElementById("stageDetailCloseButton");
+const stageLearningHint=document.getElementById("stageLearningHint");
+
+// 키보드 탐색 대상은 시뮬레이션의 currentStep과 독립적이다.
+let learningFocusIndex=-1;
+
+function getStageIndexAtPoint(event){
+
+    const rect=canvas.getBoundingClientRect();
+
+    if(
+        rect.width<=0 || rect.height<=0 ||
+        canvas.clientWidth<=0 || canvas.clientHeight<=0 ||
+        canvas.offsetWidth<=0 || canvas.offsetHeight<=0 ||
+        !Number.isFinite(event.clientX) || !Number.isFinite(event.clientY)
+    ){
+        return -1;
+    }
+
+    // Canvas의 CSS border와 화면 배율/축소를 보정해 내부 좌표로 변환.
+    const x=(
+        ((event.clientX-rect.left)*canvas.offsetWidth/rect.width)-canvas.clientLeft
+    )*canvas.width/canvas.clientWidth;
+
+    const y=(
+        ((event.clientY-rect.top)*canvas.offsetHeight/rect.height)-canvas.clientTop
+    )*canvas.height/canvas.clientHeight;
+
+    for(let i=0;i<stageData.length;i++){
+
+        const left=PATHWAY_LAYOUT.startX+(i*PATHWAY_LAYOUT.spacing);
+
+        if(
+            x>=left && x<left+PATHWAY_LAYOUT.boxWidth &&
+            y>=PATHWAY_LAYOUT.y && y<PATHWAY_LAYOUT.y+PATHWAY_LAYOUT.boxHeight
+        ){
+            return i;
+        }
+
+    }
+
+    return -1;
+}
+
+function getStageEffectText(effect){
+
+    const labels={
+        bp:["혈압"," mmHg"],
+        sodium:["Na⁺"," mmol/L"],
+        volume:["혈액량"," %"],
+        gfr:["GFR"," mL/min"]
+    };
+
+    const changes=Object.keys(labels).filter(key=>effect[key]!==0)
+        .map(key=>{
+            const value=effect[key];
+            return labels[key][0]+" "+(value>0?"+":"")+value+labels[key][1];
+        });
+
+    return changes.length>0
+        ?changes.join(", ")+" (교육용 모델 수치)"
+        :"이 단계에는 별도 수치 변화가 지정되어 있지 않습니다.";
+}
+
+function showStageLearning(index){
+
+    if(!Number.isInteger(index) || index<0 || index>=stageData.length){
+        return;
+    }
+
+    const stage=stageData[index];
+    const drugs=Object.values(drugData).filter(drug=>drug.blockStep===index);
+
+    stageDetailTitle.textContent=(index+1)+". "+stage.name;
+    stageDetailSummary.textContent=stage.description;
+    stageDetailLearning.textContent=stage.learningDetail;
+    stageDetailEffect.textContent=getStageEffectText(stage.effect);
+    stageDetailDrugs.textContent=drugs.length
+        ?drugs.map(drug=>drug.name+": "+drug.effect).join(" / ")
+        :"이 단계에 지정된 직접 연관 약물은 없습니다.";
+
+    stageDetailPanel.hidden=false;
+    learningFocusIndex=index;
+    stageLearningHint.textContent=
+        "학습 중: "+stage.name+" ("+(index+1)+"/"+stageData.length+") — 아래 상세 설명에서 확인하세요.";
+}
+
+canvas.addEventListener("click",(event)=>{
+    const index=getStageIndexAtPoint(event);
+
+    if(index!==-1){
+        showStageLearning(index);
+    }
+});
+
+canvas.addEventListener("keydown",(event)=>{
+
+    let index=learningFocusIndex;
+
+    switch(event.key){
+        case "ArrowRight":
+            index=Math.min(index+1,stageData.length-1);
+            break;
+        case "ArrowLeft":
+            index=index===-1?stageData.length-1:Math.max(index-1,0);
+            break;
+        case "Home":
+            index=0;
+            break;
+        case "End":
+            index=stageData.length-1;
+            break;
+        case "Enter":
+        case " ":
+            index=index===-1?0:index;
+            break;
+        default:
+            return;
+    }
+
+    event.preventDefault();
+    showStageLearning(index);
+});
+
+stageDetailCloseButton.addEventListener("click",()=>{
+    stageDetailPanel.hidden=true;
+    canvas.focus();
 });
 
 
