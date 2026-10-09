@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v4.4
+RAAS Simulator v4.5
 </title>
 
 
@@ -374,7 +374,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v4.4
+RAAS Simulator v4.5
 </h1>
 
 
@@ -697,14 +697,16 @@ class="variableValue">
             <div class="help-legend-item"><span class="help-swatch" style="background:#99ccff" aria-hidden="true"></span>파랑: 현재 보고 있는 단계</div>
             <div class="help-legend-item"><span class="help-swatch" style="background:#ffe066" aria-hidden="true"></span>노랑: 적용 약물의 작용 위치</div>
             <div class="help-legend-item"><span class="help-swatch" style="background:#eeeeee" aria-hidden="true"></span>회색: 아직 진행하지 않은 단계</div>
+            <div class="help-legend-item"><span class="help-swatch" style="background:#7c3a96" aria-hidden="true"></span>보라: 약물 작용 기전 표식</div>
         </div>
-        <p>색상이 겹칠 때는 <strong>노랑 → 파랑 → 빨강 → 회색</strong> 순으로 우선 표시됩니다. 색상은 단계 표시 상태이며 생리 계산값과 직접 같지는 않습니다.</p>
+        <p>단계 상자의 색상 우선순위는 <strong>노랑 → 파랑 → 빨강 → 회색</strong>입니다. 보라색은 약물 작용 기전 안내이며 단계 상자 색상이나 생리 계산값을 바꾸지 않습니다.</p>
 
         <h3>3. 약물 적용과 제거</h3>
         <ul>
             <li>선택창에서 ACE inhibitor, Aldosterone antagonist, ARB, β blocker, Loop diuretic, Thiazide diuretic 중 하나를 고르고 <strong>약물 적용</strong>을 누릅니다.</li>
             <li>약물 작용 위치가 노란색으로 표시되며 생리 변수에 교육용 약물 효과가 반영됩니다.</li>
             <li>현재 모델에서는 약물을 적용하면 작용 단계 이후로 <strong>다음 단계 진행 자체가 제한</strong>될 수 있습니다.</li>
+            <li>보라색 사선은 전환·수용체 작용의 억제, 보라색 원형 표식은 특정 표적 작용의 억제를 뜻합니다. 후속 RAAS 과정이 모두 완전히 중단된다는 의미는 아닙니다. 이뇨제의 신세뇨관 표적은 간략한 Na⁺/Water 단계에 요약해 표시합니다.</li>
             <li><strong>약물 제거:</strong> 적용 효과와 진행 제한을 해제합니다. 약물 선택창의 선택 항목과 이전 진행 기록은 유지됩니다.</li>
         </ul>
 
@@ -1491,6 +1493,63 @@ function drawPathway(){
 // 현재 단계 및 구분선 렌더링
 // =============================
 
+// v4.5 시각화 전용: 계산과 진행 상태를 읽기만 함
+function drawDrugMechanism(){
+    const drug=drugData[state.drug.appliedDrug];
+    const visual=drug.visualization;
+    if(!visual){ return; }
+    let x;
+    ctx.save();
+    ctx.strokeStyle="#7c3a96";
+    ctx.fillStyle="#7c3a96";
+    ctx.lineWidth=2;
+    if(visual.type==="link"){
+        // 상자 사이 10px 연결선 안쪽에만 억제 표식 위치
+        const left=PATHWAY_LAYOUT.startX+visual.afterStep*PATHWAY_LAYOUT.spacing;
+        x=left+PATHWAY_LAYOUT.boxWidth+
+            (PATHWAY_LAYOUT.spacing-PATHWAY_LAYOUT.boxWidth)/2;
+        ctx.beginPath();
+        ctx.moveTo(x-3,82);
+        ctx.lineTo(x+3,98);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x,102);
+        ctx.lineTo(x,157);
+        ctx.stroke();
+    }else if(visual.type==="node"){
+        // 신세뇨관 표적은 개념적으로 Na⁺/Water 단계에 표시
+        x=PATHWAY_LAYOUT.startX+visual.step*PATHWAY_LAYOUT.spacing+
+            PATHWAY_LAYOUT.boxWidth/2;
+        ctx.beginPath();
+        ctx.moveTo(x,125);
+        ctx.lineTo(x,135);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(x,145,9,0,Math.PI*2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x-4,145);
+        ctx.lineTo(x+4,145);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x,154);
+        ctx.lineTo(x,157);
+        ctx.stroke();
+    }
+    // 기존 하단 상태 구분선(y=250) 위의 빈 영역 사용
+    ctx.fillStyle="#f7f0fa";
+    ctx.fillRect(40,163,820,64);
+    ctx.strokeStyle="#7c3a96";
+    ctx.lineWidth=1;
+    ctx.strokeRect(40,163,820,64);
+    ctx.fillStyle="#3b2145";
+    ctx.font="13px Arial";
+    ctx.fillText("약물 작용: "+drug.name+" — "+visual.mechanism,52,187);
+    ctx.font="12px Arial";
+    ctx.fillText("보라색 표식은 작용 기전 안내입니다. 기존 단계 진행 제한·생리 계산 모델은 그대로 유지됩니다.",52,210);
+    ctx.restore();
+}
+
 function drawStatus(){
 
     ctx.beginPath();
@@ -1574,6 +1633,7 @@ function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     drawPathway();
+    drawDrugMechanism();
     drawStatus();
     drawDrugInfo();
     drawDescription();
