@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v4.3.3
+RAAS Simulator v4.3.4
 </title>
 
 
@@ -227,6 +227,65 @@ line-height:1.4;
 
 
 
+
+/* =====================
+   사용 설명서 (독립 모달)
+   기존 화면의 크기와 위치에 영향을 주지 않음
+===================== */
+.help-trigger{
+    margin-top:auto;
+    background:#edf5ff;
+    border:1px solid #5679a6;
+    cursor:pointer;
+}
+.help-dialog{
+    box-sizing:border-box;
+    width:min(700px, calc(100vw - 32px));
+    max-width:700px;
+    max-height:85vh;
+    max-height:85dvh;
+    overflow-y:auto;
+    padding:0;
+    border:1px solid #555;
+    border-radius:12px;
+    background:#fff;
+    color:#222;
+    text-align:left;
+    box-shadow:0 12px 40px rgba(0,0,0,.25);
+}
+.help-dialog::backdrop{
+    background:rgba(0,0,0,.58);
+}
+.help-header{
+    position:sticky;
+    top:0;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:14px 20px;
+    background:#fff;
+    border-bottom:1px solid #ddd;
+}
+.help-dialog h2{margin:0;font-size:20px;}
+.help-close{width:auto;min-width:70px;flex-shrink:0;cursor:pointer;}
+.help-body{padding:16px 20px 22px;font-size:14px;line-height:1.65;overflow-wrap:anywhere;}
+.help-body h3{margin:22px 0 8px;font-size:16px;}
+.help-body h3:first-of-type{margin-top:16px;}
+.help-body p{margin:7px 0;}
+.help-body ul{padding-left:22px;margin:8px 0;}
+.help-body li{margin:4px 0;}
+.help-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0;}
+.help-legend-item{display:flex;align-items:center;gap:8px;font-size:13px;}
+.help-swatch{display:inline-block;width:18px;height:18px;flex:0 0 18px;border:1px solid #777;border-radius:3px;}
+.help-note{padding:10px 12px;background:#f3f5f7;border-left:3px solid #5679a6;}
+@media (max-width:420px){
+    .help-body{padding:12px 14px 18px;}
+    .help-header{padding:12px 14px;}
+    .help-legend{grid-template-columns:1fr;}
+}
+
 </style>
 
 
@@ -242,7 +301,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v4.3.3
+RAAS Simulator v4.3.4
 </h1>
 
 
@@ -371,6 +430,10 @@ Thiazide diuretic
 
 ⚠ 전체 초기화
 
+</button>
+
+<button type="button" id="helpOpenButton" class="help-trigger" aria-haspopup="dialog" aria-controls="helpDialog">
+? 사용 설명서
 </button>
 
 
@@ -515,6 +578,56 @@ class="variableValue">
 
 
 
+
+
+<!-- 사용 설명서: Canvas와 생리 계산 상태에 영향을 주지 않는 모달 -->
+<dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle" aria-describedby="helpLead">
+    <div class="help-header">
+        <h2 id="helpTitle">RAAS Simulator 사용 설명서</h2>
+        <button type="button" id="helpCloseButton" class="help-close" autofocus>닫기</button>
+    </div>
+    <div class="help-body">
+        <p id="helpLead">RAAS 경로의 진행, 약물 작용 위치, 생리 변수 변화를 확인하는 교육용 시뮬레이터입니다.</p>
+
+        <h3>1. 기본 조작</h3>
+        <ul>
+            <li><strong>다음 단계:</strong> RAAS 경로를 한 단계 진행합니다. 약물이 적용된 경우 특정 단계 이후의 진행이 제한될 수 있습니다.</li>
+            <li><strong>이전 단계:</strong> 표시 중인 단계를 한 단계 되돌립니다. 이미 도달한 최대 단계와 생리 효과는 되돌리지 않습니다.</li>
+            <li><strong>진행 초기화:</strong> RAAS 진행 기록만 초기화합니다. 적용된 약물과 진행 제한은 그대로 유지됩니다.</li>
+            <li><strong>전체 초기화:</strong> 진행 기록과 적용 약물을 모두 초기화하고 약물 선택창도 ‘약물 없음’으로 되돌립니다.</li>
+        </ul>
+
+        <h3>2. Canvas 색상</h3>
+        <div class="help-legend" aria-label="RAAS 단계 색상 설명">
+            <div class="help-legend-item"><span class="help-swatch" style="background:#ff9999" aria-hidden="true"></span>빨강: 진행한 단계</div>
+            <div class="help-legend-item"><span class="help-swatch" style="background:#99ccff" aria-hidden="true"></span>파랑: 현재 보고 있는 단계</div>
+            <div class="help-legend-item"><span class="help-swatch" style="background:#ffe066" aria-hidden="true"></span>노랑: 적용 약물의 작용 위치</div>
+            <div class="help-legend-item"><span class="help-swatch" style="background:#eeeeee" aria-hidden="true"></span>회색: 아직 진행하지 않은 단계</div>
+        </div>
+        <p>색상이 겹칠 때는 <strong>노랑 → 파랑 → 빨강 → 회색</strong> 순으로 우선 표시됩니다. 색상은 단계 표시 상태이며 생리 계산값과 직접 같지는 않습니다.</p>
+
+        <h3>3. 약물 적용과 제거</h3>
+        <ul>
+            <li>선택창에서 ACE inhibitor, Aldosterone antagonist, ARB, β blocker, Loop diuretic, Thiazide diuretic 중 하나를 고르고 <strong>약물 적용</strong>을 누릅니다.</li>
+            <li>약물 작용 위치가 노란색으로 표시되며 생리 변수에 교육용 약물 효과가 반영됩니다.</li>
+            <li>현재 모델에서는 약물을 적용하면 작용 단계 이후로 <strong>다음 단계 진행 자체가 제한</strong>될 수 있습니다.</li>
+            <li><strong>약물 제거:</strong> 적용 효과와 진행 제한을 해제합니다. 약물 선택창의 선택 항목과 이전 진행 기록은 유지됩니다.</li>
+        </ul>
+
+        <h3>4. 생리 변수 읽는 방법</h3>
+        <p>혈압(BP), Na⁺, 혈액량, GFR의 <strong>기본값</strong>, <strong>변화량</strong>, <strong>현재값</strong>을 표시합니다.</p>
+        <p class="help-note"><strong>현재값 = 기본값 + RAAS 영향 + 약물 영향</strong></p>
+        <ul>
+            <li>혈압: mmHg / Na⁺: mmol/L / 혈액량: 기준값 100% / GFR: mL/min</li>
+            <li>화살표 ↑·↓는 계산된 변화 방향을 뜻합니다.</li>
+            <li>GFR은 현재 단순화 모델에서 별도의 변화 효과가 없으므로 값이 유지됩니다.</li>
+        </ul>
+
+        <h3>5. 교육용 모델의 한계</h3>
+        <p class="help-note">시뮬레이터의 약물 및 RAAS 효과값은 교육을 위한 단순화된 수치입니다. 실제 환자의 혈압, 전해질, 혈액량 또는 신기능을 예측하거나 치료 결정을 내리는 데 사용할 수 없습니다.</p>
+        <p>설명서를 닫으려면 <strong>닫기</strong> 버튼이나 <strong>Esc</strong> 키를 사용하세요. 팝업 바깥을 클릭해도 닫힙니다.</p>
+    </div>
+</dialog>
 
 <script>
 
@@ -2531,6 +2644,48 @@ physiology.current.gfr
 
 }
 
+
+
+// =============================
+// 사용 설명서 모달: 시뮬레이션 상태와 독립
+// =============================
+
+const helpOpenButton=document.getElementById("helpOpenButton");
+const helpCloseButton=document.getElementById("helpCloseButton");
+const helpDialog=document.getElementById("helpDialog");
+
+helpOpenButton.addEventListener("click",()=>{
+    if(!helpDialog.open){
+        helpDialog.showModal();
+    }
+});
+
+helpCloseButton.addEventListener("click",()=>{
+    helpDialog.close();
+});
+
+helpDialog.addEventListener("click",(event)=>{
+    // 팝업 내용 클릭은 닫힘 이벤트가 아니다.
+    if(event.target!==helpDialog || !helpDialog.open){
+        return;
+    }
+
+    const rect=helpDialog.getBoundingClientRect();
+    const outside=
+        event.clientX<rect.left ||
+        event.clientX>rect.right ||
+        event.clientY<rect.top ||
+        event.clientY>rect.bottom;
+
+    if(outside){
+        helpDialog.close();
+    }
+});
+
+helpDialog.addEventListener("close",()=>{
+    // Esc, 바깥 클릭 및 닫기 버튼 모두 진입점으로 포커스 복귀.
+    helpOpenButton.focus();
+});
 
 
 // =============================
