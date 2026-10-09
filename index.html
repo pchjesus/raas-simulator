@@ -1310,671 +1310,157 @@ function calculatePhysiology(){
 
 
 // =============================
-// Canvas 그리기
+// Canvas 단계 색상 결정
+// 약물 위치 > 현재 단계 > 진행 완료 > 미진행
 // =============================
 
+function getStageColor(index){
+
+    const drug=drugData[state.appliedDrug];
+
+    if(state.appliedDrug!=="none" && drug.blockStep===index){
+        return "#ffe066";
+    }
+
+    if(index===state.currentStep){
+        return "#99ccff";
+    }
+
+    if(index<=state.maxReachedStep){
+        return "#ff9999";
+    }
+
+    return "#eeeeee";
+}
+
+
+// =============================
+// RAAS pathway 렌더링
+// =============================
+
+function drawPathway(){
+
+    stageData.forEach((stage,index)=>{
+
+        let x=35+(index*95);
+        let y=55;
+
+        ctx.fillStyle=getStageColor(index);
+        ctx.fillRect(x,y,85,70);
+
+        ctx.strokeStyle="#333";
+        ctx.strokeRect(x,y,85,70);
+
+        ctx.fillStyle="black";
+        ctx.font="12px Arial";
+        ctx.fillText(stage.name,x+5,y+40);
+
+        if(index<stageData.length-1){
+
+            ctx.beginPath();
+            ctx.moveTo(x+85,y+35);
+            ctx.lineTo(x+95,y+35);
+            ctx.stroke();
+
+        }
+
+    });
+
+}
+
+
+// =============================
+// 현재 단계 및 구분선 렌더링
+// =============================
+
+function drawStatus(){
+
+    ctx.beginPath();
+    ctx.moveTo(30,250);
+    ctx.lineTo(870,250);
+    ctx.stroke();
+
+    ctx.fillStyle="black";
+    ctx.font="14px Arial";
+
+    let currentStage;
+
+    if(state.currentStep===-1){
+        currentStage="RAAS 시작 전";
+    }
+    else{
+        currentStage=stageData[state.currentStep].name;
+    }
+
+    ctx.fillText("현재 단계 : "+currentStage,40,285);
+
+}
+
+
+// =============================
+// 적용 약물 및 작용 렌더링
+// =============================
+
+function drawDrugInfo(){
+
+    const drug=drugData[state.appliedDrug];
+
+    let drugText;
+
+    if(state.appliedDrug==="none"){
+        drugText="약물 없음";
+    }
+    else{
+        drugText=drug.name+" (대표 약물: "+drug.example+")";
+    }
+
+    ctx.fillText("적용 약물 : "+drugText,40,315);
+
+    if(state.appliedDrug!=="none"){
+
+        ctx.font="12px Arial";
+        ctx.fillText("작용 : "+drug.effect,40,340);
+
+    }
+
+}
+
+
+// =============================
+// 현재 단계 설명 렌더링
+// =============================
+
+function drawDescription(){
+
+    let description;
+
+    if(state.currentStep===-1){
+        description="다음 단계 버튼을 눌러 RAAS 진행을 시작하세요.";
+    }
+    else{
+        description=stageData[state.currentStep].description;
+    }
+
+    ctx.font="12px Arial";
+    ctx.fillText("단계 설명 : "+description,40,365);
+
+}
+
+
+// =============================
+// Canvas 전체 렌더링
+// =============================
 
 function draw(){
 
+    ctx.clearRect(0,0,canvas.width,canvas.height);
 
-
-ctx.clearRect(
-
-0,
-
-0,
-
-canvas.width,
-
-canvas.height
-
-);
-
-
-
-
-
-
-
-
-const drug=
-
-
-drugData[state.appliedDrug];
-
-
-
-
-
-
-
-
-
-
-
-
-// =========================
-// RAAS pathway
-// =========================
-
-
-stageData.forEach((stage,index)=>{
-
-
-
-
-
-let x=35+(index*95);
-
-
-let y=55;
-
-
-
-
-
-
-
-
-let color="#eeeeee";
-
-
-// 진행 완료 단계
-if(index<=state.maxReachedStep){
-
-    color="#ff9999";
+    drawPathway();
+    drawStatus();
+    drawDrugInfo();
+    drawDescription();
 
 }
-
-
-// 현재 선택 단계
-if(index===state.currentStep){
-
-    color="#99ccff";
-
-}
-
-
-// 약물 작용 위치 최우선
-if(
-state.appliedDrug!=="none"
-&&
-drug.blockStep===index
-
-){
-
-    color="#ffe066";
-
-}
-
-
-
-
-
-
-
-
-
-ctx.fillStyle=color;
-
-
-ctx.fillRect(
-
-
-x,
-
-
-y,
-
-
-85,
-
-
-70
-
-
-);
-
-
-
-
-
-
-
-
-ctx.strokeStyle="#333";
-
-
-ctx.strokeRect(
-
-
-x,
-
-
-y,
-
-
-85,
-
-
-70
-
-
-);
-
-
-
-
-
-
-
-
-ctx.fillStyle="black";
-
-
-ctx.font="12px Arial";
-
-
-
-ctx.fillText(
-
-stage.name,
-
-
-x+5,
-
-
-y+40
-
-
-);
-
-
-
-
-
-
-
-
-
-
-
-
-
-if(index<stageData.length-1){
-
-
-
-
-
-ctx.beginPath();
-
-
-
-
-ctx.moveTo(
-
-
-x+85,
-
-
-y+35
-
-
-);
-
-
-
-
-ctx.lineTo(
-
-
-x+95,
-
-
-y+35
-
-
-);
-
-
-
-
-ctx.stroke();
-
-
-
-
-}
-
-
-
-
-
-});
-
-
-
-
-
-
-
-
-
-
-
-// =========================
-// 현재 상태 영역
-// =========================
-
-
-ctx.beginPath();
-
-
-ctx.moveTo(
-
-
-30,
-
-
-250
-
-
-);
-
-
-
-ctx.lineTo(
-
-
-870,
-
-
-250
-
-
-);
-
-
-
-ctx.stroke();
-
-
-
-
-
-
-
-
-
-ctx.fillStyle="black";
-
-
-ctx.font="14px Arial";
-
-
-
-
-
-
-
-
-
-let currentStage;
-
-
-
-
-
-
-
-
-
-
-
-if(state.currentStep===-1){
-
-
-
-currentStage="RAAS 시작 전";
-
-
-
-}
-
-else{
-
-
-
-currentStage=stageData[state.currentStep].name;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-ctx.fillText(
-
-
-
-"현재 단계 : "
-
-
-
-+
-
-
-
-currentStage,
-
-
-
-40,
-
-
-
-285
-
-
-
-);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// =========================
-// 약물 표시
-// =========================
-
-
-let drugText;
-
-
-
-
-
-
-
-
-if(state.appliedDrug==="none"){
-
-
-
-drugText="약물 없음";
-
-
-
-}
-
-else{
-
-
-
-drugText=
-
-
-
-drug.name
-
-
-
-+
-
-
-
-" (대표 약물: "
-
-
-
-+
-
-
-
-drug.example
-
-
-
-+
-
-
-
-")";
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-ctx.fillText(
-
-
-
-
-
-"적용 약물 : "
-
-
-
-
-
-+
-
-
-
-
-
-drugText,
-
-
-
-40,
-
-
-
-315
-
-
-
-);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if(state.appliedDrug!=="none"){
-
-
-
-ctx.font="12px Arial";
-
-
-
-ctx.fillText(
-
-
-
-
-
-"작용 : "
-
-
-
-
-
-+
-
-
-
-
-
-drug.effect,
-
-
-
-
-
-40,
-
-
-
-340
-
-
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-let description;
-
-
-
-
-
-
-
-
-
-if(state.currentStep===-1){
-
-
-
-description=
-
-
-
-"다음 단계 버튼을 눌러 RAAS 진행을 시작하세요.";
-
-
-
-}
-
-else{
-
-
-
-description=
-
-
-
-stageData[state.currentStep].description;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-ctx.font="12px Arial";
-
-
-
-ctx.fillText(
-
-
-
-
-
-"단계 설명 : "
-
-
-
-
-
-+
-
-
-
-
-
-description,
-
-
-
-40,
-
-
-
-365
-
-
-
-);
-
-
-
-
-
-}
-
 
 
 // =============================
