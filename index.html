@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v4.7.1
+RAAS Simulator v4.8
 </title>
 
 
@@ -359,6 +359,12 @@ line-height:1.4;
     margin-top:12px;
 }
 
+.flow-demo-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0 4px}
+.flow-demo-controls button{width:auto;min-width:118px;cursor:pointer;border-radius:4px}
+#flowDemoToggle{background:#e8f3f8;border:1px solid #225e78}
+#flowDemoStop{background:#f6f6f6;border:1px solid #999}
+.flow-demo-status{font-size:12px;font-weight:bold;color:#225e78}
+.flow-demo-explain{font-size:12px;color:#454545;line-height:1.5;text-align:left}
 /* v4.7 graph: below existing physiology cards; pathway canvas unchanged */
 .model-graph{margin-top:18px;padding-top:14px;border-top:1px solid #bbb;text-align:left}
 .model-graph-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
@@ -382,7 +388,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v4.7.1
+RAAS Simulator v4.8
 </h1>
 
 
@@ -541,6 +547,12 @@ aria-label="RAAS 9개 단계: 클릭 또는 방향키로 단계별 학습 정보
 aria-describedby="stageKeyboardGuide stageLearningHint">
 </canvas>
 
+<div class="flow-demo-controls" role="group" aria-label="RAAS 경로 시연">
+<button id="flowDemoToggle" type="button" aria-pressed="false">▶ 경로 시연</button>
+<button id="flowDemoStop" type="button">■ 시연 종료</button>
+<span id="flowDemoStatus" class="flow-demo-status" role="status" aria-live="polite">시연 대기</span>
+</div>
+<p class="flow-demo-explain">진청색 점선 테두리와 '시연' 표식이 9개 단계를 자동으로 이동합니다. 실제 진행 기록·약물·생리 수치·그래프에는 영향을 주지 않습니다.</p>
 <p id="stageKeyboardGuide" class="stage-learning-hint">
   <strong>키보드 학습:</strong> Tab으로 RAAS 단계 영역 선택 →
   ←/→ 앞·뒤 단계 조회 / Home·End 첫·마지막 단계 / Enter·Space 설명 보기 /
@@ -730,6 +742,9 @@ class="variableValue">
         </ul>
         <p>초록색 테두리와 위쪽 <strong>조회</strong> 표시는 현재 <strong>학습 대상으로 선택한 상자</strong>를 알려 줍니다. 노랑·파랑·빨강·회색은 기존 시뮬레이션 진행·약물 상태를 그대로 나타냅니다. 키보드 탐색은 진행·생리 수치를 변경하지 않습니다.</p>
 
+        <h3>1-2. RAAS 경로 시연</h3>
+        <p><strong>▶ 경로 시연</strong>으로 9개 단계의 진행 순서를 자동으로 훑을 수 있습니다. 시연 중 같은 버튼으로 일시정지하고, 다시 눌러 이어봅니다. <strong>■ 시연 종료</strong>로 초기화합니다. 끝나면 다시 시연할 수 있습니다.</p>
+        <p>진청색 점선과 '시연' 표식은 자동 학습용입니다. 기존 초록색 '조회' 선택, 노랑·파랑·빨강·회색 단계 배경, 약물·생리 변수 및 비교 그래프는 바뀌지 않습니다. 시연 중에도 기존 조작을 사용할 수 있습니다.</p>
         <h3>2. Canvas 색상</h3>
         <div class="help-legend" aria-label="RAAS 단계 색상 설명">
             <div class="help-legend-item"><span class="help-swatch" style="background:#ff9999" aria-hidden="true"></span>빨강: 진행한 단계</div>
@@ -1287,6 +1302,23 @@ function drawDrugMechanism(){
     ctx.restore();
 }
 
+// v4.8 — 경로 시연은 UI 인덱스만 변경, 실제 모델에는 관여하지 않음.
+const flowDemo={index:-1,timer:null,paused:false};
+function drawFlowDemo(){
+    if(flowDemo.index<0||flowDemo.index>=stageData.length)return;
+    const x=PATHWAY_LAYOUT.startX+flowDemo.index*PATHWAY_LAYOUT.spacing;
+    const y=PATHWAY_LAYOUT.y;
+    ctx.save();
+    ctx.strokeStyle="#225e78";
+    ctx.fillStyle="#225e78";
+    ctx.lineWidth=2.5;
+    ctx.setLineDash([6,3]);
+    ctx.strokeRect(x+1,y+1,PATHWAY_LAYOUT.boxWidth-2,PATHWAY_LAYOUT.boxHeight-2);
+    ctx.setLineDash([]);
+    ctx.font="bold 12px Arial";
+    ctx.fillText("▶ 시연",x+21,y-26);
+    ctx.restore();
+}
 // v4.7.1 — 학습 중 선택 위치는 실제 진행 상태의 단계 색상과 별도 표시한다.
 function drawLearningSelection(){
     if(learningFocusIndex<0 || learningFocusIndex>=stageData.length){
@@ -1397,6 +1429,7 @@ function draw(){
 
     drawPathway();
     drawDrugMechanism();
+    drawFlowDemo();
     drawLearningSelection();
     drawStatus();
     drawDrugInfo();
@@ -2833,6 +2866,57 @@ function drawPhysiologyGraph(){
     ctx.restore();
 }
 graphVariable.addEventListener("change",drawPhysiologyGraph);
+
+// v4.8 — 시연용 단일 타이머. 의도적으로 nextStep/refreshScreen을 호출하지 않는다.
+const flowDemoToggle=document.getElementById("flowDemoToggle");
+const flowDemoStop=document.getElementById("flowDemoStop");
+const flowDemoStatus=document.getElementById("flowDemoStatus");
+function clearFlowDemoTimer(){
+    if(flowDemo.timer!==null){
+        clearInterval(flowDemo.timer);
+        flowDemo.timer=null;
+    }
+}
+function updateFlowDemoUI(buttonText,status,running){
+    flowDemoToggle.textContent=buttonText;
+    flowDemoToggle.setAttribute("aria-pressed",String(running));
+    flowDemoStatus.textContent=status;
+}
+function advanceFlowDemo(){
+    if(flowDemo.index>=stageData.length-1){
+        clearFlowDemoTimer();
+        flowDemo.paused=false;
+        updateFlowDemoUI("▶ 다시 시연","9 / 9 · 시연 완료",false);
+        return;
+    }
+    flowDemo.index++;
+    draw();
+    flowDemoStatus.textContent=(flowDemo.index+1)+" / 9 · "+stageData[flowDemo.index].name;
+}
+function toggleFlowDemo(){
+    if(flowDemo.timer!==null){
+        clearFlowDemoTimer();
+        flowDemo.paused=true;
+        updateFlowDemoUI("▶ 이어보기",(flowDemo.index+1)+" / 9 · 일시정지",false);
+        return;
+    }
+    if(!flowDemo.paused){
+        flowDemo.index=0;
+        draw();
+    }
+    flowDemo.paused=false;
+    updateFlowDemoUI("⏸ 일시정지",(flowDemo.index+1)+" / 9 · "+stageData[flowDemo.index].name,true);
+    flowDemo.timer=setInterval(advanceFlowDemo,850);
+}
+function stopFlowDemo(){
+    clearFlowDemoTimer();
+    flowDemo.index=-1;
+    flowDemo.paused=false;
+    updateFlowDemoUI("▶ 경로 시연","시연 대기",false);
+    draw();
+}
+flowDemoToggle.addEventListener("click",toggleFlowDemo);
+flowDemoStop.addEventListener("click",stopFlowDemo);
 
 // 초기 실행
 // =============================
