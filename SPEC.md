@@ -688,3 +688,43 @@ Codex가 코드를 수정할 때 다음 순서를 권장한다.
 특히 기능 추가나 UI 변경이 기존 상태 관리, 계산 엔진, Canvas 표시 또는 화면 전환에 영향을 줄 가능성이 있는 경우 먼저 영향을 검토한다.
 
 현재 구현되지 않은 기능을 임의로 추가하거나, 기존 규칙을 조용히 변경하지 않는다.
+
+
+---
+
+# 23. 약물 작용 기전 시각화 (v4.5)
+
+## 23.1 적용 범위와 경계
+
+v4.5는 현재 약물 상태를 읽어서 기존 Canvas 위에 **작용 기전 안내 표시만 추가**한다.
+
+- `drugData[drugId].visualization`: `type`(link/node), 연결 구간 `afterStep` 또는 단계 `step`, 교육용 작용 설명 `mechanism`.
+- `drawDrugMechanism()`: 적용 약물이 없으면 아무것도 그리지 않음. 약물이 있으면 보라색 표식을 연결선 또는 단계 하단에 그림.
+- `draw()`: 기존 `drawPathway()` 후 약물 기전 레이어를 추가하고, `drawStatus()`, `drawDrugInfo()`, `drawDescription()`의 기존 호출 순서는 유지.
+
+상자 간 실제 간격은 10px이며, 연결 구간의 사선은 그 간격 안에 위치해야 한다. 단계 상자 자체의 크기와 좌표, Canvas 900×380, 상세 학습 클릭 판정은 그대로 유지한다. 작용 설명은 기존 구분선(y=250) 위 빈 공간을 사용한다.
+
+## 23.2 약물별 기전 표현
+
+| 약물 | 표시 종류 | 위치 | 교육용 표현 |
+| --- | --- | --- | --- |
+| ACE inhibitor | link | ACE(3)와 Angiotensin II(4) 사이 | 전환 감소 |
+| ARB | link | Angiotensin II(4)와 AT1 receptor(5) 사이 | AT1 수용체 작용 억제 |
+| β blocker | node | Renin(1) 아래 | β1 매개 Renin 분비 감소 |
+| Aldosterone antagonist | node | Aldosterone(6) 아래 | Aldosterone 수용체 작용 억제 |
+| Loop diuretic | node | Na⁺/Water(7) 아래 | 굵은 상행각 NKCC2 억제 |
+| Thiazide diuretic | node | Na⁺/Water(7) 아래 | 원위곡세뇨관 NCC 억제 |
+
+신세뇨관의 해부학적 위치는 현행 RAAS 9단계에 개별적으로 존재하지 않아 Na⁺/Water를 개념적 요약 지점으로 사용한다. 보라색은 별도 표식이며 **노랑 > 파랑 > 빨강 > 회색**의 기존 단계 상자 색상 우선순위는 변하지 않는다.
+
+기전 표시는 시각적·교육적 표현일 뿐 RAAS가 완전히 중단된다는 의미가 아니다. 현행 단순화된 `limitStep` 진행 제한과 `isStepBlocked()` 생리 계산 제한은 여전히 기존 동작 그대로 유지한다. 미래 모델 변경 시 시각 표시만이 아닌 생리 계산과 표시의 일관성을 별도로 검증해야 한다.
+
+## 23.3 변경 금지 사항
+
+v4.5에서 `stageData[].effect`, `drugData[].physiologyEffect`, `blockStep`, `state.progress`, `state.drug`, `calculatePhysiology()`, `nextStep()`, `previousStep()`, 초기화·약물 제거 로직 및 v4.4 학습 이벤트는 변경하지 않는다.
+
+## 23.4 테스트와 미검증 범위
+
+`tests/regression-v4.5.cjs`를 통해 이전 v4.4 백업과 동일한 동작 시퀀스에서 상태, 약물, 생리 수치, UI 패널 및 Canvas 경로 명령을 비교한다. 6종 약물의 기전 표식과 단계·연결 구간을 별도로 확인한다.
+
+모의 DOM/Canvas 검증은 실제 브라우저 픽셀 출력, 클릭·터치 정밀도, 스크롤, 포커스, 네이티브 모달 접근성까지 보증하지 않는다.
