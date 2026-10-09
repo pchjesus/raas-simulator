@@ -880,3 +880,16 @@ RAAS Simulator 개발에서 가장 중요한 원칙은 다음과 같다.
 - 약물 기전 표시가 후속 RAAS의 완전 중단을 뜻하는 것으로 안내하지 않는다.
 - `limitStep`, `isStepBlocked()` 또는 생리 모델 재설계는 이 시각화 작업과 별도로 설계·검증하고 반드시 사용자 결정 후 진행한다.
 - 후속 변경에서 `node tests/regression-v4.5.cjs`를 실행하고 실제 브라우저 검증 상태를 별도로 보고한다.
+
+
+---
+
+## 23. v4.6 / v4.7 유지 규칙
+
+- v4.6 이후 진행 제한은 약물 때문에 발생하지 않는다. `limitStep`은 호환성 필드로 8이다.
+- `drugData[].suppressedRaasSteps`와 `calculatePhysiologyAtStep()`의 동일한 교육용 모델을 생리 변수 패널과 그래프에서 공유한다. 다른 계산 공식을 추가하지 않는다.
+- `physiology` 객체를 교체하지 말고 기존 객체를 유지하면서 수치를 갱신한다.
+- 진행 상태 `currentStep`/최대 기록 `maxReachedStep`을 분리하고, 이전 단계 조회는 생리 계산 기록을 되돌리지 않는다.
+- 그래프 `graphVariable` 조작은 상태와 수치 계산에 영향을 주지 않아야 한다.
+- v4.5 이전 버전과 약물 효과를 비교할 때 모델이 의도적으로 변경되었다는 점을 인지하고, 구버전의 수치 동일성 기대를 그대로 적용하지 않는다.
+- 테스트: `node tests/regression-v4.6.cjs` 및 `node tests/regression-v4.7.cjs`. 실제 브라우저 수동 검증은 아직 미완료.
