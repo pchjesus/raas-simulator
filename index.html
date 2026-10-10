@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v4.8
+RAAS Simulator v4.9
 </title>
 
 
@@ -388,7 +388,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v4.8
+RAAS Simulator v4.9
 </h1>
 
 
@@ -862,6 +862,182 @@ const state={
 
 
 
+
+// =============================
+// v4.9 — 임상 시나리오 기반 구조 (v5.0 UI 연결 전)
+// 이 영역은 기존 state / physiology / Canvas / 시연 상태를 변경하지 않는다.
+// 실제 임상 수치를 계산하거나 기존 교육용 수치를 환자 예측값으로 사용하지 않는다.
+// =============================
+
+const SCENARIO_SCHEMA_VERSION=1;
+const scenarioRuntime={
+    mode:"normal",
+    definition:null,
+    session:null
+};
+
+// 시나리오 정의는 JSON 형태의 정적 교육 콘텐츠이며, 임상적 수치 예측 모델이 아니다.
+// schemaVersion, id, version, title, caseContext, objectives, observations,
+// references, questions, modelPolicy("reference-only")를 갖는다.
+// observations: [{label, value}]는 관찰 자료이지 계산 엔진 입력값이 아니다.
+// references: [{id, citation}], questions: [{id, prompt, choices,
+// correctChoiceId, rationale, sourceIds}]. 모든 임상 문항은 출처를 연결한다.
+function validateScenarioDefinition(definition){
+    const errors=[];
+    const isRecord=value=>value!==null && typeof value==="object" && !Array.isArray(value);
+    const isText=value=>typeof value==="string" && value.trim().length>0;
+    const isId=value=>isText(value) && /^[a-z][a-z0-9-]*$/.test(value);
+
+    if(!isRecord(definition)){
+        return {valid:false,errors:["시나리오 정의는 객체여야 합니다."]};
+    }
+    if(definition.schemaVersion!==SCENARIO_SCHEMA_VERSION){
+        errors.push("지원하지 않는 시나리오 데이터 스키마 버전입니다.");
+    }
+    if(!isId(definition.id))errors.push("유효한 시나리오 ID가 필요합니다.");
+    if(!Number.isInteger(definition.version)||definition.version<1){
+        errors.push("시나리오 버전은 양의 정수여야 합니다.");
+    }
+    if(!isText(definition.title))errors.push("시나리오 제목이 필요합니다.");
+    if(!isText(definition.caseContext))errors.push("사례 배경이 필요합니다.");
+    if(definition.modelPolicy!=="reference-only"){
+        errors.push("v4.9 시나리오는 reference-only 정책만 지원합니다.");
+    }
+    if(!Array.isArray(definition.objectives)||definition.objectives.length===0||
+       definition.objectives.some(value=>!isText(value))){
+        errors.push("학습 목표는 한 개 이상의 문자열이어야 합니다.");
+    }
+    if(!Array.isArray(definition.observations)||
+       definition.observations.some(value=>!isRecord(value)||
+           !isText(value.label)||!isText(value.value))){
+        errors.push("관찰 자료는 label/value 문자열 목록이어야 합니다.");
+    }
+
+    const referenceIds=new Set();
+    if(!Array.isArray(definition.references)||definition.references.length===0){
+        errors.push("임상적 근거를 위한 참고문헌이 필요합니다.");
+    }else{
+        definition.references.forEach((ref,index)=>{
+            if(!isRecord(ref)||!isId(ref.id)||!isText(ref.citation)){
+                errors.push("참고문헌 "+(index+1)+"의 ID/서지 정보가 유효하지 않습니다.");
+            }else if(referenceIds.has(ref.id)){
+                errors.push("참고문헌 ID가 중복됩니다: "+ref.id);
+            }else{
+                referenceIds.add(ref.id);
+            }
+        });
+    }
+
+    if(!Array.isArray(definition.questions)||definition.questions.length===0){
+        errors.push("한 개 이상의 교육 문항이 필요합니다.");
+    }else{
+        const questionIds=new Set();
+        definition.questions.forEach((question,index)=>{
+            if(!isRecord(question)){
+                errors.push("문항 "+(index+1)+"은 객체여야 합니다.");
+                return;
+            }
+            if(!isId(question.id)||questionIds.has(question.id)){
+                errors.push("문항 "+(index+1)+"의 ID가 잘못되었거나 중복됩니다.");
+            }else{
+                questionIds.add(question.id);
+            }
+            if(!isText(question.prompt)||!isText(question.rationale)){
+                errors.push("문항 "+(index+1)+"의 질문/해설이 필요합니다.");
+            }
+            const choiceIds=new Set();
+            if(!Array.isArray(question.choices)||question.choices.length<2){
+                errors.push("문항 "+(index+1)+"에는 두 개 이상의 선택지가 필요합니다.");
+            }else{
+                question.choices.forEach((choice,choiceIndex)=>{
+                    if(!isRecord(choice)||!isId(choice.id)||!isText(choice.text)||
+                       choiceIds.has(choice.id)){
+                        errors.push("문항 "+(index+1)+" 선택지 "+(choiceIndex+1)+"가 유효하지 않습니다.");
+                    }else{
+                        choiceIds.add(choice.id);
+                    }
+                });
+            }
+            if(!choiceIds.has(question.correctChoiceId)){
+                errors.push("문항 "+(index+1)+"의 정답이 선택지에 없습니다.");
+            }
+            if(!Array.isArray(question.sourceIds)||question.sourceIds.length===0||
+               question.sourceIds.some(id=>!referenceIds.has(id))){
+                errors.push("문항 "+(index+1)+"에 유효한 참고문헌 연결이 필요합니다.");
+            }
+        });
+    }
+    return {valid:errors.length===0,errors};
+}
+
+// 생성과 답안 기록은 일반 진행/약물/생리 계산을 건드리지 않는다.
+function createScenarioSession(definition){
+    const validation=validateScenarioDefinition(definition);
+    if(!validation.valid){
+        throw new Error("유효하지 않은 시나리오: "+validation.errors.join(" / "));
+    }
+    return {
+        scenarioId:definition.id,
+        scenarioVersion:definition.version,
+        schemaVersion:definition.schemaVersion,
+        questionIndex:0,
+        answers:{},
+        status:"active"
+    };
+}
+
+// v4.9에서는 UI 진입점을 제공하지 않는다. 실제 임상 사례는 v5.0에서만 등록한다.
+function enterScenarioMode(definition){
+    const session=createScenarioSession(definition);
+    const definitionCopy=JSON.parse(JSON.stringify(definition));
+    scenarioRuntime.definition=definitionCopy;
+    scenarioRuntime.session=session;
+    scenarioRuntime.mode="scenario";
+    return session;
+}
+
+function submitScenarioAnswer(choiceId){
+    const session=scenarioRuntime.session;
+    const definition=scenarioRuntime.definition;
+    if(scenarioRuntime.mode!=="scenario"||!session||!definition||
+       session.status!=="active"){
+        throw new Error("진행 중인 시나리오 문항이 없습니다.");
+    }
+    const question=definition.questions[session.questionIndex];
+    if(!question||!question.choices.some(choice=>choice.id===choiceId)){
+        throw new Error("해당 문항에 존재하지 않는 선택지입니다.");
+    }
+    const questionIndex=session.questionIndex+1;
+    const completed=questionIndex===definition.questions.length;
+    scenarioRuntime.session={
+        ...session,
+        questionIndex,
+        answers:{...session.answers,[question.id]:choiceId},
+        status:completed?"completed":"active"
+    };
+    return {
+        questionId:question.id,
+        choiceId,
+        correct:choiceId===question.correctChoiceId,
+        rationale:question.rationale,
+        sourceIds:[...question.sourceIds],
+        completed
+    };
+}
+
+function resetScenarioSession(){
+    if(scenarioRuntime.mode!=="scenario"||!scenarioRuntime.definition)return false;
+    scenarioRuntime.session=createScenarioSession(scenarioRuntime.definition);
+    return true;
+}
+
+function exitScenarioMode(){
+    scenarioRuntime.mode="normal";
+    scenarioRuntime.definition=null;
+    scenarioRuntime.session=null;
+}
+
+// =============================
 
 // =============================
 // RAAS 단계 데이터 (v4.3.3-1)
