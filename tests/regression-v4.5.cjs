@@ -6,7 +6,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 const root = path.join(__dirname, "..");
 const baselineHTML = fs.readFileSync(path.join(root, "backups", "v4.4.html"), "utf8");
-const candidateHTML = fs.readFileSync(path.join(root, "index.html"), "utf8");
+// Verify the frozen v4.5 release, not the evolving current index.html.
+const candidateHTML = fs.readFileSync(path.join(root, "backups", "v4.5.html"), "utf8");
 function createHarness(html) {
   const nodes = {}, canvasCalls = [];
   const ctx = new Proxy({}, {
