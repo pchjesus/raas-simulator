@@ -787,6 +787,7 @@ class="variableValue">
   </section>
   <section id="scenarioFeedbackPanel" class="scenario-feedback" aria-live="polite" aria-atomic="true" hidden>
     <h3 id="scenarioFeedbackTitle"></h3>
+    <p id="scenarioFeedbackCorrectAnswer"></p>
     <p id="scenarioFeedbackText"></p>
     <p id="scenarioFeedbackSource"></p>
   </section>
@@ -3492,6 +3493,10 @@ function renderScenarioStudy(){
             "문항 "+session.questionIndex+" / "+definition.questions.length+" · 해설";
         document.getElementById("scenarioFeedbackTitle").textContent=
             feedback.correct?"정답입니다":"다시 생각해 볼 선택입니다";
+        const answeredQuestion=definition.questions.find(question=>question.id===feedback.questionId);
+        const rightChoice=answeredQuestion.choices.find(choice=>choice.id===answeredQuestion.correctChoiceId);
+        document.getElementById("scenarioFeedbackCorrectAnswer").textContent=
+            "정답: "+rightChoice.text;
         document.getElementById("scenarioFeedbackText").textContent=feedback.rationale;
         document.getElementById("scenarioFeedbackSource").textContent=
             "근거: "+feedback.sourceIds.map(id=>{
