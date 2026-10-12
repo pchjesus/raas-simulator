@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v4.9
+RAAS Simulator v4.10
 </title>
 
 
@@ -238,6 +238,9 @@ line-height:1.4;
     border:1px solid #5679a6;
     cursor:pointer;
 }
+/* 같은 컨트롤 패널 하단에서 두 팝업 아이콘을 연속 배치 */
+.patch-trigger{margin-top:5px;background:#f5f2ff;border-color:#7767a3}
+.help-trigger:focus-visible,.help-close:focus-visible{outline:3px solid #205c9c;outline-offset:2px}
 .help-dialog{
     box-sizing:border-box;
     width:min(700px, calc(100vw - 32px));
@@ -269,7 +272,10 @@ line-height:1.4;
     border-bottom:1px solid #ddd;
 }
 .help-dialog h2{margin:0;font-size:20px;}
-.help-close{width:auto;min-width:70px;flex-shrink:0;cursor:pointer;}
+.help-close{width:38px;height:38px;min-width:38px;padding:0;font-size:25px;line-height:1;flex-shrink:0;cursor:pointer;background:#f4f5f7;border:1px solid #aaa;border-radius:6px}
+.reference-list li{margin:9px 0;overflow-wrap:anywhere}
+.reference-list a{color:#14538a;text-decoration:underline}
+.stage-evidence{font-size:12px;color:#454545;background:#f3f5f7;padding:6px 9px;border-radius:4px}
 .help-body{padding:16px 20px 22px;font-size:14px;line-height:1.65;overflow-wrap:anywhere;}
 .help-body h3{margin:22px 0 8px;font-size:16px;}
 .help-body h3:first-of-type{margin-top:16px;}
@@ -388,7 +394,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v4.9
+RAAS Simulator v4.10
 </h1>
 
 
@@ -520,7 +526,10 @@ Thiazide diuretic
 </button>
 
 <button type="button" id="helpOpenButton" class="help-trigger" aria-haspopup="dialog" aria-controls="helpDialog">
-? 사용 설명서
+ⓘ 설명서
+</button>
+<button type="button" id="changelogOpenButton" class="help-trigger patch-trigger" aria-haspopup="dialog" aria-controls="changelogDialog" aria-label="패치 내역 열기">
+▤ 패치 내역
 </button>
 
 
@@ -567,6 +576,13 @@ aria-describedby="stageKeyboardGuide stageLearningHint">
   </div>
   <p id="stageDetailSummary"></p>
   <p id="stageDetailLearning"></p>
+  <p class="stage-detail-section-title">의학·생리학 심화</p>
+  <p id="stageDetailClinical"></p>
+  <p class="stage-detail-section-title">간호 사정·안전 포인트</p>
+  <p id="stageDetailNursing"></p>
+  <p class="stage-detail-section-title">연관 약물 임상 학습</p>
+  <p id="stageDetailDrugClinical"></p>
+  <p id="stageDetailEvidence" class="stage-evidence"></p>
   <p class="stage-detail-section-title">이 단계에 정의된 생리 효과</p>
   <p id="stageDetailEffect"></p>
   <p class="stage-detail-section-title">연관 약물</p>
@@ -719,7 +735,7 @@ class="variableValue">
 <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle" aria-describedby="helpLead">
     <div class="help-header">
         <h2 id="helpTitle">RAAS Simulator 사용 설명서</h2>
-        <button type="button" id="helpCloseButton" class="help-close" autofocus>닫기</button>
+        <button type="button" id="helpCloseButton" class="help-close" aria-label="설명서 닫기" autofocus>×</button>
     </div>
     <div class="help-body">
         <p id="helpLead">RAAS 경로의 진행, 약물 작용 위치, 생리 변수 변화를 확인하는 교육용 시뮬레이터입니다.</p>
@@ -774,9 +790,54 @@ class="variableValue">
             <li>GFR은 현재 단순화 모델에서 별도의 변화 효과가 없으므로 값이 유지됩니다.</li>
         </ul>
 
+        <h3>5. 임상 학습 시 확인할 핵심 원칙</h3>
+        <p><strong>RAAS 활성화와 실제 환자 반응은 다릅니다.</strong> 신장 관류압 저하·원위세뇨관 NaCl 전달 감소·β1 교감신경 자극이 레닌 분비를 촉진할 수 있습니다. 안지오텐신 II는 혈관수축과 알도스테론 분비에, 알도스테론은 원위 네프론의 Na⁺ 재흡수와 K⁺ 배설에 관여합니다 [1].</p>
+        <ul>
+            <li><strong>환자 사정:</strong> 활력징후 추세, 어지럼과 기립성 증상, I/O·소변량·체중·부종, 호흡곤란·폐음, 혈청 전해질·신기능을 함께 평가합니다 [3, 4].</li>
+            <li><strong>ACEi·ARB:</strong> 혈압·크레아티닌/eGFR·K⁺ 모니터링은 중요합니다. 만성콩팥병 관련 KDIGO 지침에서는 시작·증량 후 환자 상태에 따라 2~4주 이내 확인하도록 안내합니다 [2]. 실제 검진 주기는 환자·적응증·기관 지침에 따릅니다.</li>
+            <li><strong>MRA:</strong> 고칼륨혈증 위험과 신기능을 확인합니다. 심부전 환자의 약물 시작 및 증량 후 검사는 질환별 가이드라인과 처방에 따릅니다 [3].</li>
+            <li><strong>이뇨제:</strong> 저혈압·탈수·저나트륨혈증·저칼륨혈증 등과 체중·소변량 변화를 같이 평가합니다 [4].</li>
+        </ul>
+        <h3>6. 참고문헌 (APA 7판)</h3>
+        <ol class="reference-list">
+            <li id="reference-1">[1] Kaur, J., &amp; Rout, P. (2026). Physiology, renin angiotensin system. In <em>StatPearls</em>. StatPearls Publishing. <a href="https://www.ncbi.nlm.nih.gov/books/NBK470410/" target="_blank" rel="noopener noreferrer">원문 보기</a></li>
+            <li id="reference-2">[2] Kidney Disease: Improving Global Outcomes (KDIGO) CKD Work Group. (2024). KDIGO 2024 clinical practice guideline for the evaluation and management of chronic kidney disease. <em>Kidney International, 105</em>(4S), S117–S314. <a href="https://kdigo.org/guidelines/ckd-evaluation-and-management/" target="_blank" rel="noopener noreferrer">공식 가이드라인</a></li>
+            <li id="reference-3">[3] National Institute for Health and Care Excellence. (2025). <em>Chronic heart failure in adults: Diagnosis and management</em> (NG106; updated 2025). <a href="https://www.nice.org.uk/guidance/ng106/chapter/recommendations" target="_blank" rel="noopener noreferrer">권고문 보기</a></li>
+            <li id="reference-4">[4] Ernstmeyer, K., &amp; Christman, E. (Eds.). (2023). <em>Nursing fundamentals</em>: Fluids and electrolytes. Chippewa Valley Technical College. <a href="https://www.ncbi.nlm.nih.gov/books/NBK610839/" target="_blank" rel="noopener noreferrer">간호교육 자료</a></li>
+        </ol>
         <h3>5. 교육용 모델의 한계</h3>
         <p class="help-note">시뮬레이터의 약물 및 RAAS 효과값은 교육을 위한 단순화된 수치입니다. 실제 환자의 혈압, 전해질, 혈액량 또는 신기능을 예측하거나 치료 결정을 내리는 데 사용할 수 없습니다.</p>
-        <p>설명서를 닫으려면 <strong>닫기</strong> 버튼이나 <strong>Esc</strong> 키를 사용하세요. 팝업 바깥을 클릭해도 닫힙니다.</p>
+        <p>설명서를 닫으려면 <strong>×</strong> 버튼이나 <strong>Esc</strong> 키를 사용하세요. 팝업 바깥을 클릭해도 닫힙니다. 단계별 자세한 의학·간호 내용은 Canvas의 상자를 선택해 확인할 수 있습니다.</p>
+    </div>
+</dialog>
+
+<!-- 패치 내역: 읽기 전용 독립 모달 -->
+<dialog id="changelogDialog" class="help-dialog" aria-labelledby="changelogTitle" aria-describedby="changelogLead">
+    <div class="help-header">
+        <h2 id="changelogTitle">RAAS Simulator 패치 내역</h2>
+        <button type="button" id="changelogCloseButton" class="help-close" aria-label="패치 내역 닫기" autofocus>×</button>
+    </div>
+    <div class="help-body">
+        <p id="changelogLead">교육용 시뮬레이터의 주요 변경 사항을 버전별로 요약했습니다. 이전 버전의 상세 기록은 프로젝트 DEVLOG.md를 참고하세요.</p>
+        <h3>v4.10 — 임상 학습 설명 및 안내 팝업</h3>
+        <p>RAAS 9단계의 의학·간호 설명과 약물 6종의 모니터링 포인트를 보강했습니다. 설명서에 근거와 교육용 모델 한계를 추가하고, 설명서·패치 내역을 각각 아이콘으로 여는 팝업을 구성했습니다. 기존 계산식과 진행·시연 동작은 유지합니다.</p>
+        <h3>v4.9 — 시나리오 구조 기반</h3>
+        <p>시나리오 정의·출처 검증, 독립 세션 상태, 풀이·초기화·종료 함수를 추가했습니다. 실제 임상 사례·시나리오 화면·환자 예측 모델은 아직 구현하지 않았습니다.</p>
+        <h3>v4.8 — RAAS 경로 시연</h3>
+        <p>9개 단계를 자동으로 강조하는 시연, 일시정지·재개·종료·재시연 기능을 추가했습니다. 생리 계산과는 독립적입니다.</p>
+        <h3>v4.7.1 — Canvas 선택 표시 개선</h3>
+        <p>마우스·키보드 학습 선택 단계에 초록색 테두리·조회 표시를 추가했습니다.</p>
+        <h3>v4.7 — 생리 변수 비교 그래프</h3>
+        <p>혈압·Na⁺·혈액량·GFR의 단계별 가상 값을 무약물 및 현재 약물 조건에서 비교하도록 했습니다. X축은 시간이 아닌 RAAS 단계입니다.</p>
+        <h3>v4.6 — 약물과 진행·계산 분리</h3>
+        <p>약물 사용 중에도 9단계를 계속 탐색하고, 약물별 교육용 RAAS 기여만 계산에서 조정하도록 변경했습니다.</p>
+        <h3>v4.5 — 약물 기전 시각화</h3>
+        <p>6종 약물의 작용 위치와 기전 표식을 보라색으로 추가했습니다.</p>
+        <h3>v4.4 — 단계 학습 조회</h3>
+        <p>Canvas 상자를 클릭하거나 키보드로 선택하면 자세한 설명을 조회할 수 있게 했습니다.</p>
+        <h3>v4.3.4 — 모달 사용 설명서</h3>
+        <p>기존 시뮬레이션 상태를 변경하지 않는 사용 설명서를 추가했습니다.</p>
+        <p class="help-note">이 프로그램은 의학·간호 교육용이며 실제 진료·투약 결정에 사용하지 않습니다. 새 기능과 이전 기능의 상세 검증 결과는 DEVLOG.md에 기록합니다.</p>
     </div>
 </dialog>
 
@@ -1256,6 +1317,86 @@ const drugData={
 
 
 
+
+const clinicalStageNotes=[
+    {
+        "medical": "신장 관류압 저하, 치밀반점(macula densa)의 NaCl 전달 감소, 교감신경 β1 자극은 레닌 분비를 촉진할 수 있습니다. 저혈압 자체가 항상 RAAS 활성만을 의미하지 않으며 출혈·탈수·심박출량 감소 등 원인을 함께 평가해야 합니다.",
+        "nursing": "혈압 추세와 기립성 증상, 맥박, 의식·말초 관류, 소변량, 섭취·배설량(I/O), 체중 및 탈수·체액과다 징후를 함께 사정합니다. 급성 변화 시 단일 숫자보다 환자 상태와 원인 파악이 중요합니다.",
+        "sourceIds": "[1], [4]"
+    },
+    {
+        "medical": "사구체 인접세포(JG cell)에서 분비되는 레닌은 간에서 생성된 안지오텐시노겐을 안지오텐신 I으로 절단합니다. 레닌 분비는 신장 관류, 치밀반점 신호, β1 교감신경 자극과 음성 되먹임의 영향을 받습니다.",
+        "nursing": "저혈압·체액 감소·이뇨제 사용과 신장 관류의 관계를 함께 학습합니다. β 차단제 복용 환자에서는 혈압뿐 아니라 심박수, 어지럼·서맥 증상 및 관련 처방을 확인합니다.",
+        "sourceIds": "[1], [3]"
+    },
+    {
+        "medical": "안지오텐신 I은 레닌이 안지오텐시노겐에 작용해 생성한 펩타이드 전구체입니다. 주된 혈관수축과 알도스테론 자극은 이후 생성되는 안지오텐신 II를 중심으로 설명하며, 이 단계 자체의 정량 효과는 본 모델에서 부여하지 않습니다.",
+        "nursing": "검사 수치 하나로 RAAS 각 단계의 농도를 추정하지 않습니다. 체액 상태와 혈압 변화가 어떤 경로로 이어질지 설명할 때 전구체와 실제 작용 물질을 구분합니다.",
+        "sourceIds": "[1]"
+    },
+    {
+        "medical": "안지오텐신 전환효소(ACE)는 주로 혈관 내피를 포함한 다양한 조직에서 안지오텐신 I을 II로 전환합니다. ACE 억제제는 이 전환을 줄이지만 모든 안지오텐신 II 생성을 완전히 차단하는 것은 아닙니다.",
+        "nursing": "ACE 억제제 사용 시 혈압·기립성 증상, 혈청 크레아티닌/신기능, K⁺를 확인합니다. 마른기침과 드물지만 응급평가가 필요한 혈관부종 증상도 교육 포인트입니다.",
+        "sourceIds": "[1], [2], [3]"
+    },
+    {
+        "medical": "안지오텐신 II는 AT1 수용체를 통해 혈관수축·알도스테론 분비·신세뇨관 Na⁺ 재흡수와 갈증/바소프레신 반응 등에 관여합니다. 사구체 소동맥 저항에도 작용하므로 RAAS 억제 시 신기능 수치 변화를 관찰해야 합니다.",
+        "nursing": "약물 투여 전후 혈압, 어지럼, 크레아티닌·eGFR, K⁺ 및 체액 상태를 연결해 해석합니다. 본 화면의 혈압 +10은 기전 이해용 가상 기여값으로 실제 혈압 상승폭을 뜻하지 않습니다.",
+        "sourceIds": "[1], [2]"
+    },
+    {
+        "medical": "AT1 수용체는 안지오텐신 II에 의한 혈관수축 및 알도스테론 관련 효과의 주요 매개체입니다. ARB는 이 수용체 작용을 억제합니다. AT2 수용체 등 다른 경로까지 모두 소실된다는 뜻은 아닙니다.",
+        "nursing": "ARB 복용에서는 저혈압 증상, K⁺ 상승 위험, 신기능 변화를 사정합니다. ACE 억제제와 ARB의 임의 병용은 피해야 하는 중요한 약물 안전 개념입니다.",
+        "sourceIds": "[1], [2]"
+    },
+    {
+        "medical": "알도스테론은 부신피질 사구대에서 분비되고 원위 네프론의 무기질코르티코이드 수용체를 통해 Na⁺ 재흡수와 K⁺ 배설에 관여합니다. K⁺도 알도스테론 조절에 영향을 줍니다. 혈청 Na⁺는 체내 총 Na⁺량과 동일하지 않습니다.",
+        "nursing": "알도스테론 길항제(MRA) 사용 시 특히 고칼륨혈증과 신기능 변화에 주의합니다. Na⁺, K⁺, 크레아티닌, 혈압, 부종·체중·I/O를 확인하며 본 앱에는 K⁺ 계산 기능이 없음을 기억합니다.",
+        "sourceIds": "[1], [2], [3]"
+    },
+    {
+        "medical": "Na⁺ 재흡수는 세포외액량 조절에 영향을 주지만 혈청 Na⁺ 농도는 수분 균형 등 여러 요소의 결과입니다. 루프 이뇨제는 굵은 상행각의 NKCC2, 티아지드는 원위곡세뇨관의 NCC를 억제합니다. 두 약물은 전해질 이상과 체액 감소를 일으킬 수 있습니다.",
+        "nursing": "매일 같은 조건의 체중, I/O, 소변량, 부종, 호흡곤란·폐음, 기립성 혈압을 확인하고 Na⁺·K⁺·Mg²⁺ 및 신기능 검사를 살핍니다. 과도한 이뇨에 따른 탈수·저혈압·전해질 이상을 관찰합니다.",
+        "sourceIds": "[3], [4]"
+    },
+    {
+        "medical": "RAAS는 저하된 유효 순환량과 신장 관류를 보상하는 중요한 체계이지만 실제 혈압은 심박출량, 혈관저항, 자율신경, 신기능, 약물, 기저질환의 복합 결과입니다. '혈압 회복'은 정상화 보장이 아니라 9단계 교육 흐름의 끝을 뜻합니다.",
+        "nursing": "반응 평가는 원래의 저혈압 원인과 증상, 지속적인 활력징후 추세, 신장 관류·소변량, 체액 상태를 종합합니다. 시뮬레이터 결과로 처방 변경이나 환자 안정 여부를 결정하지 않습니다.",
+        "sourceIds": "[1], [4]"
+    }
+];
+const clinicalDrugNotes={
+    "acei": {
+        "medical": "ACE를 억제해 안지오텐신 II 형성을 줄입니다. 고혈압·특정 심부전·단백뇨 동반 신장질환에서 임상적 역할이 있으나 적용 여부는 진단과 상태에 따라 달라집니다.",
+        "nursing": "혈압, 크레아티닌/eGFR, K⁺, 마른기침·혈관부종 위험을 확인합니다. 임신 중 사용 금기를 포함한 처방 확인이 중요하며 임의 용량 조절은 하지 않습니다.",
+        "sourceIds": "[2], [3]"
+    },
+    "arb": {
+        "medical": "AT1 수용체를 차단하여 안지오텐신 II의 주요 효과를 줄입니다. ACE 억제제와 달리 ACE 자체를 억제하지 않으므로 작용 지점이 다릅니다.",
+        "nursing": "저혈압·K⁺ 상승·신기능 변화를 확인합니다. ACE 억제제와 ARB의 임의 병용은 위험할 수 있으며 임신 관련 금기도 확인합니다.",
+        "sourceIds": "[2], [3]"
+    },
+    "aldo": {
+        "medical": "스피로노락톤·에플레레논은 무기질코르티코이드 수용체(MRA)를 길항하여 알도스테론의 Na⁺ 보유/K⁺ 배설 작용을 억제합니다.",
+        "nursing": "K⁺ 상승과 신기능 변화가 핵심 모니터링 포인트입니다. 체중·부종·혈압·I/O 추세, 칼륨 보충제·동시 복용 약물의 중복 여부를 확인합니다.",
+        "sourceIds": "[3]"
+    },
+    "beta": {
+        "medical": "일부 β 차단제는 신장 JG 세포의 β1 자극을 낮춰 레닌 분비를 줄입니다. 심박수와 심근 수축 등에 미치는 작용도 있으므로 RAAS 억제 하나로 임상 효과를 모두 설명할 수 없습니다.",
+        "nursing": "심박수·혈압, 어지럼·서맥, 피로 및 환자 상태를 사정합니다. 복용 중단이나 용량 조절은 처방에 따라야 하며 모델의 고정 혈압 감소치는 실제 반응이 아닙니다.",
+        "sourceIds": "[1], [3]"
+    },
+    "loop": {
+        "medical": "푸로세미드 등은 헨레고리 굵은 상행각 NKCC2를 억제해 Na⁺·Cl⁻와 수분 배설을 증가시킵니다. K⁺·Mg²⁺ 손실도 유발할 수 있습니다.",
+        "nursing": "I/O, 체중, 혈압, 탈수·기립성 저혈압, Na⁺·K⁺·Mg²⁺, 신기능을 관찰합니다. 신속한 이뇨 시 소변량과 증상 추세를 같이 확인합니다.",
+        "sourceIds": "[3], [4]"
+    },
+    "thiazide": {
+        "medical": "히드로클로로티아지드 등은 원위곡세뇨관의 NCC를 억제해 NaCl 재흡수를 감소시킵니다. 저나트륨혈증·저칼륨혈증 등의 전해질 이상에 주의해야 합니다.",
+        "nursing": "Na⁺·K⁺, 혈압, 체중·I/O, 어지럼·탈수 및 신기능을 모니터링합니다. 개별 환자의 전해질 변화는 복용 약물, 수분 섭취, 신기능 등 복합 요인에 좌우됩니다.",
+        "sourceIds": "[3], [4]"
+    }
+};
 
 // =============================
 // Canvas
@@ -2823,6 +2964,24 @@ helpDialog.addEventListener("close",()=>{
 });
 
 
+
+const changelogOpenButton=document.getElementById("changelogOpenButton");
+const changelogCloseButton=document.getElementById("changelogCloseButton");
+const changelogDialog=document.getElementById("changelogDialog");
+changelogOpenButton.addEventListener("click",()=>{
+    if(!changelogDialog.open)changelogDialog.showModal();
+});
+changelogCloseButton.addEventListener("click",()=>changelogDialog.close());
+changelogDialog.addEventListener("click",(event)=>{
+    if(event.target!==changelogDialog||!changelogDialog.open)return;
+    const rect=changelogDialog.getBoundingClientRect();
+    if(event.clientX<rect.left||event.clientX>rect.right||
+       event.clientY<rect.top||event.clientY>rect.bottom){
+        changelogDialog.close();
+    }
+});
+changelogDialog.addEventListener("close",()=>changelogOpenButton.focus());
+
 // =============================
 // v4.4 단계별 학습: 실제 RAAS 상태는 절대 변경하지 않음
 // =============================
@@ -2833,6 +2992,10 @@ const stageDetailSummary=document.getElementById("stageDetailSummary");
 const stageDetailLearning=document.getElementById("stageDetailLearning");
 const stageDetailEffect=document.getElementById("stageDetailEffect");
 const stageDetailDrugs=document.getElementById("stageDetailDrugs");
+const stageDetailClinical=document.getElementById("stageDetailClinical");
+const stageDetailNursing=document.getElementById("stageDetailNursing");
+const stageDetailDrugClinical=document.getElementById("stageDetailDrugClinical");
+const stageDetailEvidence=document.getElementById("stageDetailEvidence");
 const stageDetailCloseButton=document.getElementById("stageDetailCloseButton");
 const stageLearningHint=document.getElementById("stageLearningHint");
 
@@ -2913,6 +3076,16 @@ function showStageLearning(index){
     stageDetailDrugs.textContent=drugs.length
         ?drugs.map(drug=>drug.name+": "+drug.effect).join(" / ")
         :"이 단계에 지정된 직접 연관 약물은 없습니다.";
+    const clinical=clinicalStageNotes[index];
+    stageDetailClinical.textContent=clinical.medical;
+    stageDetailNursing.textContent=clinical.nursing;
+    const associated=Object.keys(drugData).filter(id=>id!=="none"&&drugData[id].blockStep===index);
+    stageDetailDrugClinical.textContent=associated.length
+        ?associated.map(id=>drugData[id].name+" — "+clinicalDrugNotes[id].medical+
+            " 간호: "+clinicalDrugNotes[id].nursing+" "+clinicalDrugNotes[id].sourceIds).join("\n\n")
+        :"이 단계에 직접 표시된 약물은 없습니다. 약물 선택 및 작용 위치에 따라 다른 단계의 약물 학습을 확인하세요.";
+    stageDetailEvidence.textContent="학습 근거: "+clinical.sourceIds+
+        " (설명서의 참고문헌) · 실제 임상 판단에는 개별 환자 상태와 기관 지침이 우선합니다.";
 
     stageDetailPanel.hidden=false;
     learningFocusIndex=index;
