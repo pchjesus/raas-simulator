@@ -405,6 +405,16 @@ line-height:1.4;
 .scenario-choice-reason{padding:10px 12px;background:#fff;border-left:3px solid #577795;border-radius:4px}
 .scenario-nursing-focus{padding:10px 12px;background:#edf3f6;border-radius:6px}
 .scenario-result-review{white-space:pre-line;background:#f3f7fb;padding:12px;border-radius:6px;line-height:1.75}
+.scenario-action-step{margin-top:14px;padding:14px;border:1px solid #7794aa;border-radius:8px;background:#f7fafc}
+.scenario-action-step h3{margin-top:0}
+.scenario-action-options{display:grid;gap:9px;margin:12px 0}
+.scenario-action-options button{box-sizing:border-box;width:100%;padding:10px 12px;text-align:left;line-height:1.45;font-size:14px;white-space:normal;border:1px solid #879cad;border-radius:6px;background:white;cursor:pointer}
+.scenario-action-options button:hover:not(:disabled){background:#eaf2fb}
+.scenario-action-feedback{margin-top:14px;padding:12px;border-left:4px solid #537991;background:#f2f7fa;border-radius:4px}
+.scenario-action-feedback[data-correct="true"]{border-left-color:#347748}
+.scenario-action-feedback[data-correct="false"]{border-left-color:#a16a31}
+.scenario-action-feedback p{margin:7px 0}
+.scenario-action-review{white-space:pre-line;background:#f4f8fb;padding:12px;border-radius:6px;line-height:1.65}
 .scenario-view h4{font-size:15px;margin:15px 0 7px}
 .scenario-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .scenario-actions button{width:auto;min-width:120px;border:1px solid #56758d;border-radius:6px;background:#eff5fa;cursor:pointer}
@@ -798,14 +808,37 @@ class="variableValue">
     <p id="scenarioFeedbackNursing" class="scenario-nursing-focus"></p>
     <p id="scenarioFeedbackSource"></p>
   </section>
+  <section id="scenarioActionStep" class="scenario-action-step" aria-labelledby="scenarioActionProgress" hidden>
+    <h3 id="scenarioActionProgress">다음 간호 행동 판단</h3>
+    <p id="scenarioActionPrompt"></p>
+    <div class="scenario-action-options" role="group" aria-label="간호 행동 선택">
+      <button id="scenarioActionChoice1" type="button"></button>
+      <button id="scenarioActionChoice2" type="button"></button>
+      <button id="scenarioActionChoice3" type="button"></button>
+    </div>
+  </section>
+  <section id="scenarioActionFeedbackPanel" class="scenario-action-feedback" aria-live="polite" aria-atomic="true" hidden>
+    <h3 id="scenarioActionFeedbackTitle"></h3>
+    <p id="scenarioActionFeedbackSelected"></p>
+    <p id="scenarioActionFeedbackReason"></p>
+    <p id="scenarioActionFeedbackCorrect"></p>
+    <p id="scenarioActionFeedbackRationale"></p>
+    <p id="scenarioActionAssessment"></p>
+    <p id="scenarioActionEscalation"></p>
+    <p id="scenarioActionTeaching"></p>
+    <p id="scenarioActionEvidence"></p>
+  </section>
   <section id="scenarioResultPanel" aria-live="polite" hidden>
     <h3>학습 완료</h3>
     <p id="scenarioResultText"></p>
     <h4>문항별 선택 복습</h4>
     <p id="scenarioResultReview" class="scenario-result-review"></p>
+    <h4>간호 행동 판단 복습</h4>
+    <p id="scenarioActionReview" class="scenario-action-review"></p>
     <p>선택한 답안과 정답 근거를 확인했습니다. 필요하면 다시 풀거나 일반 학습으로 돌아갈 수 있습니다.</p>
   </section>
   <div class="scenario-actions">
+    <button id="scenarioActionStartButton" class="primary" type="button" hidden>다음: 간호 행동 판단</button>
     <button id="scenarioNextButton" class="primary" type="button" hidden>다음 문항</button>
     <button id="scenarioRestartButton" type="button">다시 풀기</button>
     <button id="scenarioExitButton" type="button">일반 학습으로 돌아가기</button>
@@ -888,8 +921,8 @@ class="variableValue">
             <li id="reference-3">[3] National Institute for Health and Care Excellence. (2025). <em>Chronic heart failure in adults: Diagnosis and management</em> (NG106; updated 2025). <a href="https://www.nice.org.uk/guidance/ng106/chapter/recommendations" target="_blank" rel="noopener noreferrer">권고문 보기</a></li>
             <li id="reference-4">[4] Ernstmeyer, K., &amp; Christman, E. (Eds.). (2024). <em>Nursing fundamentals</em> (2nd ed.), Fluids and electrolytes. Chippewa Valley Technical College. <a href="https://www.ncbi.nlm.nih.gov/books/NBK610839/" target="_blank" rel="noopener noreferrer">간호교육 자료</a></li>
         </ol>
-        <h3>7. 임상 시나리오 모드 (v5.1)</h3>
-        <p>상단의 <strong>임상 시나리오</strong>에서 만성콩팥병 환자의 ACE 억제제 관련 3문항을 풀 수 있습니다. 각 선택 뒤 선택지별 해설·정답·간호 사정 및 보고 포인트를 확인하고 다음 문항으로 이동합니다. 풀이 완료 후에는 문항별 자신의 선택과 정답을 복습할 수 있습니다.</p>
+        <h3>7. 임상 시나리오 모드 (v5.2)</h3>
+        <p>상단의 <strong>임상 시나리오</strong>에서 만성콩팥병 환자의 ACE 억제제 관련 3문항을 풀 수 있습니다. 기존 선택지별 해설을 확인한 뒤 <strong>다음: 간호 행동 판단</strong>으로 추가 사정·보고·환자 교육에 관한 선택지를 풉니다. 행동 해설을 확인해야 다음 문항으로 이동할 수 있으며 완료 후 지식 판단과 간호 행동의 선택을 각각 복습할 수 있습니다.</p>
         <p>일반 학습으로 돌아가면 시나리오의 답안 기록만 초기화하고 RAAS 진행·약물·생리 상태는 보존됩니다. 경로 시연 도중 전환하면 시연을 일시정지합니다. 새로고침 후에도 시나리오 답안은 보존되지 않습니다.</p>
         <h3>8. 교육용 모델의 한계</h3>
         <p class="help-note">시뮬레이터의 약물 및 RAAS 효과값은 교육을 위한 단순화된 수치입니다. 실제 환자의 혈압, 전해질, 혈액량 또는 신기능을 예측하거나 치료 결정을 내리는 데 사용할 수 없습니다.</p>
@@ -905,6 +938,8 @@ class="variableValue">
     </div>
     <div class="help-body">
         <p id="changelogLead">교육용 시뮬레이터의 주요 변경 사항을 버전별로 요약했습니다. 이전 버전의 상세 기록은 프로젝트 DEVLOG.md를 참고하세요.</p>
+        <h3>v5.2 — 간호 행동 판단 단계</h3>
+        <p>첫 CKD/ACEi 사례의 기존 3문항 뒤에 각각 간호 행동 선택 단계를 추가했습니다. 판단 근거 확인 → 실제로 확인·보고·교육할 내용 선택 → 행동별 해설과 추가 사정·보고·교육 요점 확인 → 다음 문항 흐름입니다. 3개 간호 행동 선택의 결과도 복습에 표시합니다.</p>
         <h3>v5.1 — 선택지별 임상 피드백 강화</h3>
         <p>첫 사례의 3문항에 9개 선택지별 오개념 해설과 문항별 간호 사정·보고 포인트를 추가했습니다. 각 답변 뒤 선택한 답·정답·공통 근거를 구분하고, 완료 화면에서 자신의 선택을 복습할 수 있습니다. 기존 환자 예측 계산이나 처방 결정 기능은 추가하지 않았습니다.</p>
         <h3>v5.0 — 첫 임상 시나리오 교육 모드</h3>
