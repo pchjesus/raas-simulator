@@ -1125,7 +1125,7 @@ function createScenarioSession(definition){
     };
 }
 
-// v4.9에서는 UI 진입점을 제공하지 않는다. 실제 임상 사례는 v5.0에서만 등록한다.
+// v5.0: independent scenario UI uses the v4.9 session API.
 function enterScenarioMode(definition){
     const session=createScenarioSession(definition);
     const definitionCopy=JSON.parse(JSON.stringify(definition));
@@ -1177,6 +1177,113 @@ function exitScenarioMode(){
 }
 
 // =============================
+
+
+// v5.0 — static, sourced clinical education case (not a patient prediction)
+const firstClinicalScenario={
+    "schemaVersion": 1,
+    "id": "ckd-acei-nursing-monitoring",
+    "version": 1,
+    "title": "만성콩팥병 환자의 ACE 억제제 관련 간호 사정",
+    "caseContext": "외래에서 만성콩팥병(CKD)과 알부민뇨가 있는 성인 환자가 ACE 억제제를 새로 처방받았습니다. 간호학습자로서 약물의 RAAS 작용과 투여 전후 사정·환자 교육을 판단해 보세요. 환자별 실제 검사값이나 약물 효과 수치는 제시하지 않습니다.",
+    "objectives": [
+        "ACE 억제제와 RAAS 작용의 연결을 설명한다.",
+        "혈압·신기능·혈청 K⁺ 추적 확인의 이유를 판단한다.",
+        "위험한 RAAS 억제제 병용 상황을 구별한다."
+    ],
+    "observations": [
+        {
+            "label": "기저 정보",
+            "value": "CKD 및 알부민뇨(교육용 설정)"
+        },
+        {
+            "label": "약물 상황",
+            "value": "ACE 억제제 신규 처방(교육용 설정)"
+        },
+        {
+            "label": "검사 정보",
+            "value": "개별 수치 미제시. 기초값과 추적 검사 확인이 학습 목표"
+        }
+    ],
+    "modelPolicy": "reference-only",
+    "references": [
+        {
+            "id": "kdigo-2024",
+            "citation": "Kidney Disease: Improving Global Outcomes (KDIGO) CKD Work Group. (2024). KDIGO 2024 clinical practice guideline for the evaluation and management of chronic kidney disease. Kidney International, 105(4S), S117–S314. Section 3.6."
+        }
+    ],
+    "questions": [
+        {
+            "id": "monitoring",
+            "prompt": "ACE 억제제를 새로 사용하게 된 이 환자의 상태를 추적할 때 가장 적절한 사정 항목 조합은?",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "혈압 변화, 혈청 크레아티닌(신기능), 혈청 K⁺"
+                },
+                {
+                    "id": "b",
+                    "text": "체온과 시력만 추적"
+                },
+                {
+                    "id": "c",
+                    "text": "혈압만 확인하고 신기능·전해질 추적은 생략"
+                }
+            ],
+            "correctChoiceId": "a",
+            "rationale": "KDIGO 2024 Practice Point 3.6.2에 따라 ACEi/ARB 시작 또는 증량 후 혈압, 혈청 크레아티닌, 혈청 K⁺ 변화를 확인해야 합니다. 저혈압 증상뿐 아니라 신기능과 고칼륨혈증 관련 위험도 살펴야 합니다.",
+            "sourceIds": [
+                "kdigo-2024"
+            ]
+        },
+        {
+            "id": "follow-up",
+            "prompt": "ACE 억제제를 시작하거나 증량한 뒤 추적 검사·관찰 계획에 대한 가장 적절한 설명은?",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "증상이 없으면 추적 혈액 검사는 필요하지 않다."
+                },
+                {
+                    "id": "b",
+                    "text": "현재 GFR·혈청 K⁺와 환자 위험도에 따라 달라지지만, 시작·증량 후 2~4주 이내 혈압·크레아티닌·K⁺ 변화를 확인하도록 계획한다."
+                },
+                {
+                    "id": "c",
+                    "text": "모든 환자에게 동일하게 1년 후 검사하면 충분하다."
+                }
+            ],
+            "correctChoiceId": "b",
+            "rationale": "KDIGO 2024 Practice Point 3.6.2는 환자의 현재 GFR과 K⁺에 따라 시작 또는 증량 후 2~4주 이내 혈압, 크레아티닌, K⁺를 확인하도록 안내합니다. 더 이른 검사 필요성 등은 위험도와 기관/처방 지침에 따릅니다.",
+            "sourceIds": [
+                "kdigo-2024"
+            ]
+        },
+        {
+            "id": "dual-raas",
+            "prompt": "약물 확인 중 기존 ARB와 새 ACE 억제제를 함께 사용하는 계획이 발견되었습니다. 간호학습자로서 가장 적절한 판단은?",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "서로 다른 이름이므로 병용해도 무조건 안전하다."
+                },
+                {
+                    "id": "b",
+                    "text": "환자가 임의로 두 약제를 모두 중단하도록 한다."
+                },
+                {
+                    "id": "c",
+                    "text": "CKD에서는 ACEi·ARB 병용을 피하도록 권고되므로 처방·복용 이력을 확인하고 담당 의료진에게 확인한다."
+                }
+            ],
+            "correctChoiceId": "c",
+            "rationale": "KDIGO 2024 Recommendation 3.6.4는 CKD 환자에서 ACEi, ARB, 직접 레닌 억제제의 병용을 피하도록 권고합니다. 간호에서는 처방·실제 복용 이력 확인, 잠재적 위험 인지, 담당 의료진과의 확인이 우선이며 임의 처방 변경은 하지 않습니다.",
+            "sourceIds": [
+                "kdigo-2024"
+            ]
+        }
+    ]
+};
 
 // =============================
 // RAAS 단계 데이터 (v4.3.3-1)
