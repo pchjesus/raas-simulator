@@ -39,7 +39,8 @@ function boot(html){
 }
 const before=boot(fs.readFileSync(path.join(root,"backups","v5.0.html"),"utf8"));
 // Frozen release self-test: compare v5.0 against v4.10, not future index.html.
-const source=fs.readFileSync(path.join(root,"index.html"),"utf8");
+// Frozen v5.1 self-test stays on the immutable v5.1 release.
+const source=fs.readFileSync(path.join(root,"backups","v5.1.html"),"utf8");
 const now=boot(source);
 let checks=0;
 function check(ok,label){checks++;if(!ok)throw Error("v5.0 FAIL: "+label);}
