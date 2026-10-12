@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v4.10
+RAAS Simulator v5.0
 </title>
 
 
@@ -380,6 +380,34 @@ line-height:1.4;
 .model-graph-header select{width:185px}
 .model-graph canvas{max-width:100%;height:auto;background:white;border:1px solid #ddd;box-sizing:border-box}
 .model-graph-note{font-size:12px;line-height:1.55;color:#444;margin:7px 0}
+
+/* v5.0: scenario mode uses a separate view; legacy layout remains untouched. */
+[hidden]{display:none !important}
+.study-mode-nav{max-width:1100px;margin:14px auto 5px;display:flex;justify-content:center;gap:9px;flex-wrap:wrap}
+.study-mode-nav button{width:auto;min-width:170px;border:1px solid #64758b;border-radius:8px;background:#fff;color:#18324b;cursor:pointer;font-weight:bold}
+.study-mode-nav button[aria-pressed="true"]{background:#194e78;color:#fff;border-color:#194e78}
+.study-mode-nav button:focus-visible,.scenario-view button:focus-visible{outline:3px solid #184ea7;outline-offset:3px}
+.scenario-view{box-sizing:border-box;max-width:900px;margin:20px auto 28px;padding:20px;text-align:left;background:#fff;border:2px solid #2c526b;border-radius:12px;line-height:1.65}
+.scenario-view h2{font-size:22px;margin:0 0 6px}
+.scenario-view h3{font-size:17px;margin:18px 0 8px}
+.scenario-view p{margin:8px 0}
+.scenario-tag{display:inline-block;background:#edf4fc;color:#1b4d77;padding:2px 10px;border-radius:16px;font-size:12px;font-weight:bold}
+.scenario-caution{background:#f5f7f9;border-left:4px solid #52758e;padding:10px 12px;font-size:13px}
+.scenario-observations{background:#f7fafc;padding:10px 12px;border-radius:8px}
+.scenario-options{display:grid;gap:9px;margin:12px 0}
+.scenario-options button{width:100%;box-sizing:border-box;text-align:left;font-size:14px;line-height:1.45;padding:11px 12px;border:1px solid #9caab6;border-radius:7px;background:#fff;cursor:pointer;white-space:normal}
+.scenario-options button:hover:not(:disabled){background:#eaf2fa}
+.scenario-options button:disabled{cursor:default;opacity:.85}
+.scenario-feedback{padding:13px 14px;border:2px solid #7088a0;border-radius:8px;background:#f1f7fc}
+.scenario-feedback[data-correct="true"]{border-color:#37744d;background:#eef8f1}
+.scenario-feedback[data-correct="false"]{border-color:#986a3c;background:#fff6e9}
+.scenario-feedback h3{margin:0 0 5px}
+.scenario-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.scenario-actions button{width:auto;min-width:120px;border:1px solid #56758d;border-radius:6px;background:#eff5fa;cursor:pointer}
+.scenario-actions button.primary{background:#194e78;border-color:#194e78;color:#fff}
+.scenario-evidence{margin-top:18px;padding-top:10px;border-top:1px solid #ddd;font-size:13px}
+.scenario-evidence a{color:#17548b;text-decoration:underline}
+@media (max-width:930px){.scenario-view{margin:12px 12px 24px;padding:15px}}
 </style>
 
 
@@ -395,7 +423,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v4.10
+RAAS Simulator v5.0
 </h1>
 
 
@@ -412,6 +440,11 @@ RAAS + Drug + Physiological Variables
 
 
 
+<nav class="study-mode-nav" aria-label="학습 모드 선택">
+  <button id="normalModeButton" type="button" aria-pressed="true" aria-controls="normalStudyView">RAAS 일반 학습</button>
+  <button id="scenarioModeButton" type="button" aria-pressed="false" aria-controls="scenarioStudyView">임상 시나리오</button>
+</nav>
+<div id="normalStudyView">
 <div class="main">
 
 
@@ -732,6 +765,44 @@ class="variableValue">
 
 
 
+
+</div>
+<section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
+  <span class="scenario-tag">v5.0 · 교육용 가상 사례</span>
+  <h2 id="scenarioHeading">임상 시나리오 교육</h2>
+  <p id="scenarioOverview"></p>
+  <p id="scenarioObjectives" class="scenario-caution"></p>
+  <h3>환자 상황</h3>
+  <p id="scenarioContext"></p>
+  <div id="scenarioObservations" class="scenario-observations"></div>
+  <p class="scenario-caution">이 사례는 실제 환자 기록이 아닌 교육용 가상 상황입니다. 기존 RAAS 그래프의 BP·Na⁺·혈액량·GFR 숫자는 이 환자의 검사 결과나 약물 반응이 아닙니다. 실제 처방·투여 변경에 사용하지 마세요.</p>
+  <section id="scenarioQuestionSection" aria-labelledby="scenarioProgress">
+    <h3 id="scenarioProgress"></h3>
+    <p id="scenarioQuestion"></p>
+    <div class="scenario-options" role="group" aria-label="시나리오 답안 선택">
+      <button id="scenarioChoice1" type="button"></button>
+      <button id="scenarioChoice2" type="button"></button>
+      <button id="scenarioChoice3" type="button"></button>
+    </div>
+  </section>
+  <section id="scenarioFeedbackPanel" class="scenario-feedback" aria-live="polite" aria-atomic="true" hidden>
+    <h3 id="scenarioFeedbackTitle"></h3>
+    <p id="scenarioFeedbackText"></p>
+    <p id="scenarioFeedbackSource"></p>
+  </section>
+  <section id="scenarioResultPanel" aria-live="polite" hidden>
+    <h3>학습 완료</h3>
+    <p id="scenarioResultText"></p>
+    <p>선택한 답안과 정답 근거를 확인했습니다. 필요하면 다시 풀거나 일반 학습으로 돌아갈 수 있습니다.</p>
+  </section>
+  <div class="scenario-actions">
+    <button id="scenarioNextButton" class="primary" type="button" hidden>다음 문항</button>
+    <button id="scenarioRestartButton" type="button">다시 풀기</button>
+    <button id="scenarioExitButton" type="button">일반 학습으로 돌아가기</button>
+  </div>
+  <p class="scenario-evidence">근거: <a href="https://kdigo.org/guidelines/ckd-evaluation-and-management/" target="_blank" rel="noopener noreferrer">KDIGO 2024 CKD Guideline, Section 3.6</a> · 개별 환자 판단에는 상태와 기관 지침이 우선합니다.</p>
+</section>
+
 <!-- 사용 설명서: Canvas와 생리 계산 상태에 영향을 주지 않는 모달 -->
 <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle" aria-describedby="helpLead">
     <div class="help-header">
@@ -807,7 +878,10 @@ class="variableValue">
             <li id="reference-3">[3] National Institute for Health and Care Excellence. (2025). <em>Chronic heart failure in adults: Diagnosis and management</em> (NG106; updated 2025). <a href="https://www.nice.org.uk/guidance/ng106/chapter/recommendations" target="_blank" rel="noopener noreferrer">권고문 보기</a></li>
             <li id="reference-4">[4] Ernstmeyer, K., &amp; Christman, E. (Eds.). (2024). <em>Nursing fundamentals</em> (2nd ed.), Fluids and electrolytes. Chippewa Valley Technical College. <a href="https://www.ncbi.nlm.nih.gov/books/NBK610839/" target="_blank" rel="noopener noreferrer">간호교육 자료</a></li>
         </ol>
-        <h3>5. 교육용 모델의 한계</h3>
+        <h3>7. 임상 시나리오 모드 (v5.0)</h3>
+        <p>상단의 <strong>임상 시나리오</strong>에서 만성콩팥병 환자의 ACE 억제제 관련 3문항을 풀 수 있습니다. 각 선택 뒤 해설을 확인하고 다음 문항으로 이동합니다.</p>
+        <p>일반 학습으로 돌아가면 시나리오의 답안 기록만 초기화하고 RAAS 진행·약물·생리 상태는 보존됩니다. 경로 시연 도중 전환하면 시연을 일시정지합니다. 새로고침 후에도 시나리오 답안은 보존되지 않습니다.</p>
+        <h3>8. 교육용 모델의 한계</h3>
         <p class="help-note">시뮬레이터의 약물 및 RAAS 효과값은 교육을 위한 단순화된 수치입니다. 실제 환자의 혈압, 전해질, 혈액량 또는 신기능을 예측하거나 치료 결정을 내리는 데 사용할 수 없습니다.</p>
         <p>설명서를 닫으려면 <strong>×</strong> 버튼이나 <strong>Esc</strong> 키를 사용하세요. 팝업 바깥을 클릭해도 닫힙니다. 단계별 자세한 의학·간호 내용은 Canvas의 상자를 선택해 확인할 수 있습니다.</p>
     </div>
@@ -821,6 +895,8 @@ class="variableValue">
     </div>
     <div class="help-body">
         <p id="changelogLead">교육용 시뮬레이터의 주요 변경 사항을 버전별로 요약했습니다. 이전 버전의 상세 기록은 프로젝트 DEVLOG.md를 참고하세요.</p>
+        <h3>v5.0 — 첫 임상 시나리오 교육 모드</h3>
+        <p>일반 학습과 분리된 CKD/ACE 억제제 간호 시나리오를 도입했습니다. 3문항, 정답·해설·근거, 학습 결과, 다시 풀기를 제공하며 일반 학습의 진행·생리 계산은 변경하지 않습니다. 시나리오에서 일반 학습으로 돌아가면 답안이 초기화됩니다.</p>
         <h3>v4.10 — 임상 학습 설명 및 안내 팝업</h3>
         <p>RAAS 9단계의 의학·간호 설명과 약물 6종의 모니터링 포인트를 보강했습니다. 설명서에 근거와 교육용 모델 한계를 추가하고, 설명서·패치 내역을 각각 아이콘으로 여는 팝업을 구성했습니다. 기존 계산식과 진행·시연 동작은 유지합니다.</p>
         <h3>v4.9 — 시나리오 구조 기반</h3>
