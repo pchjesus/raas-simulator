@@ -3452,6 +3452,145 @@ function stopFlowDemo(){
 flowDemoToggle.addEventListener("click",toggleFlowDemo);
 flowDemoStop.addEventListener("click",stopFlowDemo);
 
+
+// =============================
+// v5.0 — isolated clinical scenario interface
+// =============================
+const normalStudyView=document.getElementById("normalStudyView");
+const scenarioStudyView=document.getElementById("scenarioStudyView");
+const normalModeButton=document.getElementById("normalModeButton");
+const scenarioModeButton=document.getElementById("scenarioModeButton");
+const scenarioChoiceButtons=[1,2,3].map(i=>document.getElementById("scenarioChoice"+i));
+const scenarioFeedbackPanel=document.getElementById("scenarioFeedbackPanel");
+const scenarioResultPanel=document.getElementById("scenarioResultPanel");
+const scenarioQuestionSection=document.getElementById("scenarioQuestionSection");
+const scenarioNextButton=document.getElementById("scenarioNextButton");
+let scenarioLatestFeedback=null;
+
+function renderScenarioStudy(){
+    const definition=scenarioRuntime.definition;
+    const session=scenarioRuntime.session;
+    if(scenarioRuntime.mode!=="scenario"||!definition||!session)return;
+
+    document.getElementById("scenarioHeading").textContent=definition.title;
+    document.getElementById("scenarioOverview").textContent=
+        "KDIGO 2024 근거 · 객관식 "+definition.questions.length+"문항 · 선택 후 해설 제공";
+    document.getElementById("scenarioObjectives").textContent=
+        "학습 목표: "+definition.objectives.join(" / ");
+    document.getElementById("scenarioContext").textContent=definition.caseContext;
+    document.getElementById("scenarioObservations").textContent=
+        definition.observations.map(item=>item.label+": "+item.value).join(" · ");
+
+    scenarioFeedbackPanel.hidden=!scenarioLatestFeedback;
+    scenarioResultPanel.hidden=true;
+    scenarioNextButton.hidden=!scenarioLatestFeedback;
+
+    if(scenarioLatestFeedback){
+        const feedback=scenarioLatestFeedback;
+        scenarioQuestionSection.hidden=false;
+        document.getElementById("scenarioProgress").textContent=
+            "문항 "+session.questionIndex+" / "+definition.questions.length+" · 해설";
+        document.getElementById("scenarioFeedbackTitle").textContent=
+            feedback.correct?"정답입니다":"다시 생각해 볼 선택입니다";
+        document.getElementById("scenarioFeedbackText").textContent=feedback.rationale;
+        document.getElementById("scenarioFeedbackSource").textContent=
+            "근거: "+feedback.sourceIds.map(id=>{
+                const ref=definition.references.find(item=>item.id===id);
+                return ref?ref.citation:id;
+            }).join(" / ");
+        scenarioFeedbackPanel.setAttribute("data-correct",String(feedback.correct));
+        scenarioChoiceButtons.forEach(button=>{button.hidden=true;button.disabled=true;});
+        document.getElementById("scenarioQuestion").textContent=
+            "해설을 확인하고 아래 버튼을 눌러 진행하세요.";
+        scenarioNextButton.textContent=feedback.completed?"결과 보기":"다음 문항";
+        return;
+    }
+
+    if(session.status==="completed"){
+        scenarioQuestionSection.hidden=true;
+        scenarioResultPanel.hidden=false;
+        const correct=definition.questions.filter(question=>
+            session.answers[question.id]===question.correctChoiceId).length;
+        document.getElementById("scenarioResultText").textContent=
+            definition.questions.length+"문항 중 "+correct+"문항을 올바르게 선택했습니다. "+
+            "학습 확인용 결과이며 임상 실무 능력 인증이나 환자 치료 지침은 아닙니다.";
+        return;
+    }
+
+    const question=definition.questions[session.questionIndex];
+    scenarioQuestionSection.hidden=false;
+    document.getElementById("scenarioProgress").textContent=
+        "문항 "+(session.questionIndex+1)+" / "+definition.questions.length;
+    document.getElementById("scenarioQuestion").textContent=question.prompt;
+    scenarioChoiceButtons.forEach((button,i)=>{
+        const choice=question.choices[i];
+        button.hidden=!choice;
+        button.disabled=!choice;
+        if(choice)button.textContent=(i+1)+". "+choice.text;
+    });
+}
+
+function chooseScenarioAnswer(index){
+    if(scenarioRuntime.mode!=="scenario"||scenarioLatestFeedback)return;
+    const session=scenarioRuntime.session;
+    if(!session||session.status!=="active")return;
+    const choice=scenarioRuntime.definition.questions[session.questionIndex].choices[index];
+    if(!choice)return;
+    scenarioLatestFeedback=submitScenarioAnswer(choice.id);
+    renderScenarioStudy();
+    scenarioNextButton.focus();
+}
+
+function switchStudyMode(mode){
+    if(mode==="scenario"){
+        if(!normalStudyView.hidden && flowDemo.timer!==null){
+            toggleFlowDemo(); // pause demo and retain index without new timers
+        }
+        if(scenarioRuntime.mode!=="scenario"){
+            enterScenarioMode(firstClinicalScenario);
+            scenarioLatestFeedback=null;
+        }
+        normalStudyView.hidden=true;
+        scenarioStudyView.hidden=false;
+        normalModeButton.setAttribute("aria-pressed","false");
+        scenarioModeButton.setAttribute("aria-pressed","true");
+        renderScenarioStudy();
+        scenarioModeButton.focus();
+        return;
+    }
+    if(mode==="normal"){
+        if(scenarioRuntime.mode==="scenario")exitScenarioMode();
+        scenarioLatestFeedback=null;
+        scenarioStudyView.hidden=true;
+        normalStudyView.hidden=false;
+        normalModeButton.setAttribute("aria-pressed","true");
+        scenarioModeButton.setAttribute("aria-pressed","false");
+        normalModeButton.focus();
+    }
+}
+normalModeButton.addEventListener("click",()=>switchStudyMode("normal"));
+scenarioModeButton.addEventListener("click",()=>switchStudyMode("scenario"));
+document.getElementById("scenarioExitButton").addEventListener("click",()=>switchStudyMode("normal"));
+document.getElementById("scenarioRestartButton").addEventListener("click",()=>{
+    if(scenarioRuntime.mode!=="scenario")return;
+    resetScenarioSession();
+    scenarioLatestFeedback=null;
+    renderScenarioStudy();
+    scenarioChoiceButtons[0].focus();
+});
+scenarioNextButton.addEventListener("click",()=>{
+    if(!scenarioLatestFeedback)return;
+    scenarioLatestFeedback=null;
+    renderScenarioStudy();
+    if(scenarioRuntime.session.status==="completed"){
+        document.getElementById("scenarioRestartButton").focus();
+    }else{
+        scenarioChoiceButtons[0].focus();
+    }
+});
+scenarioChoiceButtons.forEach((button,i)=>
+    button.addEventListener("click",()=>chooseScenarioAnswer(i)));
+
 // 초기 실행
 // =============================
 
