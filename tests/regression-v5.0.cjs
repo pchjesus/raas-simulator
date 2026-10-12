@@ -100,6 +100,7 @@ for(const drug of scenarios){
         check(now.el("scenarioFeedbackPanel").hidden===false,"feedback visible "+drug+" "+question);
         check(now.el("scenarioNextButton").hidden===false,"continue visible "+drug+" "+question);
         check(now.el("scenarioFeedbackText").textContent.length>50,"sourced rationale "+drug+" "+question);
+        check(now.el("scenarioFeedbackCorrectAnswer").textContent.includes("정답:"),"explicit correct choice "+drug+" "+question);
         check(now.el("scenarioFeedbackSource").textContent.includes("KDIGO"),"ref label "+drug+" "+question);
         check(chosen.every(id=>now.el(id).hidden),"options hidden after answer "+drug+" "+question);
         const answerSnapshot=JSON.stringify(now.api.scenarioRuntime.session.answers);
