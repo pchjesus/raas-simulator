@@ -40,7 +40,7 @@ function boot(html){
 
 
 const reference=boot(fs.readFileSync(path.join(root,"backups","v5.2.html"),"utf8"));
-const source=fs.readFileSync(path.join(root,"index.html"),"utf8");
+const source=fs.readFileSync(path.join(root,"backups","v5.3.html"),"utf8");
 const app=boot(source);
 let count=0;
 function verify(flag,label){count++;if(!flag)throw Error("FAIL v5.3 "+label)}
