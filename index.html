@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v5.1
+RAAS Simulator v5.2
 </title>
 
 
@@ -427,7 +427,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v5.1
+RAAS Simulator v5.2
 </h1>
 
 
@@ -772,7 +772,7 @@ class="variableValue">
 
 </div>
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.1 · 교육용 가상 사례</span>
+  <span class="scenario-tag">v5.2 · 교육용 가상 사례</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <p id="scenarioOverview"></p>
   <p id="scenarioObjectives" class="scenario-caution"></p>
@@ -1122,6 +1122,32 @@ function validateScenarioDefinition(definition){
                question.sourceIds.some(id=>!referenceIds.has(id))){
                 errors.push("문항 "+(index+1)+"에 유효한 참고문헌 연결이 필요합니다.");
             }
+            // Optional v5.2 action activity; keep schema version 1 backward-compatible.
+            if(question.actionExercise!==undefined){
+                const action=question.actionExercise;
+                if(!isRecord(action)||!isText(action.prompt)||!isText(action.rationale)||
+                   !isText(action.assessment)||!isText(action.escalation)||!isText(action.teaching)){
+                    errors.push("문항 "+(index+1)+"의 간호 행동 문제/해설이 유효하지 않습니다.");
+                }
+                if(!isRecord(action)||!Array.isArray(action.choices)||action.choices.length<2){
+                    errors.push("문항 "+(index+1)+"의 간호 행동 선택지가 부족합니다.");
+                }else{
+                    const ids=new Set();
+                    action.choices.forEach((choice,choiceIndex)=>{
+                        if(!isRecord(choice)||!isId(choice.id)||!isText(choice.text)||
+                           !isText(choice.feedback)||ids.has(choice.id)){
+                            errors.push("문항 "+(index+1)+" 간호 행동 선택지 "+(choiceIndex+1)+"가 유효하지 않습니다.");
+                        }else ids.add(choice.id);
+                    });
+                    if(!ids.has(action.correctChoiceId)){
+                        errors.push("문항 "+(index+1)+"의 간호 행동 정답이 유효하지 않습니다.");
+                    }
+                }
+                if(!isRecord(action)||!Array.isArray(action.sourceIds)||action.sourceIds.length===0||
+                   action.sourceIds.some(id=>!referenceIds.has(id))){
+                    errors.push("문항 "+(index+1)+"의 간호 행동 출처가 유효하지 않습니다.");
+                }
+            }
         });
     }
     return {valid:errors.length===0,errors};
@@ -1201,7 +1227,7 @@ function exitScenarioMode(){
 const firstClinicalScenario={
     "schemaVersion": 1,
     "id": "ckd-acei-nursing-monitoring",
-    "version": 2,
+    "version": 3,
     "title": "만성콩팥병 환자의 ACE 억제제 관련 간호 사정",
     "caseContext": "외래에서 만성콩팥병(CKD)과 알부민뇨가 있는 성인 환자가 ACE 억제제를 새로 처방받았습니다. 간호학습자로서 약물의 RAAS 작용과 투여 전후 사정·환자 교육을 판단해 보세요. 환자별 실제 검사값이나 약물 효과 수치는 제시하지 않습니다.",
     "objectives": [
@@ -1256,7 +1282,35 @@ const firstClinicalScenario={
             "sourceIds": [
                 "kdigo-2024"
             ],
-            "nursingFocus": "새로운 ACE 억제제 처방을 확인할 때 기존 혈압 추세와 저혈압 증상, 혈청 크레아티닌/eGFR 및 K⁺의 기초값과 추적검사 계획을 함께 점검합니다. 확인되지 않은 검사는 처방 및 기관 절차에 따라 의료진과 공유합니다."
+            "nursingFocus": "새로운 ACE 억제제 처방을 확인할 때 기존 혈압 추세와 저혈압 증상, 혈청 크레아티닌/eGFR 및 K⁺의 기초값과 추적검사 계획을 함께 점검합니다. 확인되지 않은 검사는 처방 및 기관 절차에 따라 의료진과 공유합니다.",
+            "actionExercise": {
+                "prompt": "ACE 억제제 신규 처방을 확인했지만 최근 검사 여부가 불명확합니다. 다음 간호 행동으로 가장 적절한 것은?",
+                "choices": [
+                    {
+                        "id": "a",
+                        "text": "기존 혈압·크레아티닌/eGFR·K⁺ 기록과 관련 증상을 확인하고 검사·추적계획을 담당 의료진과 확인한다.",
+                        "feedback": "적절합니다. 기초검사와 환자 상태, 추적 계획을 함께 확인하는 안전한 사정입니다."
+                    },
+                    {
+                        "id": "b",
+                        "text": "증상이 없으니 검사계획 확인 없이 안전하다고 판단한다.",
+                        "feedback": "무증상이라도 신기능 변화나 K⁺ 상승을 배제할 수 없습니다. 검사·추적 계획을 확인해야 합니다."
+                    },
+                    {
+                        "id": "c",
+                        "text": "간호학습자 판단으로 환자에게 ACE 억제제를 영구 중단하라고 지시한다.",
+                        "feedback": "약물 중단은 독단적으로 결정하지 않습니다. 필요한 정보와 처방 의도를 확인하고 의료진과 협의합니다."
+                    }
+                ],
+                "correctChoiceId": "a",
+                "rationale": "KDIGO 2024 Practice Point 3.6.2는 ACEi/ARB 시작 또는 증량 후 혈압·크레아티닌·K⁺ 변화를 추적하도록 안내합니다. 안전한 간호는 관련 정보와 검사 계획 확인부터 시작합니다.",
+                "assessment": "혈압 추세·어지럼 등 증상, 기존 크레아티닌/eGFR 및 K⁺ 기록, 검사 예약 여부를 확인합니다.",
+                "escalation": "검사자료가 누락되었거나 유의한 증상·이상 정보가 확인되면 기관 절차에 따라 담당 의료진에게 확인·보고합니다.",
+                "teaching": "정기검사·재진 일정을 지키는 이유를 설명하고 새로운 증상 발생 시 의료진에게 알리도록 안내합니다. 임의 복용 변경을 지시하지 않습니다.",
+                "sourceIds": [
+                    "kdigo-2024"
+                ]
+            }
         },
         {
             "id": "follow-up",
@@ -1283,7 +1337,35 @@ const firstClinicalScenario={
             "sourceIds": [
                 "kdigo-2024"
             ],
-            "nursingFocus": "약물 시작·증량 시점과 기존 eGFR·K⁺, 동반 질환 및 위험도를 확인하고 검사·재진 일정이 실제로 예약됐는지 점검합니다. 2~4주는 지침상의 일반 기준이며 환자 상태에 따라 더 이른 평가가 필요할 수 있습니다."
+            "nursingFocus": "약물 시작·증량 시점과 기존 eGFR·K⁺, 동반 질환 및 위험도를 확인하고 검사·재진 일정이 실제로 예약됐는지 점검합니다. 2~4주는 지침상의 일반 기준이며 환자 상태에 따라 더 이른 평가가 필요할 수 있습니다.",
+            "actionExercise": {
+                "prompt": "ACE 억제제 시작 후 검사·재진 일정이 아직 없습니다. 가장 적절한 간호 행동은?",
+                "choices": [
+                    {
+                        "id": "a",
+                        "text": "모든 환자에게 4주가 될 때까지 다른 확인은 하지 않도록 안내한다.",
+                        "feedback": "2~4주는 일반적 기준이며 신기능·K⁺·증상에 따라 더 이른 평가가 필요할 수 있습니다."
+                    },
+                    {
+                        "id": "b",
+                        "text": "시작·증량 날짜, 기존 GFR·K⁺ 및 증상을 확인하고 처방 의료진과 추적검사·재진 일정을 확정한다.",
+                        "feedback": "적절합니다. 개별 위험도에 맞춰 검사 권고를 실제 환자 추적계획과 연결합니다."
+                    },
+                    {
+                        "id": "c",
+                        "text": "가정에서 혈압만 재면 충분하다며 혈액검사 계획을 취소한다.",
+                        "feedback": "혈압과 함께 신기능·혈청 K⁺ 확인이 중요합니다. 혈액검사를 임의로 취소하도록 안내해서는 안 됩니다."
+                    }
+                ],
+                "correctChoiceId": "b",
+                "rationale": "KDIGO Practice Point 3.6.2의 시작·증량 후 2~4주 이내 혈압·크레아티닌·K⁺ 확인 권고를, 환자 위험도에 맞는 추적 계획과 연결합니다.",
+                "assessment": "약물 변경일, 최근 혈압·크레아티닌/eGFR·K⁺, 증상·동반 약물, 검사 및 재진 예약을 점검합니다.",
+                "escalation": "기저 신기능/K⁺에 위험 정보가 있거나 증상 악화·검사 누락이 있으면 담당 의료진에게 시기 재평가를 요청합니다.",
+                "teaching": "검사 목적, 예약 시점과 연락 방법을 설명합니다. 2~4주라는 지침 표현을 모든 환자에게 같은 확정 날짜로 안내하지 않습니다.",
+                "sourceIds": [
+                    "kdigo-2024"
+                ]
+            }
         },
         {
             "id": "dual-raas",
@@ -1310,7 +1392,35 @@ const firstClinicalScenario={
             "sourceIds": [
                 "kdigo-2024"
             ],
-            "nursingFocus": "실제 복용 중인 약, 이전 처방, 중복 처방 가능성을 대조합니다. CKD에서 ACEi·ARB 병용을 발견하면 혈압·신기능·K⁺ 관련 위험을 인지하고 담당 의료진·약사와 처방 의도를 확인합니다. 환자에게 임의로 중단·변경하도록 지시하지 않습니다."
+            "nursingFocus": "실제 복용 중인 약, 이전 처방, 중복 처방 가능성을 대조합니다. CKD에서 ACEi·ARB 병용을 발견하면 혈압·신기능·K⁺ 관련 위험을 인지하고 담당 의료진·약사와 처방 의도를 확인합니다. 환자에게 임의로 중단·변경하도록 지시하지 않습니다.",
+            "actionExercise": {
+                "prompt": "복용약 목록에서 ACE 억제제와 ARB 병용 가능성이 확인됐습니다. 가장 적절한 행동은?",
+                "choices": [
+                    {
+                        "id": "a",
+                        "text": "약물 이름이 다르므로 중복 확인 없이 안전하다고 기록한다.",
+                        "feedback": "이름이 달라도 RAAS의 이중 차단이 될 수 있습니다. CKD에서 조합을 피하라는 권고와 맞지 않습니다."
+                    },
+                    {
+                        "id": "b",
+                        "text": "간호학습자가 환자에게 두 약을 영구 중단하라고 통보한다.",
+                        "feedback": "병용 위험을 발견했더라도 처방·복용 변경은 임의로 결정하지 않습니다. 약물 이력과 처방 의도 확인이 우선입니다."
+                    },
+                    {
+                        "id": "c",
+                        "text": "실제 복용·처방 목록을 대조하고 중복 가능성을 담당 의료진·약사에게 확인한다.",
+                        "feedback": "적절합니다. 복약 이력 확인과 의료진 협의로 위험을 줄이되 독단적으로 처방을 변경하지 않습니다."
+                    }
+                ],
+                "correctChoiceId": "c",
+                "rationale": "KDIGO 2024 Recommendation 3.6.4는 CKD에서 ACEi·ARB·직접 레닌 억제제 병용 회피를 권고합니다. 간호 판단은 투약 이력 확인과 보고로 이어져야 합니다.",
+                "assessment": "처방 내역과 실제 복용약, 변경 이력, 중복 가능성을 확인합니다.",
+                "escalation": "중복 복용 가능성을 담당 의료진·약사와 확인하고 관련 상태·검사 정보를 기관 절차에 따라 전달합니다.",
+                "teaching": "새 약을 받을 때 기존 복용약 목록을 제시하도록 안내합니다. 자의적인 약물 추가·중단을 지시하지 않습니다.",
+                "sourceIds": [
+                    "kdigo-2024"
+                ]
+            }
         }
     ]
 };
