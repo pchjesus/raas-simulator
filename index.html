@@ -3811,6 +3811,22 @@ const normalStudyView=document.getElementById("normalStudyView");
 const scenarioStudyView=document.getElementById("scenarioStudyView");
 const normalModeButton=document.getElementById("normalModeButton");
 const scenarioModeButton=document.getElementById("scenarioModeButton");
+const scenarioCaseCatalog=document.getElementById("scenarioCaseCatalog");
+const scenarioSessionContent=document.getElementById("scenarioSessionContent");
+// Only internally curated cases are selectable; sources are trusted fixed URLs.
+const scenarioCaseRegistry=Object.freeze({
+    [firstClinicalScenario.id]:{
+        definition:firstClinicalScenario,
+        sources:[{label:"KDIGO 2024 CKD guideline",url:"https://kdigo.org/guidelines/ckd-evaluation-and-management/"}]
+    },
+    [secondClinicalScenario.id]:{
+        definition:secondClinicalScenario,
+        sources:[
+            {label:"AHA/ACC/HFSA 2022 HF guideline",url:"https://www.jacc.org/doi/10.1016/j.jacc.2021.12.012"},
+            {label:"NICE NG106 (2025) 권고",url:"https://www.nice.org.uk/guidance/ng106/chapter/recommendations"}
+        ]
+    }
+});
 const scenarioChoiceButtons=[1,2,3].map(i=>document.getElementById("scenarioChoice"+i));
 const scenarioFeedbackPanel=document.getElementById("scenarioFeedbackPanel");
 const scenarioResultPanel=document.getElementById("scenarioResultPanel");
@@ -3842,7 +3858,7 @@ function renderScenarioStudy(){
 
     document.getElementById("scenarioHeading").textContent=definition.title;
     document.getElementById("scenarioOverview").textContent=
-        "KDIGO 2024 근거 · 임상 판단 "+definition.questions.length+
+        "근거 문헌 "+definition.references.length+"종 · 임상 판단 "+definition.questions.length+
         "문항 · 간호 행동 선택 "+definition.questions.filter(q=>q.actionExercise).length+"회";
     document.getElementById("scenarioObjectives").textContent=
         "학습 목표: "+definition.objectives.join(" / ");
@@ -3987,28 +4003,64 @@ function chooseScenarioAnswer(index){
     }else scenarioNextButton.focus();
 }
 
+function showClinicalCaseCatalog(shouldFocus){
+    if(scenarioRuntime.mode==="scenario")exitScenarioMode();
+    scenarioLatestFeedback=null;
+    resetScenarioActions();
+    scenarioCaseCatalog.hidden=false;
+    scenarioSessionContent.hidden=true;
+    document.getElementById("scenarioHeading").textContent="임상 시나리오 교육";
+    if(shouldFocus)document.getElementById("caseCKDButton").focus();
+}
+function selectClinicalCase(id){
+    if(scenarioStudyView.hidden||scenarioCaseCatalog.hidden)return false;
+    const selected=scenarioCaseRegistry[id];
+    if(!selected)return false;
+    // Validate before changing any visible/session state.
+    const session=enterScenarioMode(selected.definition);
+    scenarioLatestFeedback=null;
+    resetScenarioActions();
+    scenarioCaseCatalog.hidden=true;
+    scenarioSessionContent.hidden=false;
+    const primary=document.getElementById("scenarioSourcePrimary");
+    const secondary=document.getElementById("scenarioSourceSecondary");
+    primary.textContent=selected.sources[0].label;
+    primary.setAttribute("href",selected.sources[0].url);
+    const extra=selected.sources[1];
+    secondary.hidden=!extra;
+    if(extra){
+        secondary.textContent=" · "+extra.label;
+        secondary.setAttribute("href",extra.url);
+    }else{
+        secondary.textContent="";
+        secondary.removeAttribute?.("href");
+    }
+    renderScenarioStudy();
+    scenarioChoiceButtons[0].focus();
+    return Boolean(session);
+}
 function switchStudyMode(mode){
     if(mode==="scenario"){
-        if(!normalStudyView.hidden && flowDemo.timer!==null){
-            toggleFlowDemo(); // pause demo and retain index without new timers
-        }
-        if(scenarioRuntime.mode!=="scenario"){
-            enterScenarioMode(firstClinicalScenario);
-            scenarioLatestFeedback=null;
-            resetScenarioActions();
+        if(!normalStudyView.hidden&&flowDemo.timer!==null){
+            toggleFlowDemo(); // pause hidden demo; preserves progress and index
         }
         normalStudyView.hidden=true;
         scenarioStudyView.hidden=false;
         normalModeButton.setAttribute("aria-pressed","false");
         scenarioModeButton.setAttribute("aria-pressed","true");
-        renderScenarioStudy();
+        // When no session is active show the catalog rather than silently selecting a case.
+        if(scenarioRuntime.mode!=="scenario"){
+            showClinicalCaseCatalog(false);
+        }else{
+            scenarioCaseCatalog.hidden=true;
+            scenarioSessionContent.hidden=false;
+            renderScenarioStudy();
+        }
         scenarioModeButton.focus();
         return;
     }
     if(mode==="normal"){
-        if(scenarioRuntime.mode==="scenario")exitScenarioMode();
-        scenarioLatestFeedback=null;
-        resetScenarioActions();
+        showClinicalCaseCatalog(false); // discard previous case knowledge/action answers
         scenarioStudyView.hidden=true;
         normalStudyView.hidden=false;
         normalModeButton.setAttribute("aria-pressed","true");
@@ -4019,6 +4071,9 @@ function switchStudyMode(mode){
 normalModeButton.addEventListener("click",()=>switchStudyMode("normal"));
 scenarioModeButton.addEventListener("click",()=>switchStudyMode("scenario"));
 document.getElementById("scenarioExitButton").addEventListener("click",()=>switchStudyMode("normal"));
+document.getElementById("caseCKDButton").addEventListener("click",()=>selectClinicalCase(firstClinicalScenario.id));
+document.getElementById("caseMRAButton").addEventListener("click",()=>selectClinicalCase(secondClinicalScenario.id));
+document.getElementById("scenarioBackToCasesButton").addEventListener("click",()=>showClinicalCaseCatalog(true));
 document.getElementById("scenarioRestartButton").addEventListener("click",()=>{
     if(scenarioRuntime.mode!=="scenario")return;
     resetScenarioSession();
