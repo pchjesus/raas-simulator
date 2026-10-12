@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v5.3
+RAAS Simulator v5.4
 </title>
 
 
@@ -429,6 +429,32 @@ line-height:1.4;
 .scenario-evidence{margin-top:18px;padding-top:10px;border-top:1px solid #ddd;font-size:13px}
 .scenario-evidence a{color:#17548b;text-decoration:underline}
 @media (max-width:930px){.scenario-view{margin:12px 12px 24px;padding:15px}}
+/* v5.4: only the scenario layout; the normal learning Canvas stays unchanged. */
+.scenario-active-case{margin:12px 0 4px!important;font-weight:700;color:#1f4c6a}
+.scenario-learning-progress{margin:8px 0 16px!important;padding:10px 12px;border:1px solid #b5c9da;border-radius:7px;background:#f4f8fc;color:#193e58;font-weight:600;font-size:14px;line-height:1.65}
+.scenario-case-button{min-height:150px;padding:17px}
+.scenario-case-button strong{font-size:16px;line-height:1.4}
+.scenario-case-button .scenario-case-description{font-size:14px;color:#29475d;line-height:1.55}
+.scenario-case-button .scenario-case-meta{font-size:13px;font-weight:700;color:#214f75;margin-top:10px}
+.scenario-case-button .scenario-case-start{font-size:13px;font-weight:700;text-align:right;margin-top:10px;color:#174b70}
+.scenario-feedback-selection{font-weight:700;padding-bottom:8px;border-bottom:1px solid #cbd6df;overflow-wrap:anywhere}
+.scenario-feedback-correct{font-weight:700;padding:8px 10px;background:#fff;border-radius:5px}
+.scenario-feedback-subtitle{font-size:15px!important;margin:14px 0 4px!important;color:#1b4561}
+.scenario-feedback-rationale{line-height:1.7}
+.scenario-feedback-evidence{font-size:12px;line-height:1.7;color:#465c6b;border-top:1px solid #cbd6df;padding-top:9px;overflow-wrap:anywhere}
+.scenario-action-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:10px;margin:10px 0 14px}
+.scenario-action-detail{border:1px solid #cbdae6;border-radius:7px;background:#fff;padding:10px 12px;min-width:0;overflow-wrap:anywhere}
+.scenario-action-detail h4{font-size:14px!important;margin:0 0 6px!important;color:#194a6b}
+.scenario-action-detail p{margin:0!important;line-height:1.65}
+@media (max-width:600px){
+  .scenario-view{margin:10px 8px 20px;padding:14px}
+  .scenario-case-grid{grid-template-columns:1fr;gap:10px}
+  .scenario-case-button{min-height:0;padding:15px}
+  .scenario-actions{display:grid;grid-template-columns:1fr;gap:9px}
+  .scenario-actions button{width:100%;min-height:44px;font-size:14px}
+  .scenario-options button,.scenario-action-options button{min-height:44px;font-size:14px}
+  .scenario-action-detail-grid{grid-template-columns:1fr}
+}
 </style>
 
 
@@ -789,24 +815,30 @@ class="variableValue">
 
 </div>
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.3 · 임상 교육 사례</span>
+  <span class="scenario-tag">v5.4 · 임상 교육 사례</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
     <p>풀어볼 임상 사례를 선택하세요. 사례마다 독립적인 풀이 기록을 사용합니다.</p>
     <div class="scenario-case-grid">
       <button id="caseCKDButton" class="scenario-case-button" type="button">
         <strong>사례 1 · CKD와 ACE 억제제</strong>
-        <span>혈압·신기능·K⁺ 모니터링, 이중 RAAS 차단 확인 · 지식 3문항 + 행동 3문항</span>
+        <span class="scenario-case-description">혈압·신기능·K⁺ 모니터링과 이중 RAAS 차단 확인</span>
+        <span class="scenario-case-meta">임상 판단 3문항 · 간호 행동 3문항</span>
+        <span class="scenario-case-start" aria-hidden="true">사례 시작 →</span>
       </button>
       <button id="caseMRAButton" class="scenario-case-button" type="button">
         <strong>사례 2 · HFrEF와 MRA</strong>
-        <span>스피로놀락톤 시작 전 K⁺·신기능 사정 및 투여 후 추적 · 지식 2문항 + 행동 2문항</span>
+        <span class="scenario-case-description">스피로놀락톤 시작 전 K⁺·신기능 사정 및 투여 후 추적</span>
+        <span class="scenario-case-meta">임상 판단 2문항 · 간호 행동 2문항</span>
+        <span class="scenario-case-start" aria-hidden="true">사례 시작 →</span>
       </button>
     </div>
     <p class="scenario-catalog-note">교육용 가상 사례입니다. 사례 진행 중 ‘다른 사례 선택’을 누르면 현재 풀이가 종료되고 답안은 보존되지 않습니다.</p>
   </section>
   <div id="scenarioSessionContent" hidden>
+  <p id="scenarioActiveCaseLabel" class="scenario-active-case"></p>
   <p id="scenarioOverview"></p>
+  <p id="scenarioLearningProgress" class="scenario-learning-progress" aria-live="polite" aria-atomic="true"></p>
   <p id="scenarioObjectives" class="scenario-caution"></p>
   <h3>환자 상황</h3>
   <p id="scenarioContext"></p>
@@ -823,12 +855,13 @@ class="variableValue">
   </section>
   <section id="scenarioFeedbackPanel" class="scenario-feedback" aria-live="polite" aria-atomic="true" hidden>
     <h3 id="scenarioFeedbackTitle"></h3>
-    <p id="scenarioFeedbackSelected"></p>
+    <p id="scenarioFeedbackSelected" class="scenario-feedback-selection"></p>
     <p id="scenarioFeedbackChoiceExplanation" class="scenario-choice-reason"></p>
-    <p id="scenarioFeedbackCorrectAnswer"></p>
-    <p id="scenarioFeedbackText"></p>
+    <p id="scenarioFeedbackCorrectAnswer" class="scenario-feedback-correct"></p>
+    <h4 class="scenario-feedback-subtitle">판단 근거</h4>
+     <p id="scenarioFeedbackText" class="scenario-feedback-rationale"></p>
     <p id="scenarioFeedbackNursing" class="scenario-nursing-focus"></p>
-    <p id="scenarioFeedbackSource"></p>
+    <p id="scenarioFeedbackSource" class="scenario-feedback-evidence"></p>
   </section>
   <section id="scenarioActionStep" class="scenario-action-step" aria-labelledby="scenarioActionProgress" hidden>
     <h3 id="scenarioActionProgress">다음 간호 행동 판단</h3>
@@ -841,14 +874,18 @@ class="variableValue">
   </section>
   <section id="scenarioActionFeedbackPanel" class="scenario-action-feedback" aria-live="polite" aria-atomic="true" hidden>
     <h3 id="scenarioActionFeedbackTitle"></h3>
-    <p id="scenarioActionFeedbackSelected"></p>
-    <p id="scenarioActionFeedbackReason"></p>
-    <p id="scenarioActionFeedbackCorrect"></p>
-    <p id="scenarioActionFeedbackRationale"></p>
-    <p id="scenarioActionAssessment"></p>
-    <p id="scenarioActionEscalation"></p>
-    <p id="scenarioActionTeaching"></p>
-    <p id="scenarioActionEvidence"></p>
+    <p id="scenarioActionFeedbackSelected" class="scenario-feedback-selection"></p>
+     <p id="scenarioActionFeedbackReason" class="scenario-choice-reason"></p>
+     <p id="scenarioActionFeedbackCorrect" class="scenario-feedback-correct"></p>
+     <h4 class="scenario-feedback-subtitle">행동 판단 근거</h4>
+     <p id="scenarioActionFeedbackRationale" class="scenario-feedback-rationale"></p>
+     <h4 class="scenario-feedback-subtitle">후속 간호 행동</h4>
+     <div class="scenario-action-detail-grid">
+       <section class="scenario-action-detail"><h4>추가 사정</h4><p id="scenarioActionAssessment"></p></section>
+       <section class="scenario-action-detail"><h4>확인·보고</h4><p id="scenarioActionEscalation"></p></section>
+       <section class="scenario-action-detail"><h4>환자 교육</h4><p id="scenarioActionTeaching"></p></section>
+     </div>
+     <p id="scenarioActionEvidence" class="scenario-feedback-evidence"></p>
   </section>
   <section id="scenarioResultPanel" aria-live="polite" hidden>
     <h3>학습 완료</h3>
@@ -3860,6 +3897,19 @@ function renderScenarioStudy(){
     document.getElementById("scenarioOverview").textContent=
         "근거 문헌 "+definition.references.length+"종 · 임상 판단 "+definition.questions.length+
         "문항 · 간호 행동 선택 "+definition.questions.filter(q=>q.actionExercise).length+"회";
+    // v5.4: read-only UI progress derived from the existing answer records.
+    const knowledgeDone=Object.keys(session.answers).length;
+    const actionDone=Object.keys(scenarioActionAnswers).length;
+    const actionTotal=definition.questions.filter(q=>q.actionExercise).length;
+    const phaseLabel=session.status==="completed"&&!scenarioLatestFeedback?"학습 완료":
+        !scenarioLatestFeedback?"임상 판단 선택":
+        scenarioActionPhase==="idle"?"임상 판단 해설":
+        scenarioActionPhase==="select"?"간호 행동 선택":"간호 행동 해설";
+    document.getElementById("scenarioActiveCaseLabel").textContent="선택한 사례 · "+definition.title;
+    document.getElementById("scenarioLearningProgress").textContent=
+        "현재: "+phaseLabel+" · 임상 판단 "+knowledgeDone+"/"+definition.questions.length+
+        " 완료 (남은 "+Math.max(0,definition.questions.length-knowledgeDone)+"문항) · 간호 행동 "+
+        actionDone+"/"+actionTotal+" 완료 (남은 "+Math.max(0,actionTotal-actionDone)+"문항)";
     document.getElementById("scenarioObjectives").textContent=
         "학습 목표: "+definition.objectives.join(" / ");
     document.getElementById("scenarioContext").textContent=definition.caseContext;
@@ -3934,10 +3984,10 @@ function renderScenarioStudy(){
             document.getElementById("scenarioActionFeedbackSelected").textContent="내 선택: "+choice.text;
             document.getElementById("scenarioActionFeedbackReason").textContent="선택한 이유: "+choice.feedback;
             document.getElementById("scenarioActionFeedbackCorrect").textContent="적절한 행동: "+right.text;
-            document.getElementById("scenarioActionFeedbackRationale").textContent="근거: "+exercise.rationale;
-            document.getElementById("scenarioActionAssessment").textContent="추가 사정: "+exercise.assessment;
-            document.getElementById("scenarioActionEscalation").textContent="확인·보고: "+exercise.escalation;
-            document.getElementById("scenarioActionTeaching").textContent="환자 교육: "+exercise.teaching;
+            document.getElementById("scenarioActionFeedbackRationale").textContent=exercise.rationale;
+            document.getElementById("scenarioActionAssessment").textContent=exercise.assessment;
+            document.getElementById("scenarioActionEscalation").textContent=exercise.escalation;
+            document.getElementById("scenarioActionTeaching").textContent=exercise.teaching;
             document.getElementById("scenarioActionEvidence").textContent=
                 "출처: "+exercise.sourceIds.map(id=>
                     definition.references.find(ref=>ref.id===id)?.citation||id).join(" / ");
