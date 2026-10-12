@@ -3641,6 +3641,23 @@ const scenarioResultPanel=document.getElementById("scenarioResultPanel");
 const scenarioQuestionSection=document.getElementById("scenarioQuestionSection");
 const scenarioNextButton=document.getElementById("scenarioNextButton");
 let scenarioLatestFeedback=null;
+const scenarioActionChoiceButtons=[1,2,3].map(i=>document.getElementById("scenarioActionChoice"+i));
+let scenarioActionPhase="idle"; // idle => clinical feedback, select => action question, review => action debrief
+let scenarioActionAnswers={}; // view-only exercise state; normal RAAS and session.answers untouched
+function resetScenarioActions(){
+    scenarioActionPhase="idle";
+    scenarioActionAnswers={};
+}
+function chooseScenarioAction(index){
+    if(scenarioRuntime.mode!=="scenario"||!scenarioLatestFeedback||scenarioActionPhase!=="select")return;
+    const question=scenarioRuntime.definition.questions.find(q=>q.id===scenarioLatestFeedback.questionId);
+    const choice=question.actionExercise?.choices[index];
+    if(!choice)return;
+    scenarioActionAnswers={...scenarioActionAnswers,[question.id]:choice.id};
+    scenarioActionPhase="review";
+    renderScenarioStudy();
+    scenarioNextButton.focus();
+}
 
 function renderScenarioStudy(){
     const definition=scenarioRuntime.definition;
@@ -3649,35 +3666,42 @@ function renderScenarioStudy(){
 
     document.getElementById("scenarioHeading").textContent=definition.title;
     document.getElementById("scenarioOverview").textContent=
-        "KDIGO 2024 근거 · 객관식 "+definition.questions.length+"문항 · 선택 후 해설 제공";
+        "KDIGO 2024 근거 · 임상 판단 "+definition.questions.length+
+        "문항 · 간호 행동 선택 "+definition.questions.filter(q=>q.actionExercise).length+"회";
     document.getElementById("scenarioObjectives").textContent=
         "학습 목표: "+definition.objectives.join(" / ");
     document.getElementById("scenarioContext").textContent=definition.caseContext;
     document.getElementById("scenarioObservations").textContent=
         definition.observations.map(item=>item.label+": "+item.value).join(" · ");
 
+    const actionStep=document.getElementById("scenarioActionStep");
+    const actionFeedbackPanel=document.getElementById("scenarioActionFeedbackPanel");
+    const actionStartButton=document.getElementById("scenarioActionStartButton");
+    actionStep.hidden=true;
+    actionFeedbackPanel.hidden=true;
+    actionStartButton.hidden=true;
     scenarioFeedbackPanel.hidden=!scenarioLatestFeedback;
     scenarioResultPanel.hidden=true;
     scenarioNextButton.hidden=!scenarioLatestFeedback;
 
     if(scenarioLatestFeedback){
         const feedback=scenarioLatestFeedback;
-        scenarioQuestionSection.hidden=false;
+        const question=definition.questions.find(item=>item.id===feedback.questionId);
+        const rightChoice=question.choices.find(choice=>choice.id===question.correctChoiceId);
+        const selectedChoice=question.choices.find(choice=>choice.id===feedback.choiceId);
+        scenarioQuestionSection.hidden=scenarioActionPhase!=="idle";
+        scenarioFeedbackPanel.hidden=scenarioActionPhase!=="idle";
         document.getElementById("scenarioProgress").textContent=
             "문항 "+session.questionIndex+" / "+definition.questions.length+" · 해설";
         document.getElementById("scenarioFeedbackTitle").textContent=
             feedback.correct?"정답입니다":"다시 생각해 볼 선택입니다";
-        const answeredQuestion=definition.questions.find(question=>question.id===feedback.questionId);
-        const rightChoice=answeredQuestion.choices.find(choice=>choice.id===answeredQuestion.correctChoiceId);
-        const selectedChoice=answeredQuestion.choices.find(choice=>choice.id===feedback.choiceId);
-        document.getElementById("scenarioFeedbackSelected").textContent=
-            "내 선택: "+selectedChoice.text;
+        document.getElementById("scenarioFeedbackSelected").textContent="내 선택: "+selectedChoice.text;
         document.getElementById("scenarioFeedbackChoiceExplanation").textContent=
             "선택지별 해설: "+(selectedChoice.feedback||feedback.rationale);
-        document.getElementById("scenarioFeedbackCorrectAnswer").textContent=
-            "정답: "+rightChoice.text;
+        document.getElementById("scenarioFeedbackCorrectAnswer").textContent="정답: "+rightChoice.text;
         document.getElementById("scenarioFeedbackNursing").textContent=
-            "간호 사정·보고 핵심: "+(answeredQuestion.nursingFocus||"현재 문항의 핵심 근거와 환자 상태를 함께 검토합니다.");
+            "간호 사정·보고 핵심: "+(question.nursingFocus||
+                "현재 문항의 핵심 근거와 환자 상태를 함께 검토합니다.");
         document.getElementById("scenarioFeedbackText").textContent=feedback.rationale;
         document.getElementById("scenarioFeedbackSource").textContent=
             "근거: "+feedback.sourceIds.map(id=>{
@@ -3687,27 +3711,77 @@ function renderScenarioStudy(){
         scenarioFeedbackPanel.setAttribute("data-correct",String(feedback.correct));
         scenarioChoiceButtons.forEach(button=>{button.hidden=true;button.disabled=true;});
         document.getElementById("scenarioQuestion").textContent=
-            "해설을 확인하고 아래 버튼을 눌러 진행하세요.";
+            "해설 확인 후 아래 버튼으로 간호 행동 판단을 진행하세요.";
         scenarioNextButton.textContent=feedback.completed?"결과 보기":"다음 문항";
+
+        const exercise=question.actionExercise;
+        if(!exercise){
+            scenarioNextButton.hidden=false; // legacy schema-1 scenario
+            return;
+        }
+        scenarioNextButton.hidden=scenarioActionPhase!=="review";
+        actionStartButton.hidden=scenarioActionPhase!=="idle";
+        if(scenarioActionPhase==="select"){
+            actionStep.hidden=false;
+            document.getElementById("scenarioActionProgress").textContent=
+                "간호 행동 "+session.questionIndex+" / "+definition.questions.length;
+            document.getElementById("scenarioActionPrompt").textContent=exercise.prompt;
+            scenarioActionChoiceButtons.forEach((button,index)=>{
+                const choice=exercise.choices[index];
+                button.hidden=!choice;
+                button.disabled=!choice;
+                if(choice)button.textContent=(index+1)+". "+choice.text;
+            });
+        }else if(scenarioActionPhase==="review"){
+            actionFeedbackPanel.hidden=false;
+            const choice=exercise.choices.find(item=>item.id===scenarioActionAnswers[question.id]);
+            const right=exercise.choices.find(item=>item.id===exercise.correctChoiceId);
+            const correct=choice.id===right.id;
+            document.getElementById("scenarioActionFeedbackTitle").textContent=
+                correct?"간호 행동 선택: 적절합니다":"간호 행동 선택: 보완이 필요합니다";
+            document.getElementById("scenarioActionFeedbackSelected").textContent="내 선택: "+choice.text;
+            document.getElementById("scenarioActionFeedbackReason").textContent="선택한 이유: "+choice.feedback;
+            document.getElementById("scenarioActionFeedbackCorrect").textContent="적절한 행동: "+right.text;
+            document.getElementById("scenarioActionFeedbackRationale").textContent="근거: "+exercise.rationale;
+            document.getElementById("scenarioActionAssessment").textContent="추가 사정: "+exercise.assessment;
+            document.getElementById("scenarioActionEscalation").textContent="확인·보고: "+exercise.escalation;
+            document.getElementById("scenarioActionTeaching").textContent="환자 교육: "+exercise.teaching;
+            document.getElementById("scenarioActionEvidence").textContent=
+                "출처: "+exercise.sourceIds.map(id=>
+                    definition.references.find(ref=>ref.id===id)?.citation||id).join(" / ");
+            actionFeedbackPanel.setAttribute("data-correct",String(correct));
+        }
         return;
     }
 
     if(session.status==="completed"){
         scenarioQuestionSection.hidden=true;
         scenarioResultPanel.hidden=false;
-        const correct=definition.questions.filter(question=>
-            session.answers[question.id]===question.correctChoiceId).length;
+        const correct=definition.questions.filter(q=>session.answers[q.id]===q.correctChoiceId).length;
         document.getElementById("scenarioResultText").textContent=
-            definition.questions.length+"문항 중 "+correct+"문항을 올바르게 선택했습니다. "+
-            "학습 확인용 결과이며 임상 실무 능력 인증이나 환자 치료 지침은 아닙니다.";
+            "임상 판단 "+definition.questions.length+"문항 중 "+correct+"문항 정답. "+
+            "간호 행동 "+definition.questions.filter(q=>q.actionExercise).length+"개 중 "+
+            definition.questions.filter(q=>q.actionExercise &&
+                scenarioActionAnswers[q.id]===q.actionExercise.correctChoiceId).length+
+            "개 적절한 선택. 교육용 피드백이며 실제 임상 역량 평가나 처방 지침이 아닙니다.";
         document.getElementById("scenarioResultReview").textContent=
-            definition.questions.map((question,index)=>{
-                const selected=question.choices.find(choice=>choice.id===session.answers[question.id]);
-                const expected=question.choices.find(choice=>choice.id===question.correctChoiceId);
-                return (index+1)+". "+question.prompt+
+            definition.questions.map((q,index)=>{
+                const selected=q.choices.find(x=>x.id===session.answers[q.id]);
+                const expected=q.choices.find(x=>x.id===q.correctChoiceId);
+                return (index+1)+". "+q.prompt+
                     "\n내 선택: "+(selected?selected.text:"미응답")+
                     "\n정답: "+expected.text+
-                    "\n"+(selected&&selected.id===question.correctChoiceId?"정답":"오답");
+                    "\n"+(selected?.id===q.correctChoiceId?"정답":"오답");
+            }).join("\n\n");
+        document.getElementById("scenarioActionReview").textContent=
+            definition.questions.filter(q=>q.actionExercise).map((q,index)=>{
+                const action=q.actionExercise;
+                const selected=action.choices.find(x=>x.id===scenarioActionAnswers[q.id]);
+                const expected=action.choices.find(x=>x.id===action.correctChoiceId);
+                return (index+1)+". "+action.prompt+
+                    "\n내 행동: "+(selected?selected.text:"미응답")+
+                    "\n적절한 행동: "+expected.text+
+                    "\n"+(selected?.id===action.correctChoiceId?"적절":"보완 필요");
             }).join("\n\n");
         return;
     }
@@ -3717,14 +3791,13 @@ function renderScenarioStudy(){
     document.getElementById("scenarioProgress").textContent=
         "문항 "+(session.questionIndex+1)+" / "+definition.questions.length;
     document.getElementById("scenarioQuestion").textContent=question.prompt;
-    scenarioChoiceButtons.forEach((button,i)=>{
-        const choice=question.choices[i];
+    scenarioChoiceButtons.forEach((button,index)=>{
+        const choice=question.choices[index];
         button.hidden=!choice;
         button.disabled=!choice;
-        if(choice)button.textContent=(i+1)+". "+choice.text;
+        if(choice)button.textContent=(index+1)+". "+choice.text;
     });
 }
-
 function chooseScenarioAnswer(index){
     if(scenarioRuntime.mode!=="scenario"||scenarioLatestFeedback)return;
     const session=scenarioRuntime.session;
@@ -3733,7 +3806,9 @@ function chooseScenarioAnswer(index){
     if(!choice)return;
     scenarioLatestFeedback=submitScenarioAnswer(choice.id);
     renderScenarioStudy();
-    scenarioNextButton.focus();
+    if(!document.getElementById("scenarioActionStartButton").hidden){
+        document.getElementById("scenarioActionStartButton").focus();
+    }else scenarioNextButton.focus();
 }
 
 function switchStudyMode(mode){
@@ -3744,6 +3819,7 @@ function switchStudyMode(mode){
         if(scenarioRuntime.mode!=="scenario"){
             enterScenarioMode(firstClinicalScenario);
             scenarioLatestFeedback=null;
+            resetScenarioActions();
         }
         normalStudyView.hidden=true;
         scenarioStudyView.hidden=false;
@@ -3756,6 +3832,7 @@ function switchStudyMode(mode){
     if(mode==="normal"){
         if(scenarioRuntime.mode==="scenario")exitScenarioMode();
         scenarioLatestFeedback=null;
+        resetScenarioActions();
         scenarioStudyView.hidden=true;
         normalStudyView.hidden=false;
         normalModeButton.setAttribute("aria-pressed","true");
@@ -3770,12 +3847,16 @@ document.getElementById("scenarioRestartButton").addEventListener("click",()=>{
     if(scenarioRuntime.mode!=="scenario")return;
     resetScenarioSession();
     scenarioLatestFeedback=null;
+    resetScenarioActions();
     renderScenarioStudy();
     scenarioChoiceButtons[0].focus();
 });
 scenarioNextButton.addEventListener("click",()=>{
     if(!scenarioLatestFeedback)return;
+    const question=scenarioRuntime.definition.questions.find(q=>q.id===scenarioLatestFeedback.questionId);
+    if(question.actionExercise&&scenarioActionPhase!=="review")return; // cannot skip the action stage
     scenarioLatestFeedback=null;
+    scenarioActionPhase="idle";
     renderScenarioStudy();
     if(scenarioRuntime.session.status==="completed"){
         document.getElementById("scenarioRestartButton").focus();
@@ -3785,6 +3866,16 @@ scenarioNextButton.addEventListener("click",()=>{
 });
 scenarioChoiceButtons.forEach((button,i)=>
     button.addEventListener("click",()=>chooseScenarioAnswer(i)));
+document.getElementById("scenarioActionStartButton").addEventListener("click",()=>{
+    if(scenarioRuntime.mode!=="scenario"||!scenarioLatestFeedback||scenarioActionPhase!=="idle")return;
+    const question=scenarioRuntime.definition.questions.find(q=>q.id===scenarioLatestFeedback.questionId);
+    if(!question?.actionExercise)return;
+    scenarioActionPhase="select";
+    renderScenarioStudy();
+    scenarioActionChoiceButtons[0].focus();
+});
+scenarioActionChoiceButtons.forEach((button,i)=>
+    button.addEventListener("click",()=>chooseScenarioAction(i)));
 
 // 초기 실행
 // =============================
