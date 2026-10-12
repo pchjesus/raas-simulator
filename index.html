@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v5.0
+RAAS Simulator v5.1
 </title>
 
 
@@ -402,6 +402,10 @@ line-height:1.4;
 .scenario-feedback[data-correct="true"]{border-color:#37744d;background:#eef8f1}
 .scenario-feedback[data-correct="false"]{border-color:#986a3c;background:#fff6e9}
 .scenario-feedback h3{margin:0 0 5px}
+.scenario-choice-reason{padding:10px 12px;background:#fff;border-left:3px solid #577795;border-radius:4px}
+.scenario-nursing-focus{padding:10px 12px;background:#edf3f6;border-radius:6px}
+.scenario-result-review{white-space:pre-line;background:#f3f7fb;padding:12px;border-radius:6px;line-height:1.75}
+.scenario-view h4{font-size:15px;margin:15px 0 7px}
 .scenario-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .scenario-actions button{width:auto;min-width:120px;border:1px solid #56758d;border-radius:6px;background:#eff5fa;cursor:pointer}
 .scenario-actions button.primary{background:#194e78;border-color:#194e78;color:#fff}
@@ -423,7 +427,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v5.0
+RAAS Simulator v5.1
 </h1>
 
 
@@ -768,7 +772,7 @@ class="variableValue">
 
 </div>
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.0 · 교육용 가상 사례</span>
+  <span class="scenario-tag">v5.1 · 교육용 가상 사례</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <p id="scenarioOverview"></p>
   <p id="scenarioObjectives" class="scenario-caution"></p>
@@ -787,13 +791,18 @@ class="variableValue">
   </section>
   <section id="scenarioFeedbackPanel" class="scenario-feedback" aria-live="polite" aria-atomic="true" hidden>
     <h3 id="scenarioFeedbackTitle"></h3>
+    <p id="scenarioFeedbackSelected"></p>
+    <p id="scenarioFeedbackChoiceExplanation" class="scenario-choice-reason"></p>
     <p id="scenarioFeedbackCorrectAnswer"></p>
     <p id="scenarioFeedbackText"></p>
+    <p id="scenarioFeedbackNursing" class="scenario-nursing-focus"></p>
     <p id="scenarioFeedbackSource"></p>
   </section>
   <section id="scenarioResultPanel" aria-live="polite" hidden>
     <h3>학습 완료</h3>
     <p id="scenarioResultText"></p>
+    <h4>문항별 선택 복습</h4>
+    <p id="scenarioResultReview" class="scenario-result-review"></p>
     <p>선택한 답안과 정답 근거를 확인했습니다. 필요하면 다시 풀거나 일반 학습으로 돌아갈 수 있습니다.</p>
   </section>
   <div class="scenario-actions">
@@ -879,8 +888,8 @@ class="variableValue">
             <li id="reference-3">[3] National Institute for Health and Care Excellence. (2025). <em>Chronic heart failure in adults: Diagnosis and management</em> (NG106; updated 2025). <a href="https://www.nice.org.uk/guidance/ng106/chapter/recommendations" target="_blank" rel="noopener noreferrer">권고문 보기</a></li>
             <li id="reference-4">[4] Ernstmeyer, K., &amp; Christman, E. (Eds.). (2024). <em>Nursing fundamentals</em> (2nd ed.), Fluids and electrolytes. Chippewa Valley Technical College. <a href="https://www.ncbi.nlm.nih.gov/books/NBK610839/" target="_blank" rel="noopener noreferrer">간호교육 자료</a></li>
         </ol>
-        <h3>7. 임상 시나리오 모드 (v5.0)</h3>
-        <p>상단의 <strong>임상 시나리오</strong>에서 만성콩팥병 환자의 ACE 억제제 관련 3문항을 풀 수 있습니다. 각 선택 뒤 해설을 확인하고 다음 문항으로 이동합니다.</p>
+        <h3>7. 임상 시나리오 모드 (v5.1)</h3>
+        <p>상단의 <strong>임상 시나리오</strong>에서 만성콩팥병 환자의 ACE 억제제 관련 3문항을 풀 수 있습니다. 각 선택 뒤 선택지별 해설·정답·간호 사정 및 보고 포인트를 확인하고 다음 문항으로 이동합니다. 풀이 완료 후에는 문항별 자신의 선택과 정답을 복습할 수 있습니다.</p>
         <p>일반 학습으로 돌아가면 시나리오의 답안 기록만 초기화하고 RAAS 진행·약물·생리 상태는 보존됩니다. 경로 시연 도중 전환하면 시연을 일시정지합니다. 새로고침 후에도 시나리오 답안은 보존되지 않습니다.</p>
         <h3>8. 교육용 모델의 한계</h3>
         <p class="help-note">시뮬레이터의 약물 및 RAAS 효과값은 교육을 위한 단순화된 수치입니다. 실제 환자의 혈압, 전해질, 혈액량 또는 신기능을 예측하거나 치료 결정을 내리는 데 사용할 수 없습니다.</p>
@@ -896,6 +905,8 @@ class="variableValue">
     </div>
     <div class="help-body">
         <p id="changelogLead">교육용 시뮬레이터의 주요 변경 사항을 버전별로 요약했습니다. 이전 버전의 상세 기록은 프로젝트 DEVLOG.md를 참고하세요.</p>
+        <h3>v5.1 — 선택지별 임상 피드백 강화</h3>
+        <p>첫 사례의 3문항에 9개 선택지별 오개념 해설과 문항별 간호 사정·보고 포인트를 추가했습니다. 각 답변 뒤 선택한 답·정답·공통 근거를 구분하고, 완료 화면에서 자신의 선택을 복습할 수 있습니다. 기존 환자 예측 계산이나 처방 결정 기능은 추가하지 않았습니다.</p>
         <h3>v5.0 — 첫 임상 시나리오 교육 모드</h3>
         <p>일반 학습과 분리된 CKD/ACE 억제제 간호 시나리오를 도입했습니다. 3문항, 정답·해설·근거, 학습 결과, 다시 풀기를 제공하며 일반 학습의 진행·생리 계산은 변경하지 않습니다. 시나리오에서 일반 학습으로 돌아가면 답안이 초기화됩니다.</p>
         <h3>v4.10 — 임상 학습 설명 및 안내 팝업</h3>
@@ -1082,6 +1093,9 @@ function validateScenarioDefinition(definition){
             }else{
                 questionIds.add(question.id);
             }
+            if(question.nursingFocus!==undefined&&!isText(question.nursingFocus)){
+                errors.push("문항 "+(index+1)+"의 간호 사정 해설이 유효하지 않습니다.");
+            }
             if(!isText(question.prompt)||!isText(question.rationale)){
                 errors.push("문항 "+(index+1)+"의 질문/해설이 필요합니다.");
             }
@@ -1090,6 +1104,9 @@ function validateScenarioDefinition(definition){
                 errors.push("문항 "+(index+1)+"에는 두 개 이상의 선택지가 필요합니다.");
             }else{
                 question.choices.forEach((choice,choiceIndex)=>{
+                    if(isRecord(choice)&&choice.feedback!==undefined&&!isText(choice.feedback)){
+                        errors.push("문항 "+(index+1)+" 선택지 "+(choiceIndex+1)+"의 개별 해설이 유효하지 않습니다.");
+                    }
                     if(!isRecord(choice)||!isId(choice.id)||!isText(choice.text)||
                        choiceIds.has(choice.id)){
                         errors.push("문항 "+(index+1)+" 선택지 "+(choiceIndex+1)+"가 유효하지 않습니다.");
@@ -1184,7 +1201,7 @@ function exitScenarioMode(){
 const firstClinicalScenario={
     "schemaVersion": 1,
     "id": "ckd-acei-nursing-monitoring",
-    "version": 1,
+    "version": 2,
     "title": "만성콩팥병 환자의 ACE 억제제 관련 간호 사정",
     "caseContext": "외래에서 만성콩팥병(CKD)과 알부민뇨가 있는 성인 환자가 ACE 억제제를 새로 처방받았습니다. 간호학습자로서 약물의 RAAS 작용과 투여 전후 사정·환자 교육을 판단해 보세요. 환자별 실제 검사값이나 약물 효과 수치는 제시하지 않습니다.",
     "objectives": [
@@ -1220,22 +1237,26 @@ const firstClinicalScenario={
             "choices": [
                 {
                     "id": "a",
-                    "text": "혈압 변화, 혈청 크레아티닌(신기능), 혈청 K⁺"
+                    "text": "혈압 변화, 혈청 크레아티닌(신기능), 혈청 K⁺",
+                    "feedback": "적절한 선택입니다. ACEi 시작 이후 혈압, 신기능(혈청 크레아티닌), K⁺는 각각 저혈압·신기능 변화·고칼륨혈증 위험과 연관된 핵심 관찰 항목입니다. 한 항목만 보고 안전성을 판단하지 않습니다."
                 },
                 {
                     "id": "b",
-                    "text": "체온과 시력만 추적"
+                    "text": "체온과 시력만 추적",
+                    "feedback": "체온과 시력은 다른 증상이 있을 때 의미 있는 사정이 될 수 있지만, ACEi 시작 후 권고되는 핵심 추적검사를 대신하지 못합니다. 혈압·크레아티닌·K⁺ 평가가 빠졌습니다."
                 },
                 {
                     "id": "c",
-                    "text": "혈압만 확인하고 신기능·전해질 추적은 생략"
+                    "text": "혈압만 확인하고 신기능·전해질 추적은 생략",
+                    "feedback": "혈압만으로는 혈청 K⁺ 상승이나 크레아티닌 변화를 확인할 수 없습니다. 증상이 없더라도 신기능·전해질 검사 계획을 확인해야 합니다."
                 }
             ],
             "correctChoiceId": "a",
             "rationale": "KDIGO 2024 Practice Point 3.6.2에 따라 ACEi/ARB 시작 또는 증량 후 혈압, 혈청 크레아티닌, 혈청 K⁺ 변화를 확인해야 합니다. 저혈압 증상뿐 아니라 신기능과 고칼륨혈증 관련 위험도 살펴야 합니다.",
             "sourceIds": [
                 "kdigo-2024"
-            ]
+            ],
+            "nursingFocus": "새로운 ACE 억제제 처방을 확인할 때 기존 혈압 추세와 저혈압 증상, 혈청 크레아티닌/eGFR 및 K⁺의 기초값과 추적검사 계획을 함께 점검합니다. 확인되지 않은 검사는 처방 및 기관 절차에 따라 의료진과 공유합니다."
         },
         {
             "id": "follow-up",
@@ -1243,22 +1264,26 @@ const firstClinicalScenario={
             "choices": [
                 {
                     "id": "a",
-                    "text": "증상이 없으면 추적 혈액 검사는 필요하지 않다."
+                    "text": "증상이 없으면 추적 혈액 검사는 필요하지 않다.",
+                    "feedback": "증상이 없다고 신기능·전해질 변화가 없는 것은 아닙니다. ACEi/ARB 시작 또는 증량 후 혈압·크레아티닌·K⁺ 확인을 생략해서는 안 됩니다."
                 },
                 {
                     "id": "b",
-                    "text": "현재 GFR·혈청 K⁺와 환자 위험도에 따라 달라지지만, 시작·증량 후 2~4주 이내 혈압·크레아티닌·K⁺ 변화를 확인하도록 계획한다."
+                    "text": "현재 GFR·혈청 K⁺와 환자 위험도에 따라 달라지지만, 시작·증량 후 2~4주 이내 혈압·크레아티닌·K⁺ 변화를 확인하도록 계획한다.",
+                    "feedback": "적절한 선택입니다. KDIGO Practice Point 3.6.2의 2~4주 이내 추적을 반영했고, 현재 신기능과 K⁺에 따라 구체적 시점이 달라진다는 점까지 고려했습니다."
                 },
                 {
                     "id": "c",
-                    "text": "모든 환자에게 동일하게 1년 후 검사하면 충분하다."
+                    "text": "모든 환자에게 동일하게 1년 후 검사하면 충분하다.",
+                    "feedback": "일률적인 1년 후 검사만으로는 약물 시작·증량 초기의 신기능 변화와 고칼륨혈증 위험을 적절히 평가할 수 없습니다. 처음에는 훨씬 이른 추적 계획이 필요합니다."
                 }
             ],
             "correctChoiceId": "b",
             "rationale": "KDIGO 2024 Practice Point 3.6.2는 환자의 현재 GFR과 K⁺에 따라 시작 또는 증량 후 2~4주 이내 혈압, 크레아티닌, K⁺를 확인하도록 안내합니다. 더 이른 검사 필요성 등은 위험도와 기관/처방 지침에 따릅니다.",
             "sourceIds": [
                 "kdigo-2024"
-            ]
+            ],
+            "nursingFocus": "약물 시작·증량 시점과 기존 eGFR·K⁺, 동반 질환 및 위험도를 확인하고 검사·재진 일정이 실제로 예약됐는지 점검합니다. 2~4주는 지침상의 일반 기준이며 환자 상태에 따라 더 이른 평가가 필요할 수 있습니다."
         },
         {
             "id": "dual-raas",
@@ -1266,22 +1291,26 @@ const firstClinicalScenario={
             "choices": [
                 {
                     "id": "a",
-                    "text": "서로 다른 이름이므로 병용해도 무조건 안전하다."
+                    "text": "서로 다른 이름이므로 병용해도 무조건 안전하다.",
+                    "feedback": "성분명이나 약물군 이름이 다르다는 사실은 병용 안전성을 보장하지 않습니다. KDIGO 2024는 CKD에서 ACEi·ARB·직접 레닌 억제제의 병용을 피하도록 권고합니다."
                 },
                 {
                     "id": "b",
-                    "text": "환자가 임의로 두 약제를 모두 중단하도록 한다."
+                    "text": "환자가 임의로 두 약제를 모두 중단하도록 한다.",
+                    "feedback": "잠재적 병용 위험을 발견했더라도 간호학습자가 환자에게 임의로 양쪽 약물을 모두 중단하도록 하는 것은 적절하지 않습니다. 투약 이력과 처방 의도를 확인하고 의료진과 협의해야 합니다."
                 },
                 {
                     "id": "c",
-                    "text": "CKD에서는 ACEi·ARB 병용을 피하도록 권고되므로 처방·복용 이력을 확인하고 담당 의료진에게 확인한다."
+                    "text": "CKD에서는 ACEi·ARB 병용을 피하도록 권고되므로 처방·복용 이력을 확인하고 담당 의료진에게 확인한다.",
+                    "feedback": "적절한 선택입니다. 약물 재확인과 의료진 의사소통은 간호 안전의 핵심입니다. 병용 위험을 인지하되 임의로 처방·복용을 변경하지 않는다는 점이 중요합니다."
                 }
             ],
             "correctChoiceId": "c",
             "rationale": "KDIGO 2024 Recommendation 3.6.4는 CKD 환자에서 ACEi, ARB, 직접 레닌 억제제의 병용을 피하도록 권고합니다. 간호에서는 처방·실제 복용 이력 확인, 잠재적 위험 인지, 담당 의료진과의 확인이 우선이며 임의 처방 변경은 하지 않습니다.",
             "sourceIds": [
                 "kdigo-2024"
-            ]
+            ],
+            "nursingFocus": "실제 복용 중인 약, 이전 처방, 중복 처방 가능성을 대조합니다. CKD에서 ACEi·ARB 병용을 발견하면 혈압·신기능·K⁺ 관련 위험을 인지하고 담당 의료진·약사와 처방 의도를 확인합니다. 환자에게 임의로 중단·변경하도록 지시하지 않습니다."
         }
     ]
 };
@@ -3495,8 +3524,15 @@ function renderScenarioStudy(){
             feedback.correct?"정답입니다":"다시 생각해 볼 선택입니다";
         const answeredQuestion=definition.questions.find(question=>question.id===feedback.questionId);
         const rightChoice=answeredQuestion.choices.find(choice=>choice.id===answeredQuestion.correctChoiceId);
+        const selectedChoice=answeredQuestion.choices.find(choice=>choice.id===feedback.choiceId);
+        document.getElementById("scenarioFeedbackSelected").textContent=
+            "내 선택: "+selectedChoice.text;
+        document.getElementById("scenarioFeedbackChoiceExplanation").textContent=
+            "선택지별 해설: "+(selectedChoice.feedback||feedback.rationale);
         document.getElementById("scenarioFeedbackCorrectAnswer").textContent=
             "정답: "+rightChoice.text;
+        document.getElementById("scenarioFeedbackNursing").textContent=
+            "간호 사정·보고 핵심: "+(answeredQuestion.nursingFocus||"현재 문항의 핵심 근거와 환자 상태를 함께 검토합니다.");
         document.getElementById("scenarioFeedbackText").textContent=feedback.rationale;
         document.getElementById("scenarioFeedbackSource").textContent=
             "근거: "+feedback.sourceIds.map(id=>{
@@ -3519,6 +3555,15 @@ function renderScenarioStudy(){
         document.getElementById("scenarioResultText").textContent=
             definition.questions.length+"문항 중 "+correct+"문항을 올바르게 선택했습니다. "+
             "학습 확인용 결과이며 임상 실무 능력 인증이나 환자 치료 지침은 아닙니다.";
+        document.getElementById("scenarioResultReview").textContent=
+            definition.questions.map((question,index)=>{
+                const selected=question.choices.find(choice=>choice.id===session.answers[question.id]);
+                const expected=question.choices.find(choice=>choice.id===question.correctChoiceId);
+                return (index+1)+". "+question.prompt+
+                    "\n내 선택: "+(selected?selected.text:"미응답")+
+                    "\n정답: "+expected.text+
+                    "\n"+(selected&&selected.id===question.correctChoiceId?"정답":"오답");
+            }).join("\n\n");
         return;
     }
 
