@@ -303,7 +303,7 @@ v4.8 경로 시연과 기존 주요 기능은 사용자가 실제 브라우저�
 - `modelPolicy:"reference-only"` 유지. 고정 BP·Na⁺·혈액량·GFR 효과값은 사례 환자의 예상 임상 결과가 아니다.
 - 문항의 근거는 KDIGO 2024 CKD Guideline 3.6이다. 원문 링크는 시나리오 화면에 제공한다.
 - 실제 진단·투약 결정을 지원하지 않고 간호 사정과 담당 의료진 의사소통을 학습한다.
-- 신규 `node tests/regression-v5.0.cjs` 531개, 기존 v4.5~v4.10 포함 4,934개 모의 DOM/Canvas 검사 통과.
+- 신규 `node tests/regression-v5.0.cjs` 552개, 기존 v4.5~v4.10 포함 4,955개 모의 DOM/Canvas 검사 통과.
 - 실제 브라우저·모바일 시각 및 접근성 검증은 보류했다.
 
 ---
