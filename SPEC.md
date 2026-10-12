@@ -863,3 +863,45 @@ v4.9의 시나리오 엔진은 이 함수를 호출하지 않는다. 미래 시�
 - v4.5 자기 회귀 검사는 현재 `index.html` 대신 기존 `backups/v4.5.html`과 `backups/v4.4.html`을 비교.
 - 모의 DOM/Canvas 검사는 실제 브라우저의 픽셀·터치·접근성·초점 동작을 보증하지 않는다.
 
+
+
+---
+
+# 29. v4.10 의학·간호 교육 심화와 아이콘형 정보 모달
+
+## 29.1 교육 콘텐츠 경계
+
+- `clinicalStageNotes`에는 RAAS 9단계별 의학·생리학 해설, 간호 사정·안전 포인트와 출처 번호를 저장한다.
+- `clinicalDrugNotes`에는 ACEi, ARB, MRA, β blocker, loop, thiazide 이뇨제 6종의 임상 기전·간호 모니터링·출처 번호를 저장한다.
+- 이 정적 해설 데이터는 `stageData[].effect` 및 `drugData[].physiologyEffect`를 대체하거나 수정하지 않는다.
+- `showStageLearning(index)`는 기존 상세 조회 패널의 `stageDetailClinical`, `stageDetailNursing`, `stageDetailDrugClinical`, `stageDetailEvidence`에 `textContent`로 자료를 표시한다. 외부/동적 HTML로 삽입하지 않는다.
+- 학습 대상 선택은 기존과 같이 `learningFocusIndex`와 `draw()`만 변경할 수 있다. 일반 진행·약물·생리 계산·그래프·시연 타이머는 변경하지 않는다.
+- 임상 내용과 교육용 가상 수치의 의미를 구분한다. 특히 혈청 Na⁺ 변화 예측, GFR 시간 변화, K⁺의 정량 계산을 구현했다고 표시하지 않는다.
+
+## 29.2 정보 팝업
+
+- 좌측 조작 패널의 `helpOpenButton`(ⓘ 설명서)과 `changelogOpenButton`(▤ 패치 내역)으로 각각 독립된 native `<dialog>`를 연다.
+- 모달은 `showModal()`과 `close()`를 사용하며, X(`helpCloseButton`/`changelogCloseButton`), Esc, 바깥 영역 클릭으로 종료한다.
+- 바깥 클릭은 `event.target===dialog`이면서 클릭 지점이 `getBoundingClientRect()` 범위 밖인 경우에만 닫는다. 본문 클릭·스크롤은 닫기 명령이 아니다.
+- native `close` 이벤트에서 원래 연 아이콘 버튼으로 키보드 포커스를 되돌린다.
+- 버튼에는 `aria-controls`, `aria-haspopup`, 닫기 버튼에는 적절한 `aria-label`을 둔다.
+- 설명서와 패치 내역 팝업은 시뮬레이션 `state`, `physiology`, Canvas, 비교 그래프, 시연 타이머, 시나리오 상태에 영향을 주지 않는다.
+- 정보 본문이 길면 팝업 자체에서 스크롤되며 기존 900×380 경로 Canvas 및 생리 패널의 배치를 수정하지 않는다.
+
+## 29.3 참고문헌·내용 검증
+
+현재 콘텐츠의 중심 자료는 다음과 같다. 정확한 목록과 외부 링크는 설명서에서 확인한다.
+
+1. Kaur & Rout (2026), NCBI StatPearls — RAAS 경로 및 생리 기전.
+2. KDIGO CKD Work Group (2024), `Kidney International` — ACEi/ARB 관련 신기능·전해질 감시.
+3. NICE (2025), NG106 — 심부전 약물 및 신기능·전해질 모니터링.
+4. Ernstmeyer & Christman (Eds., 2024), `Nursing Fundamentals` 2nd ed. — 체액·전해질의 간호 사정.
+
+출처에 없는 개별 환자별 약효 크기·경과를 임의로 생성하지 않는다. 실제 처방·투약·용량 변경은 본 도구에서 수행하지 않는다.
+
+## 29.4 회귀 검증
+
+- 기존 v4.5~v4.9의 회귀 검사 및 `tests/regression-v4.10.cjs`를 실행한다.
+- 새 테스트는 9개 단계의 교육 자료, 6개 약물 자료, 설명서/패치 내역 팝업의 열기·X·바깥 클릭·Esc 상당 close 이벤트·포커스 복귀, 원상태 불변을 확인한다.
+- 모의 DOM/Canvas는 실제 모바일·브라우저 픽셀/레이아웃과 native 키보드 동작까지 보증하지 않으므로 시각 검증을 별도로 기록한다.
+
