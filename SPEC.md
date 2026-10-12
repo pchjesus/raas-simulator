@@ -987,3 +987,37 @@ v4.9의 시나리오 엔진은 이 함수를 호출하지 않는다. 미래 시�
 - `tests/regression-v5.1.cjs`에서 9개 선택지의 개별 해설·간호 포인트, 정답·오답 스타일, 결과 복습, 스키마 선택 필드 유효성, 이전 v5.0 일반/시나리오 상태 및 경로 시연 동작을 검증한다.
 - 자동 JavaScript mock DOM/Canvas 테스트와 실제 데스크톱·모바일 브라우저의 시각/키보드/터치 검증은 구별한다.
 
+
+
+---
+
+# 32. v5.2 단계형 간호 행동 판단 교육
+
+## 32.1 교육 데이터와 근거 범위
+
+- `firstClinicalScenario.version=3`, `SCENARIO_SCHEMA_VERSION=1` 유지.
+- 문항별 선택적 `actionExercise`: `prompt`, `choices[{id,text,feedback}]`, `correctChoiceId`, `rationale`, `assessment`, `escalation`, `teaching`, `sourceIds`.
+- `validateScenarioDefinition()`은 추가 필드가 있을 때 형식·정답 ID·선택지 중복·출처 연결을 검증한다. 추가 필드가 없는 이전 스키마 1 사례도 허용한다.
+- CKD/ACE 억제제 사례의 세 지식 문항에 각각 1개의 행동 문항을 연결한다. KDIGO 2024 CKD Practice Point 3.6.2, Recommendation 3.6.4 범위에서 기전과 모니터링/병용 관련 안전 행동을 교육한다.
+- 검사·재진 계획, 담당 의료진·약사 확인과 환자 교육은 **교육용 간호 행동 예시**다. 실제 환자 치료·약물 처방·검사 처방을 이 앱이 결정하는 것은 아니다.
+
+## 32.2 단계 전이
+
+1. 기존 3지선다 임상 판단 제출 후 `scenarioLatestFeedback`를 통해 v5.1 개별 선택지 해설을 표시한다.
+2. 문항에 `actionExercise`가 있으면 **다음 문항** 대신 **다음: 간호 행동 판단**을 표시한다. 임상 해설만 보고 다음 문항을 건너뛰는 동작은 허용하지 않는다.
+3. 행동 선택 문제를 열면 `scenarioActionPhase="select"`, 기존 문항의 해설은 숨긴다. 행동 선택은 `scenarioActionAnswers[question.id]`에 기록하고 `scenarioActionPhase="review"`로 이동한다.
+4. 행동 피드백에는 내 선택·선택지별 해설·권장 행동·근거·추가 사정·확인/보고·환자 교육·출처를 표시한다.
+5. 후속 행동 해설 후에만 **다음 문항** 또는 **결과 보기**를 활성화한다.
+6. `actionExercise`가 없는 과거 스키마 1 정의는 기존 v5.1 진도 동작(지식 해설 → 다음 문항)을 지원한다.
+7. 완료 화면에서는 지식 문항의 정답 개수·문항별 복습과 행동 문항의 적절한 선택 개수·선택별 복습을 구분한다.
+
+## 32.3 상태 경계 및 회귀 보호
+
+- 시나리오 지식 정답은 `scenarioRuntime.session.answers`; 간호 행동 선택은 UI 전용 `scenarioActionAnswers`; 현재 행동 진행은 `scenarioActionPhase`에만 기록한다.
+- `scenarioLatestFeedback`는 해당 지식 문항에서 선택한 응답의 결과만 보유한다. 정답 채점 모델, `submitScenarioAnswer()` 반환값 및 기존 생리 계산을 변경하지 않는다.
+- 재시작, 시나리오 종료, 일반 학습 전환/재진입 시 `resetScenarioActions()`를 호출하여 이전 행동 선택이 남지 않게 한다.
+- 읽기 전용 UI와 정적 해설은 `textContent`를 사용한다. 약물 적용·RAAS 상태·기존 그래프·Canvas/키보드 조회·시연 타이머, v4.10 정보 팝업은 변경하지 않는다.
+- 자동 검사 `tests/regression-v5.2.cjs`에서 모든 3×3 행동 선택지를 검증하며, 기존 v4.5~v5.1 회귀 스위트와 함께 수행한다.
+- v5.1 자기 테스트는 이전 `backups/v5.1.html`에서 실행하도록 고정하고 과거 백업은 수정하지 않는다.
+- 실제 브라우저의 모달·포커스·화면 크기·터치 검증은 사용자 추후 점검 항목으로 남긴다.
+
