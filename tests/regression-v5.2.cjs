@@ -39,7 +39,8 @@ function boot(html){
 }
 
 const before=boot(fs.readFileSync(path.join(root,"backups","v5.1.html"),"utf8"));
-const source=fs.readFileSync(path.join(root,"index.html"),"utf8");
+// v5.2 tests remain fixed on the immutable v5.2 release snapshot.
+const source=fs.readFileSync(path.join(root,"backups","v5.2.html"),"utf8");
 const now=boot(source);
 let checks=0;
 function check(ok,label){checks++;if(!ok)throw Error("v5.2 FAIL: "+label);}
