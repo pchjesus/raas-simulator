@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v5.2
+RAAS Simulator v5.3
 </title>
 
 
@@ -415,6 +415,13 @@ line-height:1.4;
 .scenario-action-feedback[data-correct="false"]{border-left-color:#a16a31}
 .scenario-action-feedback p{margin:7px 0}
 .scenario-action-review{white-space:pre-line;background:#f4f8fb;padding:12px;border-radius:6px;line-height:1.65}
+.scenario-case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:12px;margin:16px 0}
+.scenario-case-button{display:block;box-sizing:border-box;width:100%;height:auto;min-height:128px;text-align:left;padding:16px;border:2px solid #8ba0b2;border-radius:9px;background:#f7fafc;cursor:pointer;white-space:normal;line-height:1.6}
+.scenario-case-button:hover{border-color:#1b577b;background:#edf6fb}
+.scenario-case-button strong{display:block;font-size:15px;margin-bottom:8px}
+.scenario-case-button span{display:block;font-size:13px;color:#38536a}
+.scenario-catalog-note{font-size:13px;color:#465d6f}
+.scenario-evidence a[hidden]{display:none!important}
 .scenario-view h4{font-size:15px;margin:15px 0 7px}
 .scenario-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .scenario-actions button{width:auto;min-width:120px;border:1px solid #56758d;border-radius:6px;background:#eff5fa;cursor:pointer}
@@ -437,7 +444,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v5.2
+RAAS Simulator v5.3
 </h1>
 
 
@@ -782,8 +789,23 @@ class="variableValue">
 
 </div>
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.2 · 교육용 가상 사례</span>
+  <span class="scenario-tag">v5.3 · 임상 교육 사례</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
+  <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
+    <p>풀어볼 임상 사례를 선택하세요. 사례마다 독립적인 풀이 기록을 사용합니다.</p>
+    <div class="scenario-case-grid">
+      <button id="caseCKDButton" class="scenario-case-button" type="button">
+        <strong>사례 1 · CKD와 ACE 억제제</strong>
+        <span>혈압·신기능·K⁺ 모니터링, 이중 RAAS 차단 확인 · 지식 3문항 + 행동 3문항</span>
+      </button>
+      <button id="caseMRAButton" class="scenario-case-button" type="button">
+        <strong>사례 2 · HFrEF와 MRA</strong>
+        <span>스피로놀락톤 시작 전 K⁺·신기능 사정 및 투여 후 추적 · 지식 2문항 + 행동 2문항</span>
+      </button>
+    </div>
+    <p class="scenario-catalog-note">교육용 가상 사례입니다. 사례 진행 중 ‘다른 사례 선택’을 누르면 현재 풀이가 종료되고 답안은 보존되지 않습니다.</p>
+  </section>
+  <div id="scenarioSessionContent" hidden>
   <p id="scenarioOverview"></p>
   <p id="scenarioObjectives" class="scenario-caution"></p>
   <h3>환자 상황</h3>
@@ -841,9 +863,11 @@ class="variableValue">
     <button id="scenarioActionStartButton" class="primary" type="button" hidden>다음: 간호 행동 판단</button>
     <button id="scenarioNextButton" class="primary" type="button" hidden>다음 문항</button>
     <button id="scenarioRestartButton" type="button">다시 풀기</button>
+    <button id="scenarioBackToCasesButton" type="button">다른 사례 선택</button>
     <button id="scenarioExitButton" type="button">일반 학습으로 돌아가기</button>
   </div>
-  <p class="scenario-evidence">근거: <a href="https://kdigo.org/guidelines/ckd-evaluation-and-management/" target="_blank" rel="noopener noreferrer">KDIGO 2024 CKD Guideline, Section 3.6</a> · 개별 환자 판단에는 상태와 기관 지침이 우선합니다.</p>
+  <p class="scenario-evidence">근거: <a id="scenarioSourcePrimary" href="https://kdigo.org/guidelines/ckd-evaluation-and-management/" target="_blank" rel="noopener noreferrer">KDIGO 2024 CKD Guideline</a><a id="scenarioSourceSecondary" href="https://www.nice.org.uk/guidance/ng106/chapter/recommendations" target="_blank" rel="noopener noreferrer" hidden></a> · 개별 환자 판단에는 상태와 기관 지침이 우선합니다.</p>
+  </div>
 </section>
 
 <!-- 사용 설명서: Canvas와 생리 계산 상태에 영향을 주지 않는 모달 -->
@@ -921,8 +945,8 @@ class="variableValue">
             <li id="reference-3">[3] National Institute for Health and Care Excellence. (2025). <em>Chronic heart failure in adults: Diagnosis and management</em> (NG106; updated 2025). <a href="https://www.nice.org.uk/guidance/ng106/chapter/recommendations" target="_blank" rel="noopener noreferrer">권고문 보기</a></li>
             <li id="reference-4">[4] Ernstmeyer, K., &amp; Christman, E. (Eds.). (2024). <em>Nursing fundamentals</em> (2nd ed.), Fluids and electrolytes. Chippewa Valley Technical College. <a href="https://www.ncbi.nlm.nih.gov/books/NBK610839/" target="_blank" rel="noopener noreferrer">간호교육 자료</a></li>
         </ol>
-        <h3>7. 임상 시나리오 모드 (v5.2)</h3>
-        <p>상단의 <strong>임상 시나리오</strong>에서 만성콩팥병 환자의 ACE 억제제 관련 3문항을 풀 수 있습니다. 기존 선택지별 해설을 확인한 뒤 <strong>다음: 간호 행동 판단</strong>으로 추가 사정·보고·환자 교육에 관한 선택지를 풉니다. 행동 해설을 확인해야 다음 문항으로 이동할 수 있으며 완료 후 지식 판단과 간호 행동의 선택을 각각 복습할 수 있습니다.</p>
+        <h3>7. 임상 시나리오 모드 (v5.3)</h3>
+        <p>상단의 <strong>임상 시나리오</strong>에서 만성콩팥병 환자의 ACE 억제제 관련 3문항을 풀 수 있습니다. 임상 시나리오에 진입하면 <strong>CKD·ACE 억제제</strong> 또는 <strong>HFrEF·MRA</strong> 사례를 선택합니다. 풀이 중에는 <strong>다른 사례 선택</strong>으로 돌아갈 수 있지만 현재 답안은 삭제됩니다. 기존 선택지별 해설을 확인한 뒤 <strong>다음: 간호 행동 판단</strong>으로 추가 사정·보고·환자 교육에 관한 선택지를 풉니다. 행동 해설을 확인해야 다음 문항으로 이동할 수 있으며 완료 후 지식 판단과 간호 행동의 선택을 각각 복습할 수 있습니다.</p>
         <p>일반 학습으로 돌아가면 시나리오의 답안 기록만 초기화하고 RAAS 진행·약물·생리 상태는 보존됩니다. 경로 시연 도중 전환하면 시연을 일시정지합니다. 새로고침 후에도 시나리오 답안은 보존되지 않습니다.</p>
         <h3>8. 교육용 모델의 한계</h3>
         <p class="help-note">시뮬레이터의 약물 및 RAAS 효과값은 교육을 위한 단순화된 수치입니다. 실제 환자의 혈압, 전해질, 혈액량 또는 신기능을 예측하거나 치료 결정을 내리는 데 사용할 수 없습니다.</p>
@@ -938,6 +962,8 @@ class="variableValue">
     </div>
     <div class="help-body">
         <p id="changelogLead">교육용 시뮬레이터의 주요 변경 사항을 버전별로 요약했습니다. 이전 버전의 상세 기록은 프로젝트 DEVLOG.md를 참고하세요.</p>
+        <h3>v5.3 — 두 번째 임상 사례와 선택 카드</h3>
+        <p>기존 CKD·ACE 억제제 사례와 새로운 HFrEF·MRA 모니터링 사례를 사례 선택 카드에서 고를 수 있습니다. 새 사례에는 지식 판단 2문항과 간호 행동 2문항을 추가했으며 AHA/ACC/HFSA 2022·NICE NG106(2025) 근거를 연결했습니다. 사례별 답안을 분리하고 다른 사례 선택/종료 시 기록을 초기화합니다. 기존 RAAS 모델은 변경하지 않았습니다.</p>
         <h3>v5.2 — 간호 행동 판단 단계</h3>
         <p>첫 CKD/ACEi 사례의 기존 3문항 뒤에 각각 간호 행동 선택 단계를 추가했습니다. 판단 근거 확인 → 실제로 확인·보고·교육할 내용 선택 → 행동별 해설과 추가 사정·보고·교육 요점 확인 → 다음 문항 흐름입니다. 3개 간호 행동 선택의 결과도 복습에 표시합니다.</p>
         <h3>v5.1 — 선택지별 임상 피드백 강화</h3>
