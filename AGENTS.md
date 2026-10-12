@@ -921,3 +921,17 @@ RAAS Simulator 개발에서 가장 중요한 원칙은 다음과 같다.
 - 무증상이라는 이유로 검사 생략, ACEi/ARB 임의 병용, 환자에게 무조건 약물을 중단하도록 하는 잘못된 판단을 교육 내용에서 정당화하지 않는다.
 - `tests/regression-v5.0.cjs`는 이전 `backups/v5.0.html`을 검사한다. `tests/regression-v5.1.cjs`와 기존 테스트를 모두 재실행한다. 동결 백업 수정 금지.
 - 실제 브라우저 포커스, 모바일 스크롤 및 상세 피드백 가독성은 후속 수동 검증 대상으로 남긴다.
+
+
+---
+
+## 30. v5.2 간호 행동 판단 단계 보호 규칙
+
+- KDIGO 2024 CKD Guideline 3.6의 RAASi 모니터링 및 ACEi/ARB 병용 회피 근거를 기준으로 첫 CKD/ACEi 임상 사례의 행동 선택지를 검토한다. '추가 사정/보고/환자 교육'은 처방 자동화가 아닌 일반 간호 교육 예시다.
+- `actionExercise`는 `firstClinicalScenario`의 질문별 **선택 데이터**이며 `SCENARIO_SCHEMA_VERSION` 1과 호환된다. 새로운 필드가 없을 때 이전 임상 시나리오 정의도 유효해야 한다.
+- 두 단계의 순서는 **임상 판단 → 지식 피드백 → 간호 행동 선택 → 행동 근거/사정·보고·교육 요약 → 다음 문항**이다. 다음 문항/결과 보기의 조기 실행을 차단한다.
+- `scenarioRuntime.session.answers`의 기존 지식 채점 값은 변경하지 않는다. `scenarioActionAnswers`와 `scenarioActionPhase`는 시나리오 화면 전용이며 일반 모드 `state`, `physiology`와 분리한다.
+- 일반 화면 전환 및 다시 풀기 시 `resetScenarioActions()`로 행동 기록을 초기화한다. 마지막 지식 문항이 `completed`라도 행동 피드백을 확인하기 전에 결과 화면을 열지 않는다.
+- 근거 설명과 복습 문자열은 `textContent`로만 표시한다. 교육용 수치와 실제 환자의 혈압·K⁺·신기능 예측을 혼동하지 않는다.
+- 역사적 `tests/regression-v5.1.cjs`는 `backups/v5.1.html`을 사용하도록 고정한다. `tests/regression-v5.2.cjs` 및 기존 v4.5~v5.1 모든 테스트를 수행한다.
+- 실제 시각·모바일·키보드 포커스 검증은 사용자 추후 확인 대상으로 구분한다. 기존 백업을 수정하지 않는다.
