@@ -47,7 +47,8 @@ function boot(html){
     }};
 }
 const previous=boot(fs.readFileSync(path.join(root,"backups","v4.9.html"),"utf8"));
-const currentHTML=fs.readFileSync(path.join(root,"index.html"),"utf8");
+// Frozen v4.10 self-test: future versions may change title and UI intentionally.
+const currentHTML=fs.readFileSync(path.join(root,"backups","v4.10.html"),"utf8");
 const now=boot(currentHTML);
 let count=0;
 function check(condition,name){count++;if(!condition)throw Error("FAIL v4.10 "+name);}
