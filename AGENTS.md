@@ -950,3 +950,14 @@ RAAS Simulator 개발에서 가장 중요한 원칙은 다음과 같다.
 - 두 사례 모두 기존 `SCENARIO_SCHEMA_VERSION=1`의 `validateScenarioDefinition()` 및 지식·간호 행동 학습 흐름을 사용한다. 신규 MRA 시나리오용 특별 채점 분기는 만들지 않는다.
 - 과거 `tests/regression-v5.2.cjs`는 `backups/v5.2.html`을 대상으로 자기 테스트를 수행한다. 신규 `tests/regression-v5.3.cjs`와 기존 v4.5~v5.2 모든 테스트를 수행한다.
 - 사례 선택 카드의 모바일 배치/키보드 포커스/실제 브라우저 접근성은 추후 사용자 확인을 받아 개선한다. 동결된 기존 백업은 수정하지 않는다.
+
+---
+
+## 32. v5.4 시나리오 가독성·진도 UI 보호 규칙
+
+- `scenarioLearningProgress`는 표시 전용이며 `session.answers`, `scenarioActionAnswers`, `scenarioActionPhase`, `scenarioLatestFeedback`를 읽어 진도를 계산한다. 별도의 답안/진도 저장 상태를 추가하지 않는다.
+- 현재 선택 사례명·남은 문항 수·후속 간호 해설의 출처와 텍스트는 등록된 사례 및 기존 답안에서 얻는다. 카드와 해설의 HTML/CSS 변경으로 `scenarioRuntime` 세션 초기화·이벤트 전환을 바꾸지 않는다.
+- `scenario-action-detail-grid`는 추가 사정 / 확인·보고 / 환자 교육 표시 전용이다. 문구나 임상 판단 근거를 임의로 추가하거나 `textContent` 안전 규칙을 우회하지 않는다.
+- CSS는 가능하면 시나리오 전용으로 범위를 한정한다. 일반 900px Canvas의 모바일 구조 변경, 기전/간호/근거 탭 도입, 시나리오 영속 저장은 각각 별도 영향 분석과 사용자 UX 판단을 거쳐야 한다.
+- `tests/regression-v5.3.cjs`의 역사적 비교 대상은 `backups/v5.3.html`이다. v5.4 이후에는 `tests/regression-v5.4.cjs`가 최신 화면을 검증한다. 기존 v4.5~v5.3 7,355항목과 새 804항목(총 8,159항목)을 기준으로 유지한다.
+- 이 수치는 V8 메모리 파일시스템 및 mock DOM/Canvas 테스트 통과 결과이다. 실제 Node CLI, 브라우저 시각·키보드·모바일 터치·스크린리더 테스트는 별도 확인 전까지 미완료로 보고한다.
