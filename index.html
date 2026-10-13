@@ -4265,6 +4265,11 @@ function renderScenarioStudy(){
 }
 // v5.5 review uses pre-existing content and textContent only, avoiding dynamic HTML injection.
 function renderScenarioReviewCards(definition,session){
+    // Both current curated cases fit three cards. For future larger cases, also
+    // reveal the full text review so no answers are silently omitted.
+    document.getElementById("scenarioResultReview").hidden=definition.questions.length<=3;
+    document.getElementById("scenarioActionReview").hidden=
+        definition.questions.filter(q=>q.actionExercise).length<=3;
     function showCard(prefix,index,prompt,selected,expected,correct,note){
         const slot=index+1;
         const card=document.getElementById(prefix+"Card"+slot);
