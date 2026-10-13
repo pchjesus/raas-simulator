@@ -508,6 +508,31 @@ line-height:1.4;
 .learning-next button,.scenario-takeaways-trigger{min-height:44px;width:auto;padding:10px 16px;border:1px solid #194e78;background:#194e78;color:white;border-radius:6px;cursor:pointer}
 .learning-view button:focus-visible,.learning-view summary:focus-visible,.scenario-view summary:focus-visible,#globalHelpButton:focus-visible{outline:3px solid #1556a1;outline-offset:3px}
 @media(max-width:700px){.learning-grid{grid-template-columns:1fr}.study-mode-nav button{min-width:140px}}
+
+/* v5.5: clinical roadmap, evidence disclosure, readable comparison */
+.scenario-instructions{padding:12px 14px;background:#eff6fb;border:1px solid #bbcedd;border-radius:9px;margin-bottom:15px}
+.scenario-instructions h3{margin:0 0 6px}
+.scenario-instructions p{font-size:14px}
+.scenario-roadmap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;list-style:none;margin:12px 0;padding:0}
+.scenario-roadmap li{text-align:center;font-size:12px;padding:10px 2px;border:1px solid #bccbd6;border-radius:7px;background:#f4f6f8;color:#47576b;font-weight:700}
+.scenario-roadmap li[data-status="done"]{background:#e7f3ea;color:#245339;border-color:#8cb499}
+.scenario-roadmap li[data-status="current"]{background:#194e78;color:#fff;border-color:#194e78}
+.scenario-current-task{font-weight:700;padding:11px 13px;background:#f1f6fb;border-left:4px solid #194e78;line-height:1.6}
+.scenario-answer-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:11px 0}
+.scenario-answer-card{box-sizing:border-box;min-width:0;padding:11px 13px;border:1px solid #bccbd6;border-radius:8px;background:#fff;overflow-wrap:anywhere}
+.scenario-answer-card.selected{border-left:4px solid #6d879c}
+.scenario-answer-card.recommended{border-left:4px solid #2e7652;background:#f7fcf8}
+.scenario-answer-card h4,.scenario-answer-card h6{font-size:14px!important;margin:0 0 7px!important;color:#29526a}
+.scenario-answer-card p{border:none!important;padding:0!important;margin:0!important;background:transparent!important;font-weight:500}
+.scenario-review-cards{display:grid;gap:10px}
+.scenario-review-card{border:1px solid #b9cbd7;border-radius:8px;background:#fff;padding:12px}
+.scenario-review-card[data-correct="false"]{border-left:4px solid #af763a}
+.scenario-review-card[data-correct="true"]{border-left:4px solid #2e7652}
+.scenario-review-card h5{font-size:15px;line-height:1.5;margin:0}
+.scenario-review-status{font-weight:700;color:#27506d}
+.scenario-review-note{font-size:13px;line-height:1.65}
+.scenario-takeaways-trigger{margin:16px 0 4px}
+@media(max-width:700px){.scenario-answer-compare{grid-template-columns:1fr}.scenario-roadmap li{font-size:11px}}
 </style>
 
 
@@ -1042,6 +1067,17 @@ class="variableValue">
   </div>
 </section>
 
+<dialog id="scenarioTakeawaysDialog" class="help-dialog" aria-labelledby="scenarioTakeawaysTitle">
+  <div class="help-header"><h2 id="scenarioTakeawaysTitle">핵심 임상 포인트</h2><button id="scenarioTakeawaysCloseButton" type="button" class="help-close" aria-label="복습 팝업 닫기">×</button></div>
+  <div class="help-body">
+    <p class="help-note">교육용 복습이며 실제 환자 처방이나 검사 지시가 아닙니다. 담당 의료진과 기관 지침을 우선합니다.</p>
+    <h3>추가 사정</h3><p id="scenarioTakeawayAssessment"></p>
+    <h3>확인·보고</h3><p id="scenarioTakeawayEscalation"></p>
+    <h3>환자 교육</h3><p id="scenarioTakeawayTeaching"></p>
+    <p id="scenarioTakeawayEvidence" class="scenario-feedback-evidence"></p>
+  </div>
+</dialog>
+
 <!-- 사용 설명서: Canvas와 생리 계산 상태에 영향을 주지 않는 모달 -->
 <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle" aria-describedby="helpLead">
     <div class="help-header">
@@ -1117,7 +1153,11 @@ class="variableValue">
             <li id="reference-3">[3] National Institute for Health and Care Excellence. (2025). <em>Chronic heart failure in adults: Diagnosis and management</em> (NG106; updated 2025). <a href="https://www.nice.org.uk/guidance/ng106/chapter/recommendations" target="_blank" rel="noopener noreferrer">권고문 보기</a></li>
             <li id="reference-4">[4] Ernstmeyer, K., &amp; Christman, E. (Eds.). (2024). <em>Nursing fundamentals</em> (2nd ed.), Fluids and electrolytes. Chippewa Valley Technical College. <a href="https://www.ncbi.nlm.nih.gov/books/NBK610839/" target="_blank" rel="noopener noreferrer">간호교육 자료</a></li>
         </ol>
-        <h3>7. 임상 시나리오 모드 (v5.3)</h3>
+        <h3>7. 세 학습 영역과 임상 적용 (v5.5)</h3>
+        <p><strong>① 시뮬레이터</strong>는 RAAS 경로·약물·생리 변화를 조작합니다. <strong>② 학습</strong>은 9단계 기전 및 약물 6종의 의학·간호 설명을 정리합니다. <strong>③ 임상 적용</strong>은 CKD/ACEi 또는 HFrEF/MRA 사례에서 판단과 행동을 연습합니다.</p>
+        <p>임상 학습 순서: <strong>환자 파악 → 임상 판단 → 선택한 답/권장 답안 비교·근거 확인 → 간호 행동 → 행동 해설 → 다음 문항 → 완료 복습</strong>. 상세 근거는 접이식 영역에서 확인하고, 완료 후 ⓘ 핵심 임상 포인트 버튼으로 별도 팝업을 엽니다.</p>
+        <p>상단의 탭 이동은 풀이를 보존합니다. <strong>다시 풀기·다른 사례 선택·학습 종료</strong>는 답안을 초기화하며, 새로고침 시 풀이 기록은 사라집니다.</p>
+        <h3>7-1. 기존 임상 사례 안내</h3>
         <p>상단의 <strong>임상 시나리오</strong>에서 만성콩팥병 환자의 ACE 억제제 관련 3문항을 풀 수 있습니다. 임상 시나리오에 진입하면 <strong>CKD·ACE 억제제</strong> 또는 <strong>HFrEF·MRA</strong> 사례를 선택합니다. 풀이 중에는 <strong>다른 사례 선택</strong>으로 돌아갈 수 있지만 현재 답안은 삭제됩니다. 기존 선택지별 해설을 확인한 뒤 <strong>다음: 간호 행동 판단</strong>으로 추가 사정·보고·환자 교육에 관한 선택지를 풉니다. 행동 해설을 확인해야 다음 문항으로 이동할 수 있으며 완료 후 지식 판단과 간호 행동의 선택을 각각 복습할 수 있습니다.</p>
         <p>일반 학습으로 돌아가면 시나리오의 답안 기록만 초기화하고 RAAS 진행·약물·생리 상태는 보존됩니다. 경로 시연 도중 전환하면 시연을 일시정지합니다. 새로고침 후에도 시나리오 답안은 보존되지 않습니다.</p>
         <h3>8. 교육용 모델의 한계</h3>
