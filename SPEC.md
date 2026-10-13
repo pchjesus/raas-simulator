@@ -1076,3 +1076,19 @@ v4.9의 시나리오 엔진은 이 함수를 호출하지 않는다. 미래 시�
 - `tests/regression-v5.3.cjs`의 역사적 실행 대상을 동결 `backups/v5.3.html`로 옮기고, 새 `tests/regression-v5.4.cjs`는 `index.html`을 시험한다.
 - 기존 v4.5~v5.3 7,355항목과 v5.4 804항목, 총 8,159항목의 결정적 자동 검사 통과. 범위는 V8/메모리 fs 어댑터 및 모의 DOM/Canvas이며, Node.js CLI와 실제 브라우저 수동 시각·포커스·터치·스크린리더 검증 완료를 뜻하지 않는다.
 - 단계별 설명의 탭/아코디언 선택, 일반 모드 모바일 Canvas 화면 구성 및 별도 UX 설계는 추후 사용자 결정 대상이다.
+
+---
+
+# 35. v5.4.1 일반 RAAS 학습 패널 아코디언
+
+- 기존 `stageDetailPanel`의 제목·간단 요약·닫기 버튼·학습 안내는 그대로 유지한다.
+- 정보는 세 개의 **native HTML details/summary** 그룹을 사용한다.
+  - `stageMechanismDetails` (기전): 학습 설명, 의학·생리학 심화, 교육용 단계 생리 효과. 처음에 **열림**.
+  - `stageNursingDetails` (간호 사정): 간호 사정·안전 포인트. 처음에 **닫힘**.
+  - `stageDrugsEvidenceDetails` (약물·근거): 연관 약물 학습, 연관 약물 효과, 기존 근거 표기. 처음에 **닫힘**.
+- 각 그룹은 서로 독립적으로 열고 닫을 수 있다. 단계 이동·학습 패널 닫기 이후에도 열림 상태는 HTML 요소에 유지되며, 새로고침 시 초기 상태로 돌아간다. 별도 저장·채점·학습 진행 상태를 만들지 않는다.
+- 기존 `stageDetailLearning` / `stageDetailClinical` / `stageDetailEffect` / `stageDetailNursing` / `stageDetailDrugClinical` / `stageDetailDrugs` / `stageDetailEvidence` DOM ID를 각각 정확히 한 번만 유지한다.
+- `showStageLearning()`·`closeStageLearning()` 및 Canvas·생리·약물·그래프·시연·임상 사례 로직은 변경하지 않는다. v5.4와 `<script>` 본문이 일치해야 한다.
+- 출처 및 교육용 생리 효과는 정보용이며 실제 환자 반응의 예측값이 아니다.
+- `tests/regression-v5.4.cjs`는 동결 `backups/v5.4.html`을 대상으로 하고 새 `tests/regression-v5.4.1.cjs`가 현재 `index.html`을 검사한다.
+- V8/모의 DOM·Canvas 기준 역사적 8,159개 + 신규 1,491개 = **9,650개** 통과. 브라우저 실제 native details 상호작용과 키보드·모바일·스크린리더 확인은 별도 미완료.
