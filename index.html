@@ -533,6 +533,8 @@ line-height:1.4;
 .scenario-review-note{font-size:13px;line-height:1.65}
 .scenario-takeaways-trigger{margin:16px 0 4px}
 @media(max-width:700px){.scenario-answer-compare{grid-template-columns:1fr}.scenario-roadmap li{font-size:11px}}
+
+.scenario-answered-question{padding:9px 12px;background:white;border-left:3px solid #6d879c;font-weight:600;line-height:1.65}
 </style>
 
 
@@ -993,6 +995,7 @@ class="variableValue">
   </section>
   <section id="scenarioFeedbackPanel" class="scenario-feedback" aria-live="polite" aria-atomic="true" hidden>
     <h3 id="scenarioFeedbackTitle"></h3>
+    <p id="scenarioAnsweredQuestion" class="scenario-answered-question"></p>
     <div class="scenario-answer-compare">
       <div class="scenario-answer-card selected"><h4>내가 선택한 답</h4><p id="scenarioFeedbackSelected" class="scenario-feedback-selection"></p></div>
       <div class="scenario-answer-card recommended"><h4>권장 답안</h4><p id="scenarioFeedbackCorrectAnswer" class="scenario-feedback-correct"></p></div>
@@ -1020,6 +1023,7 @@ class="variableValue">
   </section>
   <section id="scenarioActionFeedbackPanel" class="scenario-action-feedback" aria-live="polite" aria-atomic="true" hidden>
     <h3 id="scenarioActionFeedbackTitle"></h3>
+    <p id="scenarioAnsweredActionPrompt" class="scenario-answered-question"></p>
     <div class="scenario-answer-compare">
       <div class="scenario-answer-card selected"><h4>내가 선택한 간호 행동</h4><p id="scenarioActionFeedbackSelected" class="scenario-feedback-selection"></p></div>
       <div class="scenario-answer-card recommended"><h4>권장 간호 행동</h4><p id="scenarioActionFeedbackCorrect" class="scenario-feedback-correct"></p></div>
@@ -1059,7 +1063,7 @@ class="variableValue">
   <div class="scenario-actions">
     <button id="scenarioActionStartButton" class="primary" type="button" hidden>다음: 간호 행동 판단</button>
     <button id="scenarioNextButton" class="primary" type="button" hidden>다음 문항</button>
-    <button id="scenarioRestartButton" type="button">다시 풀기</button>
+    <button id="scenarioRestartButton" type="button">다시 풀기 · 답안 초기화</button>
     <button id="scenarioBackToCasesButton" type="button">다른 사례 선택 · 답안 초기화</button>
     <button id="scenarioExitButton" type="button">학습 종료 · 답안 초기화</button>
   </div>
@@ -4143,6 +4147,7 @@ function renderScenarioStudy(){
         scenarioFeedbackPanel.hidden=scenarioActionPhase!=="idle";
         document.getElementById("scenarioProgress").textContent=
             "문항 "+session.questionIndex+" / "+definition.questions.length+" · 해설";
+        document.getElementById("scenarioAnsweredQuestion").textContent=question.prompt;
         document.getElementById("scenarioFeedbackTitle").textContent=
             feedback.correct?"임상 판단 · 권장 답안과 일치":"임상 판단 · 보완이 필요한 선택";
         document.getElementById("scenarioFeedbackSelected").textContent=selectedChoice.text;
@@ -4187,6 +4192,7 @@ function renderScenarioStudy(){
             const choice=exercise.choices.find(item=>item.id===scenarioActionAnswers[question.id]);
             const right=exercise.choices.find(item=>item.id===exercise.correctChoiceId);
             const correct=choice.id===right.id;
+            document.getElementById("scenarioAnsweredActionPrompt").textContent=exercise.prompt;
             document.getElementById("scenarioActionFeedbackTitle").textContent=
                 correct?"간호 행동 · 권장 행동과 일치":"간호 행동 · 보완이 필요한 선택";
             document.getElementById("scenarioActionFeedbackSelected").textContent=choice.text;
