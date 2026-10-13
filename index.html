@@ -535,6 +535,10 @@ line-height:1.4;
 @media(max-width:700px){.scenario-answer-compare{grid-template-columns:1fr}.scenario-roadmap li{font-size:11px}}
 
 .scenario-answered-question{padding:9px 12px;background:white;border-left:3px solid #6d879c;font-weight:600;line-height:1.65}
+
+.learning-pathway{padding:13px 15px;margin:14px 0;border:1px solid #b9d1dc;border-radius:8px;background:#f5fafc}
+.learning-pathway h3{margin:0 0 6px}
+.learning-pathway p{line-height:1.8;overflow-wrap:anywhere}
 </style>
 
 
@@ -917,6 +921,7 @@ class="variableValue">
   <span class="scenario-tag">② RAAS 이론·간호 학습</span>
   <h2 id="learningHeading">기전 이해부터 임상 간호까지</h2>
   <p class="learning-intro">학습 순서: <strong>RAAS 전체 흐름 → 9단계 기전·간호 사정 → 약물 6종 → 임상 적용</strong>. 이 화면은 시뮬레이터 수치와 약물 상태를 변경하지 않습니다.</p>
+  <section class="learning-pathway"><h3>RAAS 전체 흐름</h3><p id="learningPathwayOverview"></p><p class="scenario-catalog-note">교육용 9단계의 연결 관계입니다. 아래에서 단계를 선택해 기전과 간호학적 의미를 살펴보세요.</p></section>
   <div class="learning-grid">
     <section class="learning-block" aria-labelledby="learningStageHeading">
       <h3 id="learningStageHeading">1. RAAS 단계별 이해</h3>
@@ -1163,7 +1168,7 @@ class="variableValue">
         <p>상단의 탭 이동은 풀이를 보존합니다. <strong>다시 풀기·다른 사례 선택·학습 종료</strong>는 답안을 초기화하며, 새로고침 시 풀이 기록은 사라집니다.</p>
         <h3>7-1. 기존 임상 사례 안내</h3>
         <p>상단의 <strong>임상 시나리오</strong>에서 만성콩팥병 환자의 ACE 억제제 관련 3문항을 풀 수 있습니다. 임상 시나리오에 진입하면 <strong>CKD·ACE 억제제</strong> 또는 <strong>HFrEF·MRA</strong> 사례를 선택합니다. 풀이 중에는 <strong>다른 사례 선택</strong>으로 돌아갈 수 있지만 현재 답안은 삭제됩니다. 기존 선택지별 해설을 확인한 뒤 <strong>다음: 간호 행동 판단</strong>으로 추가 사정·보고·환자 교육에 관한 선택지를 풉니다. 행동 해설을 확인해야 다음 문항으로 이동할 수 있으며 완료 후 지식 판단과 간호 행동의 선택을 각각 복습할 수 있습니다.</p>
-        <p>일반 학습으로 돌아가면 시나리오의 답안 기록만 초기화하고 RAAS 진행·약물·생리 상태는 보존됩니다. 경로 시연 도중 전환하면 시연을 일시정지합니다. 새로고침 후에도 시나리오 답안은 보존되지 않습니다.</p>
+        <p>상단 탭을 이용해 시뮬레이터나 학습 화면으로 이동해도 진행 중인 답안은 유지됩니다. 답안을 삭제하려면 임상 적용의 ‘학습 종료·답안 초기화’, ‘다시 풀기·답안 초기화’, ‘다른 사례 선택·답안 초기화’를 사용합니다. 경로 시연 도중 전환하면 시연을 일시정지합니다. 새로고침 후에도 시나리오 답안은 보존되지 않습니다.</p>
         <h3>8. 교육용 모델의 한계</h3>
         <p class="help-note">시뮬레이터의 약물 및 RAAS 효과값은 교육을 위한 단순화된 수치입니다. 실제 환자의 혈압, 전해질, 혈액량 또는 신기능을 예측하거나 치료 결정을 내리는 데 사용할 수 없습니다.</p>
         <p>설명서를 닫으려면 <strong>×</strong> 버튼이나 <strong>Esc</strong> 키를 사용하세요. 팝업 바깥을 클릭해도 닫힙니다. 단계별 자세한 의학·간호 내용은 Canvas의 상자를 선택해 확인할 수 있습니다.</p>
@@ -1178,6 +1183,8 @@ class="variableValue">
     </div>
     <div class="help-body">
         <p id="changelogLead">교육용 시뮬레이터의 주요 변경 사항을 버전별로 요약했습니다. 이전 버전의 상세 기록은 프로젝트 DEVLOG.md를 참고하세요.</p>
+        <h3>v5.5 — 시뮬레이터·학습·임상 적용 3체제 및 임상학습 UX</h3>
+        <p>기존 시뮬레이터를 보존하면서 별도 읽기 전용 학습 영역을 신설했습니다. 탭 이동 중 임상 답안을 유지하고, 임상 학습의 로드맵·현재 행동 안내·선택 답안 비교·접이식 근거·문항별 결과 복습·핵심 임상 포인트 팝업·공통 사용법을 추가했습니다. 기존 두 사례 및 채점 근거는 변경하지 않았습니다.</p>
         <h3>v5.4.1 — RAAS 단계별 상세 설명 아코디언</h3>
         <p>단계 설명을 기전, 간호 사정, 약물·근거 세 영역으로 구분했습니다. 기전은 처음에 열려 있으며 영역을 각각 펼쳐 비교할 수 있습니다. 기존 Canvas 탐색, 약물, 생리 계산, 임상 사례는 그대로 유지합니다.</p>
         <h3>v5.4 — 임상 시나리오 정보 구조 개선</h3>
@@ -4449,6 +4456,8 @@ scenarioActionChoiceButtons.forEach((button,i)=>
 
 // v5.5 read-only RAAS library, driven by the same source data as the simulator.
 function renderLearningLibrary(){
+    document.getElementById("learningPathwayOverview").textContent=
+        stageData.map((stage,index)=>(index+1)+". "+stage.name).join(" → ");
     const index=Number(document.getElementById("learningStageSelect").value||0);
     const validIndex=Number.isInteger(index)&&index>=0&&index<stageData.length?index:0;
     const stage=stageData[validIndex];
