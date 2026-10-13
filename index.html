@@ -3714,6 +3714,31 @@ physiology.current.gfr
 // 사용 설명서 모달: 시뮬레이션 상태와 독립
 // =============================
 
+// v5.5.1: shared on-demand model explanation; no impact on RAAS/session state.
+const modelPolicyButton=document.getElementById("modelPolicyButton");
+const graphPolicyButton=document.getElementById("graphPolicyButton");
+const modelPolicyDialog=document.getElementById("modelPolicyDialog");
+const modelPolicyCloseButton=document.getElementById("modelPolicyCloseButton");
+let modelPolicyReturnFocus=modelPolicyButton;
+function openModelPolicy(origin){
+    modelPolicyReturnFocus=origin;
+    if(!modelPolicyDialog.open)modelPolicyDialog.showModal();
+}
+modelPolicyButton.addEventListener("click",()=>openModelPolicy(modelPolicyButton));
+graphPolicyButton.addEventListener("click",()=>openModelPolicy(graphPolicyButton));
+modelPolicyCloseButton.addEventListener("click",()=>modelPolicyDialog.close());
+modelPolicyDialog.addEventListener("close",()=>{
+    modelPolicyReturnFocus.focus(); // close button, Esc, backdrop all restore focus
+});
+modelPolicyDialog.addEventListener("click",(event)=>{
+    if(event.target!==modelPolicyDialog||!modelPolicyDialog.open)return;
+    const rect=modelPolicyDialog.getBoundingClientRect();
+    if(event.clientX<rect.left||event.clientX>rect.right||
+       event.clientY<rect.top||event.clientY>rect.bottom){
+        modelPolicyDialog.close();
+    }
+});
+
 const helpOpenButton=document.getElementById("helpOpenButton");
 const helpCloseButton=document.getElementById("helpCloseButton");
 const helpDialog=document.getElementById("helpDialog");
