@@ -971,3 +971,15 @@ RAAS Simulator 개발에서 가장 중요한 원칙은 다음과 같다.
 - 단계별 설명 ID와 근거 표기, 참고문헌, 기존 환자 반응 비예측 원칙을 유지한다. `showStageLearning`, Canvas/키보드 이벤트, 약물 계산, 그래프·시연·시나리오의 JavaScript는 v5.4와 동일해야 한다.
 - 과거 `tests/regression-v5.4.cjs`는 동결 `backups/v5.4.html`을 검사한다. 최신 `tests/regression-v5.4.1.cjs`는 현 `index.html`을 검사한다. 역사적 8,159개 + 새 1,491개(총 **9,650개**)를 기준으로 유지한다.
 - 이 검증은 V8 + mock DOM/Canvas 결과이다. 실제 키보드·스크린리더·모바일 터치/스크롤과 native details 펼침 동작은 실제 브라우저 검증 전까지 미완료로 표기한다.
+
+---
+
+## 34. v5.5 3영역 교육 UI 및 임상 기록 보호 규칙
+
+- 상위 탭은 **① 시뮬레이터 / ② 학습 / ③ 임상 적용**. 기존 RAAS Canvas, 생리 변수/그래프 및 약물 상태는 독립 유지.
+- `learningStudyView`는 원본 `stageData`/ `clinicalStageNotes`/ `drugData`/ `clinicalDrugNotes`를 읽기만 하며, 학습 드롭다운이 기존 `state` / `physiology`를 변경해서는 안 된다.
+- `switchStudyMode`의 단순 탭 전환은 활성 임상 세션과 채점/행동 단계/피드백 상태를 보존한다. `scenarioRuntime.mode==="scenario"` 상태로 정상 시뮬레이터 탭이 표시되는 것은 **의도된 동작**이다. `scenarioRestartButton`, `scenarioBackToCasesButton`, `scenarioExitButton`만 명시적 임상 답안 초기화 수행. 새로고침 시 세션 복원하지 않는다.
+- 사례 정의 2개·스키마 1·문항/정답/근거·환자 가상 사례 정책을 변경하지 않는다. 새로운 답변 카드와 로드맵·결과 카드는 기존 답안에서 **읽어 표시**한다. 표시 문자열은 `textContent`, 학습 근거는 기존 정적 출처를 사용한다.
+- 완료 핵심 요약 모달은 새 치료·처방 지시가 아니라 CKD/ACEi, HFrEF/MRA 두 사례의 안전 사정·의사소통·환자 교육을 간추린 교육자료다. 사례의 핵심 포인트와 불일치하는 변화가 있으면 함께 검토·수정한다.
+- `tests/regression-v5.4.1.cjs`는 `backups/v5.4.1.html`로 고정. 신규 `tests/regression-v5.5.cjs` 및 기존 전체 13개를 실행한다. V8/mock 환경 기준 **14개 스위트 / 10,351개 검사** 완료.
+- 실제 브라우저의 정보 밀도·키보드 초점·반응형/터치·스크린리더 검증은 별도다. 기존 버전 백업 불변 원칙을 유지한다.
