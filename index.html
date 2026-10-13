@@ -3682,11 +3682,14 @@ const helpOpenButton=document.getElementById("helpOpenButton");
 const helpCloseButton=document.getElementById("helpCloseButton");
 const helpDialog=document.getElementById("helpDialog");
 
-helpOpenButton.addEventListener("click",()=>{
-    if(!helpDialog.open){
-        helpDialog.showModal();
-    }
-});
+const globalHelpButton=document.getElementById("globalHelpButton");
+let helpReturnFocus=helpOpenButton;
+function openSharedHelp(origin){
+    helpReturnFocus=origin;
+    if(!helpDialog.open)helpDialog.showModal();
+}
+helpOpenButton.addEventListener("click",()=>openSharedHelp(helpOpenButton));
+globalHelpButton.addEventListener("click",()=>openSharedHelp(globalHelpButton));
 
 helpCloseButton.addEventListener("click",()=>{
     helpDialog.close();
@@ -3712,7 +3715,7 @@ helpDialog.addEventListener("click",(event)=>{
 
 helpDialog.addEventListener("close",()=>{
     // Esc, 바깥 클릭 및 닫기 버튼 모두 진입점으로 포커스 복귀.
-    helpOpenButton.focus();
+    helpReturnFocus.focus();
 });
 
 
@@ -4024,6 +4027,9 @@ flowDemoStop.addEventListener("click",stopFlowDemo);
 // v5.0 — isolated clinical scenario interface
 // =============================
 const normalStudyView=document.getElementById("normalStudyView");
+const learningStudyView=document.getElementById("learningStudyView");
+const learningModeButton=document.getElementById("learningModeButton");
+const studyModeNames=["normal","learning","scenario"];
 const scenarioStudyView=document.getElementById("scenarioStudyView");
 const normalModeButton=document.getElementById("normalModeButton");
 const scenarioModeButton=document.getElementById("scenarioModeButton");
@@ -4268,38 +4274,37 @@ function selectClinicalCase(id){
     scenarioChoiceButtons[0].focus();
     return Boolean(session);
 }
+// v5.5: navigation changes visible views only. Explicit case actions own session deletion.
 function switchStudyMode(mode){
+    if(!studyModeNames.includes(mode))return;
+    if(mode!=="normal"&&!normalStudyView.hidden&&flowDemo.timer!==null){
+        toggleFlowDemo(); // pause hidden auto-demo; keep its previous position
+    }
+    normalStudyView.hidden=mode!=="normal";
+    learningStudyView.hidden=mode!=="learning";
+    scenarioStudyView.hidden=mode!=="scenario";
+    normalModeButton.setAttribute("aria-pressed",String(mode==="normal"));
+    learningModeButton.setAttribute("aria-pressed",String(mode==="learning"));
+    scenarioModeButton.setAttribute("aria-pressed",String(mode==="scenario"));
+    if(mode==="learning")renderLearningLibrary();
     if(mode==="scenario"){
-        if(!normalStudyView.hidden&&flowDemo.timer!==null){
-            toggleFlowDemo(); // pause hidden demo; preserves progress and index
-        }
-        normalStudyView.hidden=true;
-        scenarioStudyView.hidden=false;
-        normalModeButton.setAttribute("aria-pressed","false");
-        scenarioModeButton.setAttribute("aria-pressed","true");
-        // When no session is active show the catalog rather than silently selecting a case.
-        if(scenarioRuntime.mode!=="scenario"){
-            showClinicalCaseCatalog(false);
-        }else{
+        if(scenarioRuntime.mode!=="scenario")showClinicalCaseCatalog(false);
+        else{
             scenarioCaseCatalog.hidden=true;
             scenarioSessionContent.hidden=false;
             renderScenarioStudy();
         }
-        scenarioModeButton.focus();
-        return;
     }
-    if(mode==="normal"){
-        showClinicalCaseCatalog(false); // discard previous case knowledge/action answers
-        scenarioStudyView.hidden=true;
-        normalStudyView.hidden=false;
-        normalModeButton.setAttribute("aria-pressed","true");
-        scenarioModeButton.setAttribute("aria-pressed","false");
-        normalModeButton.focus();
-    }
+    ({normal:normalModeButton,learning:learningModeButton,scenario:scenarioModeButton})[mode].focus();
 }
 normalModeButton.addEventListener("click",()=>switchStudyMode("normal"));
+learningModeButton.addEventListener("click",()=>switchStudyMode("learning"));
 scenarioModeButton.addEventListener("click",()=>switchStudyMode("scenario"));
-document.getElementById("scenarioExitButton").addEventListener("click",()=>switchStudyMode("normal"));
+document.getElementById("learningGoClinicalButton").addEventListener("click",()=>switchStudyMode("scenario"));
+document.getElementById("scenarioExitButton").addEventListener("click",()=>{
+    showClinicalCaseCatalog(false); // explicit termination, not tab navigation
+    switchStudyMode("normal");
+});
 document.getElementById("caseCKDButton").addEventListener("click",()=>selectClinicalCase(firstClinicalScenario.id));
 document.getElementById("caseMRAButton").addEventListener("click",()=>selectClinicalCase(secondClinicalScenario.id));
 document.getElementById("scenarioBackToCasesButton").addEventListener("click",()=>showClinicalCaseCatalog(true));
@@ -4336,6 +4341,30 @@ document.getElementById("scenarioActionStartButton").addEventListener("click",()
 });
 scenarioActionChoiceButtons.forEach((button,i)=>
     button.addEventListener("click",()=>chooseScenarioAction(i)));
+
+// v5.5 read-only RAAS library, driven by the same source data as the simulator.
+function renderLearningLibrary(){
+    const index=Number(document.getElementById("learningStageSelect").value||0);
+    const validIndex=Number.isInteger(index)&&index>=0&&index<stageData.length?index:0;
+    const stage=stageData[validIndex];
+    const clinical=clinicalStageNotes[validIndex];
+    document.getElementById("learningStageTitle").textContent=(validIndex+1)+". "+stage.name;
+    document.getElementById("learningStageSummary").textContent=stage.description;
+    document.getElementById("learningStageMechanism").textContent=stage.learningDetail;
+    document.getElementById("learningStageClinical").textContent=clinical.medical;
+    document.getElementById("learningStageNursing").textContent=clinical.nursing;
+    document.getElementById("learningStageSources").textContent="학습 근거: "+clinical.sourceIds+" · 자세한 원문은 설명서 참고문헌을 확인하세요.";
+
+    const selectedId=document.getElementById("learningDrugSelect").value||"acei";
+    const id=clinicalDrugNotes[selectedId]?selectedId:"acei";
+    const drug=drugData[id],detail=clinicalDrugNotes[id];
+    document.getElementById("learningDrugTitle").textContent=drug.name;
+    document.getElementById("learningDrugMechanism").textContent=detail.medical;
+    document.getElementById("learningDrugNursing").textContent=detail.nursing;
+    document.getElementById("learningDrugSources").textContent="학습 근거: "+detail.sourceIds+" · 원문은 설명서 참고문헌을 확인하세요.";
+}
+document.getElementById("learningStageSelect").addEventListener("change",renderLearningLibrary);
+document.getElementById("learningDrugSelect").addEventListener("change",renderLearningLibrary);
 
 // 초기 실행
 // =============================
