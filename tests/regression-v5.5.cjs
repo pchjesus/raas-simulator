@@ -73,6 +73,7 @@ for(const drug of ["none","acei","arb","aldo","beta","loop","thiazide"]){
   app.fire("learningModeButton");
   ok(!app.el("learningStudyView").hidden&&app.el("normalStudyView").hidden&&app.el("scenarioStudyView").hidden,"learning view "+drug);
   ok(app.el("learningStageTitle").textContent.length>0&&app.el("learningDrugTitle").textContent.length>0,"library rendered "+drug);
+  ok(app.el("learningPathwayOverview").textContent===app.api.stageData.map((s,i)=>(i+1)+". "+s.name).join(" → "),"9-stage overview shares source data "+drug);
   ok(snap(app)===baseline,"learning view read-only "+drug);
   for(let i=0;i<9;i++){
     app.el("learningStageSelect").value=String(i);
@@ -115,6 +116,7 @@ for(const item of [{button:"caseCKDButton",definition:app.api.firstClinicalScena
    const selectedIndex=i===0?1:q.choices.findIndex(c=>c.id===q.correctChoiceId);
    const choice=q.choices[selectedIndex],expected=q.choices.find(c=>c.id===q.correctChoiceId);
    app.fire("scenarioChoice"+(selectedIndex+1));
+   ok(app.el("scenarioAnsweredQuestion").textContent===q.prompt,"answered judgement prompt retained "+def.id+"/"+i);
    ok(app.el("scenarioFeedbackSelected").textContent===choice.text,"correct user choice displayed "+def.id+"/"+i);
    ok(app.el("scenarioFeedbackCorrectAnswer").textContent===expected.text,"recommended choice displayed "+def.id+"/"+i);
    ok(app.el("scenarioFeedbackChoiceExplanation").textContent.includes(choice.feedback),"specific choice rationale "+def.id+"/"+i);
@@ -133,6 +135,7 @@ for(const item of [{button:"caseCKDButton",definition:app.api.firstClinicalScena
    const actionIndex=i===0?1:ex.choices.findIndex(c=>c.id===ex.correctChoiceId);
    const actionChoice=ex.choices[actionIndex],recommended=ex.choices.find(c=>c.id===ex.correctChoiceId);
    app.fire("scenarioActionChoice"+(actionIndex+1));
+   ok(app.el("scenarioAnsweredActionPrompt").textContent===ex.prompt,"answered action prompt retained "+def.id+"/"+i);
    ok(app.el("scenarioActionFeedbackSelected").textContent===actionChoice.text,"action selected comparison "+def.id+"/"+i);
    ok(app.el("scenarioActionFeedbackCorrect").textContent===recommended.text,"action recommended comparison "+def.id+"/"+i);
    ok(app.el("scenarioActionFeedbackReason").textContent.includes(actionChoice.feedback),"action tailored feedback "+def.id+"/"+i);
@@ -172,4 +175,15 @@ ok(Object.keys(app.api.scenarioRuntime.session.answers).length===1,"answer captu
 app.fire("scenarioExitButton");
 ok(app.api.scenarioRuntime.mode==="normal"&&app.api.scenarioRuntime.session===null,"explicit learning exit clears session");
 ok(!app.el("normalStudyView").hidden,"explicit exit returns simulator");
+// Hidden auto-demo should pause without losing the last displayed position.
+app.api.toggleFlowDemo();
+ok(app.api.flowDemo.timer!==null,"auto demo timer started");
+const priorIndex=app.api.flowDemo.index,priorModel=snap(app);
+app.fire("learningModeButton");
+ok(app.api.flowDemo.timer===null&&app.api.flowDemo.paused,"demo paused on learning switch");
+ok(app.api.flowDemo.index===priorIndex,"demo index retained across tab");
+ok(snap(app)===priorModel,"tab pause does not alter model");
+app.fire("normalModeButton");
+app.api.stopFlowDemo();
+ok(app.api.flowDemo.timer===null,"auto demo cleanup");
 console.log("PASS v5.5 three-area learning/clinical UI: "+count+" deterministic checks (mock DOM/Canvas, browser verification outstanding).");
