@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v5.4.1
+RAAS Simulator v5.5
 </title>
 
 
@@ -490,6 +490,24 @@ line-height:1.4;
   .scenario-options button,.scenario-action-options button{min-height:44px;font-size:14px}
   .scenario-action-detail-grid{grid-template-columns:1fr}
 }
+
+/* v5.5: separated educational view with no change to simulation Canvas sizing */
+.study-mode-intro{max-width:1060px;margin:5px auto 14px;padding:0 14px;text-align:center;color:#365368;font-size:13px;line-height:1.65}
+#globalHelpButton{min-width:120px;background:#edf5fc}
+.learning-intro{background:#f1f6fb;padding:12px;border-left:4px solid #245578}
+.learning-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.learning-block,.learning-next{padding:15px;border:1px solid #bfd1dd;border-radius:9px;background:#fafcfe;min-width:0}
+.learning-block label{font-size:13px;font-weight:700}
+.learning-block select{box-sizing:border-box;display:block;width:100%;margin:6px 0 12px;padding:9px;background:white;border:1px solid #8299aa;border-radius:5px}
+.learning-block p{overflow-wrap:anywhere}
+.learning-disclosure,.scenario-evidence-disclosure,.scenario-case-details{border:1px solid #b6c9d9;border-radius:8px;margin:11px 0;background:#fff}
+.learning-disclosure>summary,.scenario-evidence-disclosure>summary,.scenario-case-details>summary{box-sizing:border-box;min-height:44px;padding:12px;cursor:pointer;font-weight:700;color:#205170}
+.learning-disclosure[open]>summary,.scenario-evidence-disclosure[open]>summary,.scenario-case-details[open]>summary{background:#edf4fb;border-bottom:1px solid #c8d8e6}
+.learning-disclosure>p,.scenario-disclosure-body,.scenario-case-details-body{padding:11px 13px;margin:0}
+.learning-next{margin-top:15px}
+.learning-next button,.scenario-takeaways-trigger{min-height:44px;width:auto;padding:10px 16px;border:1px solid #194e78;background:#194e78;color:white;border-radius:6px;cursor:pointer}
+.learning-view button:focus-visible,.learning-view summary:focus-visible,.scenario-view summary:focus-visible,#globalHelpButton:focus-visible{outline:3px solid #1556a1;outline-offset:3px}
+@media(max-width:700px){.learning-grid{grid-template-columns:1fr}.study-mode-nav button{min-width:140px}}
 </style>
 
 
@@ -522,10 +540,13 @@ RAAS + Drug + Physiological Variables
 
 
 
-<nav class="study-mode-nav" aria-label="학습 모드 선택">
-  <button id="normalModeButton" type="button" aria-pressed="true" aria-controls="normalStudyView">RAAS 일반 학습</button>
-  <button id="scenarioModeButton" type="button" aria-pressed="false" aria-controls="scenarioStudyView">임상 시나리오</button>
+<nav class="study-mode-nav" aria-label="RAAS 학습 영역 선택">
+  <button id="normalModeButton" type="button" aria-pressed="true" aria-controls="normalStudyView">① 시뮬레이터</button>
+  <button id="learningModeButton" type="button" aria-pressed="false" aria-controls="learningStudyView">② 학습</button>
+  <button id="scenarioModeButton" type="button" aria-pressed="false" aria-controls="scenarioStudyView">③ 임상 적용</button>
+  <button id="globalHelpButton" type="button" aria-haspopup="dialog" aria-controls="helpDialog">ⓘ 사용법</button>
 </nav>
+<p class="study-mode-intro">시뮬레이터에서 흐름을 관찰하고, 학습에서 기전·간호를 정리한 뒤, 임상 적용에서 판단을 연습하세요. 탭 이동만으로 풀이 기록은 사라지지 않습니다.</p>
 <div id="normalStudyView">
 <div class="main">
 
@@ -865,8 +886,35 @@ class="variableValue">
 
 
 </div>
+<section id="learningStudyView" class="scenario-view learning-view" aria-labelledby="learningHeading" hidden>
+  <span class="scenario-tag">② RAAS 이론·간호 학습</span>
+  <h2 id="learningHeading">기전 이해부터 임상 간호까지</h2>
+  <p class="learning-intro">학습 순서: <strong>RAAS 전체 흐름 → 9단계 기전·간호 사정 → 약물 6종 → 임상 적용</strong>. 이 화면은 시뮬레이터 수치와 약물 상태를 변경하지 않습니다.</p>
+  <div class="learning-grid">
+    <section class="learning-block" aria-labelledby="learningStageHeading">
+      <h3 id="learningStageHeading">1. RAAS 단계별 이해</h3>
+      <label for="learningStageSelect">학습할 단계</label>
+      <select id="learningStageSelect"><option value="0">1단계</option><option value="1">2단계</option><option value="2">3단계</option><option value="3">4단계</option><option value="4">5단계</option><option value="5">6단계</option><option value="6">7단계</option><option value="7">8단계</option><option value="8">9단계</option></select>
+      <h4 id="learningStageTitle"></h4><p id="learningStageSummary"></p>
+      <details class="learning-disclosure" open><summary>기전·의학적 의미</summary><p id="learningStageMechanism"></p><p id="learningStageClinical"></p></details>
+      <details class="learning-disclosure"><summary>간호 사정과 안전 포인트</summary><p id="learningStageNursing"></p></details>
+      <p id="learningStageSources" class="scenario-feedback-evidence"></p>
+    </section>
+    <section class="learning-block" aria-labelledby="learningDrugHeading">
+      <h3 id="learningDrugHeading">2. 약물 작용과 간호</h3>
+      <label for="learningDrugSelect">학습할 약물</label>
+      <select id="learningDrugSelect"><option value="acei">ACE 억제제</option><option value="arb">ARB</option><option value="aldo">알도스테론 길항제(MRA)</option><option value="beta">베타차단제</option><option value="loop">고리이뇨제</option><option value="thiazide">티아지드이뇨제</option></select>
+      <h4 id="learningDrugTitle"></h4><p id="learningDrugMechanism"></p>
+      <h4>간호 확인 사항</h4><p id="learningDrugNursing"></p>
+      <p id="learningDrugSources" class="scenario-feedback-evidence"></p>
+      <p class="scenario-caution">교육용 개념 정리이며 환자의 실제 혈압·K⁺·신기능 변화나 처방 적합성을 계산하지 않습니다.</p>
+    </section>
+  </div>
+  <div class="learning-next"><h3>3. 배운 내용을 환자에게 적용하기</h3><p>CKD·ACEi 또는 HFrEF·MRA 사례에서 임상 판단과 간호 행동을 연습해 보세요.</p><button id="learningGoClinicalButton" type="button">임상 적용으로 이동 →</button></div>
+</section>
+
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.4.1 · 임상 교육 사례</span>
+  <span class="scenario-tag">v5.5 · 임상 적용</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
     <p>풀어볼 임상 사례를 선택하세요. 사례마다 독립적인 풀이 기록을 사용합니다.</p>
