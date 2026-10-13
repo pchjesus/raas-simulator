@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v5.4.1
+RAAS Simulator v5.5
 </title>
 
 
@@ -490,6 +490,55 @@ line-height:1.4;
   .scenario-options button,.scenario-action-options button{min-height:44px;font-size:14px}
   .scenario-action-detail-grid{grid-template-columns:1fr}
 }
+
+/* v5.5: separated educational view with no change to simulation Canvas sizing */
+.study-mode-intro{max-width:1060px;margin:5px auto 14px;padding:0 14px;text-align:center;color:#365368;font-size:13px;line-height:1.65}
+#globalHelpButton{min-width:120px;background:#edf5fc}
+.learning-intro{background:#f1f6fb;padding:12px;border-left:4px solid #245578}
+.learning-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.learning-block,.learning-next{padding:15px;border:1px solid #bfd1dd;border-radius:9px;background:#fafcfe;min-width:0}
+.learning-block label{font-size:13px;font-weight:700}
+.learning-block select{box-sizing:border-box;display:block;width:100%;margin:6px 0 12px;padding:9px;background:white;border:1px solid #8299aa;border-radius:5px}
+.learning-block p{overflow-wrap:anywhere}
+.learning-disclosure,.scenario-evidence-disclosure,.scenario-case-details{border:1px solid #b6c9d9;border-radius:8px;margin:11px 0;background:#fff}
+.learning-disclosure>summary,.scenario-evidence-disclosure>summary,.scenario-case-details>summary{box-sizing:border-box;min-height:44px;padding:12px;cursor:pointer;font-weight:700;color:#205170}
+.learning-disclosure[open]>summary,.scenario-evidence-disclosure[open]>summary,.scenario-case-details[open]>summary{background:#edf4fb;border-bottom:1px solid #c8d8e6}
+.learning-disclosure>p,.scenario-disclosure-body,.scenario-case-details-body{padding:11px 13px;margin:0}
+.learning-next{margin-top:15px}
+.learning-next button,.scenario-takeaways-trigger{min-height:44px;width:auto;padding:10px 16px;border:1px solid #194e78;background:#194e78;color:white;border-radius:6px;cursor:pointer}
+.learning-view button:focus-visible,.learning-view summary:focus-visible,.scenario-view summary:focus-visible,#globalHelpButton:focus-visible{outline:3px solid #1556a1;outline-offset:3px}
+@media(max-width:700px){.learning-grid{grid-template-columns:1fr}.study-mode-nav button{min-width:140px}}
+
+/* v5.5: clinical roadmap, evidence disclosure, readable comparison */
+.scenario-instructions{padding:12px 14px;background:#eff6fb;border:1px solid #bbcedd;border-radius:9px;margin-bottom:15px}
+.scenario-instructions h3{margin:0 0 6px}
+.scenario-instructions p{font-size:14px}
+.scenario-roadmap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;list-style:none;margin:12px 0;padding:0}
+.scenario-roadmap li{text-align:center;font-size:12px;padding:10px 2px;border:1px solid #bccbd6;border-radius:7px;background:#f4f6f8;color:#47576b;font-weight:700}
+.scenario-roadmap li[data-status="done"]{background:#e7f3ea;color:#245339;border-color:#8cb499}
+.scenario-roadmap li[data-status="current"]{background:#194e78;color:#fff;border-color:#194e78}
+.scenario-current-task{font-weight:700;padding:11px 13px;background:#f1f6fb;border-left:4px solid #194e78;line-height:1.6}
+.scenario-answer-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:11px 0}
+.scenario-answer-card{box-sizing:border-box;min-width:0;padding:11px 13px;border:1px solid #bccbd6;border-radius:8px;background:#fff;overflow-wrap:anywhere}
+.scenario-answer-card.selected{border-left:4px solid #6d879c}
+.scenario-answer-card.recommended{border-left:4px solid #2e7652;background:#f7fcf8}
+.scenario-answer-card h4,.scenario-answer-card h6{font-size:14px!important;margin:0 0 7px!important;color:#29526a}
+.scenario-answer-card p{border:none!important;padding:0!important;margin:0!important;background:transparent!important;font-weight:500}
+.scenario-review-cards{display:grid;gap:10px}
+.scenario-review-card{border:1px solid #b9cbd7;border-radius:8px;background:#fff;padding:12px}
+.scenario-review-card[data-correct="false"]{border-left:4px solid #af763a}
+.scenario-review-card[data-correct="true"]{border-left:4px solid #2e7652}
+.scenario-review-card h5{font-size:15px;line-height:1.5;margin:0}
+.scenario-review-status{font-weight:700;color:#27506d}
+.scenario-review-note{font-size:13px;line-height:1.65}
+.scenario-takeaways-trigger{margin:16px 0 4px}
+@media(max-width:700px){.scenario-answer-compare{grid-template-columns:1fr}.scenario-roadmap li{font-size:11px}}
+
+.scenario-answered-question{padding:9px 12px;background:white;border-left:3px solid #6d879c;font-weight:600;line-height:1.65}
+
+.learning-pathway{padding:13px 15px;margin:14px 0;border:1px solid #b9d1dc;border-radius:8px;background:#f5fafc}
+.learning-pathway h3{margin:0 0 6px}
+.learning-pathway p{line-height:1.8;overflow-wrap:anywhere}
 </style>
 
 
@@ -522,10 +571,13 @@ RAAS + Drug + Physiological Variables
 
 
 
-<nav class="study-mode-nav" aria-label="학습 모드 선택">
-  <button id="normalModeButton" type="button" aria-pressed="true" aria-controls="normalStudyView">RAAS 일반 학습</button>
-  <button id="scenarioModeButton" type="button" aria-pressed="false" aria-controls="scenarioStudyView">임상 시나리오</button>
+<nav class="study-mode-nav" aria-label="RAAS 학습 영역 선택">
+  <button id="normalModeButton" type="button" aria-pressed="true" aria-controls="normalStudyView">① 시뮬레이터</button>
+  <button id="learningModeButton" type="button" aria-pressed="false" aria-controls="learningStudyView">② 학습</button>
+  <button id="scenarioModeButton" type="button" aria-pressed="false" aria-controls="scenarioStudyView">③ 임상 적용</button>
+  <button id="globalHelpButton" type="button" aria-haspopup="dialog" aria-controls="helpDialog">ⓘ 사용법</button>
 </nav>
+<p class="study-mode-intro">시뮬레이터에서 흐름을 관찰하고, 학습에서 기전·간호를 정리한 뒤, 임상 적용에서 판단을 연습하세요. 탭 이동만으로 풀이 기록은 사라지지 않습니다.</p>
 <div id="normalStudyView">
 <div class="main">
 
@@ -865,10 +917,42 @@ class="variableValue">
 
 
 </div>
+<section id="learningStudyView" class="scenario-view learning-view" aria-labelledby="learningHeading" hidden>
+  <span class="scenario-tag">② RAAS 이론·간호 학습</span>
+  <h2 id="learningHeading">기전 이해부터 임상 간호까지</h2>
+  <p class="learning-intro">학습 순서: <strong>RAAS 전체 흐름 → 9단계 기전·간호 사정 → 약물 6종 → 임상 적용</strong>. 이 화면은 시뮬레이터 수치와 약물 상태를 변경하지 않습니다.</p>
+  <section class="learning-pathway"><h3>RAAS 전체 흐름</h3><p id="learningPathwayOverview"></p><p class="scenario-catalog-note">교육용 9단계의 연결 관계입니다. 아래에서 단계를 선택해 기전과 간호학적 의미를 살펴보세요.</p></section>
+  <div class="learning-grid">
+    <section class="learning-block" aria-labelledby="learningStageHeading">
+      <h3 id="learningStageHeading">1. RAAS 단계별 이해</h3>
+      <label for="learningStageSelect">학습할 단계</label>
+      <select id="learningStageSelect"><option value="0">1단계</option><option value="1">2단계</option><option value="2">3단계</option><option value="3">4단계</option><option value="4">5단계</option><option value="5">6단계</option><option value="6">7단계</option><option value="7">8단계</option><option value="8">9단계</option></select>
+      <h4 id="learningStageTitle"></h4><p id="learningStageSummary"></p>
+      <details class="learning-disclosure" open><summary>기전·의학적 의미</summary><p id="learningStageMechanism"></p><p id="learningStageClinical"></p></details>
+      <details class="learning-disclosure"><summary>간호 사정과 안전 포인트</summary><p id="learningStageNursing"></p></details>
+      <p id="learningStageSources" class="scenario-feedback-evidence"></p>
+    </section>
+    <section class="learning-block" aria-labelledby="learningDrugHeading">
+      <h3 id="learningDrugHeading">2. 약물 작용과 간호</h3>
+      <label for="learningDrugSelect">학습할 약물</label>
+      <select id="learningDrugSelect"><option value="acei">ACE 억제제</option><option value="arb">ARB</option><option value="aldo">알도스테론 길항제(MRA)</option><option value="beta">베타차단제</option><option value="loop">고리이뇨제</option><option value="thiazide">티아지드이뇨제</option></select>
+      <h4 id="learningDrugTitle"></h4><p id="learningDrugMechanism"></p>
+      <h4>간호 확인 사항</h4><p id="learningDrugNursing"></p>
+      <p id="learningDrugSources" class="scenario-feedback-evidence"></p>
+      <p class="scenario-caution">교육용 개념 정리이며 환자의 실제 혈압·K⁺·신기능 변화나 처방 적합성을 계산하지 않습니다.</p>
+    </section>
+  </div>
+  <div class="learning-next"><h3>3. 배운 내용을 환자에게 적용하기</h3><p>CKD·ACEi 또는 HFrEF·MRA 사례에서 임상 판단과 간호 행동을 연습해 보세요.</p><button id="learningGoClinicalButton" type="button">임상 적용으로 이동 →</button></div>
+</section>
+
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.4.1 · 임상 교육 사례</span>
+  <span class="scenario-tag">v5.5 · 임상 적용</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
+    <div class="scenario-instructions"><h3>학습은 이렇게 진행돼요</h3>
+      <p><strong>환자 정보 → 임상 판단·해설 → 간호 행동·해설 → 결과 복습</strong> 순서로 연습합니다. 선택한 이유와 권장 행동을 확인한 후 다음으로 이동하세요.</p>
+      <p>상단 탭 이동은 풀이를 보존합니다. <strong>다시 풀기 / 다른 사례 선택 / 학습 종료</strong>는 답안을 초기화하며 새로고침하면 기록이 사라집니다.</p>
+    </div>
     <p>풀어볼 임상 사례를 선택하세요. 사례마다 독립적인 풀이 기록을 사용합니다.</p>
     <div class="scenario-case-grid">
       <button id="caseCKDButton" class="scenario-case-button" type="button">
@@ -889,11 +973,21 @@ class="variableValue">
   <div id="scenarioSessionContent" hidden>
   <p id="scenarioActiveCaseLabel" class="scenario-active-case"></p>
   <p id="scenarioOverview"></p>
+  <ol class="scenario-roadmap" aria-label="임상 학습 진행 순서">
+    <li id="scenarioRoadmapContext">① 환자 파악</li>
+    <li id="scenarioRoadmapJudgement">② 임상 판단</li>
+    <li id="scenarioRoadmapAction">③ 간호 행동</li>
+    <li id="scenarioRoadmapResult">④ 결과 복습</li>
+  </ol>
+  <p id="scenarioCurrentTask" class="scenario-current-task" aria-live="polite"></p>
   <p id="scenarioLearningProgress" class="scenario-learning-progress" aria-live="polite" aria-atomic="true"></p>
-  <p id="scenarioObjectives" class="scenario-caution"></p>
-  <h3>환자 상황</h3>
-  <p id="scenarioContext"></p>
-  <div id="scenarioObservations" class="scenario-observations"></div>
+  <details id="scenarioCaseDetails" class="scenario-case-details" open>
+    <summary>환자 상황과 학습 목표 (접기/펼치기)</summary>
+    <div class="scenario-case-details-body"><p id="scenarioObjectives" class="scenario-caution"></p>
+      <h3>환자 상황</h3><p id="scenarioContext"></p>
+      <div id="scenarioObservations" class="scenario-observations"></div>
+    </div>
+  </details>
   <p class="scenario-caution">이 사례는 실제 환자 기록이 아닌 교육용 가상 상황입니다. 기존 RAAS 그래프의 BP·Na⁺·혈액량·GFR 숫자는 이 환자의 검사 결과나 약물 반응이 아닙니다. 실제 처방·투여 변경에 사용하지 마세요.</p>
   <section id="scenarioQuestionSection" aria-labelledby="scenarioProgress">
     <h3 id="scenarioProgress"></h3>
@@ -906,14 +1000,23 @@ class="variableValue">
   </section>
   <section id="scenarioFeedbackPanel" class="scenario-feedback" aria-live="polite" aria-atomic="true" hidden>
     <h3 id="scenarioFeedbackTitle"></h3>
-    <p id="scenarioFeedbackSelected" class="scenario-feedback-selection"></p>
+    <p id="scenarioAnsweredQuestion" class="scenario-answered-question"></p>
+    <div class="scenario-answer-compare">
+      <div class="scenario-answer-card selected"><h4>내가 선택한 답</h4><p id="scenarioFeedbackSelected" class="scenario-feedback-selection"></p></div>
+      <div class="scenario-answer-card recommended"><h4>권장 답안</h4><p id="scenarioFeedbackCorrectAnswer" class="scenario-feedback-correct"></p></div>
+    </div>
+    <h4 class="scenario-feedback-subtitle">내 선택에 대한 해설</h4>
     <p id="scenarioFeedbackChoiceExplanation" class="scenario-choice-reason"></p>
-    <p id="scenarioFeedbackCorrectAnswer" class="scenario-feedback-correct"></p>
-    <h4 class="scenario-feedback-subtitle">판단 근거</h4>
-     <p id="scenarioFeedbackText" class="scenario-feedback-rationale"></p>
-    <p id="scenarioFeedbackNursing" class="scenario-nursing-focus"></p>
-    <p id="scenarioFeedbackSource" class="scenario-feedback-evidence"></p>
-  </section>
+    <details id="scenarioJudgementEvidenceDetails" class="scenario-evidence-disclosure">
+      <summary>판단 근거 · 간호 사정 · 참고문헌</summary>
+      <div class="scenario-disclosure-body">
+        <h4 class="scenario-feedback-subtitle">판단 근거</h4>
+        <p id="scenarioFeedbackText" class="scenario-feedback-rationale"></p>
+        <p id="scenarioFeedbackNursing" class="scenario-nursing-focus"></p>
+        <p id="scenarioFeedbackSource" class="scenario-feedback-evidence"></p>
+      </div>
+    </details>
+    </section>
   <section id="scenarioActionStep" class="scenario-action-step" aria-labelledby="scenarioActionProgress" hidden>
     <h3 id="scenarioActionProgress">다음 간호 행동 판단</h3>
     <p id="scenarioActionPrompt"></p>
@@ -925,38 +1028,64 @@ class="variableValue">
   </section>
   <section id="scenarioActionFeedbackPanel" class="scenario-action-feedback" aria-live="polite" aria-atomic="true" hidden>
     <h3 id="scenarioActionFeedbackTitle"></h3>
-    <p id="scenarioActionFeedbackSelected" class="scenario-feedback-selection"></p>
-     <p id="scenarioActionFeedbackReason" class="scenario-choice-reason"></p>
-     <p id="scenarioActionFeedbackCorrect" class="scenario-feedback-correct"></p>
-     <h4 class="scenario-feedback-subtitle">행동 판단 근거</h4>
-     <p id="scenarioActionFeedbackRationale" class="scenario-feedback-rationale"></p>
-     <h4 class="scenario-feedback-subtitle">후속 간호 행동</h4>
-     <div class="scenario-action-detail-grid">
-       <section class="scenario-action-detail"><h4>추가 사정</h4><p id="scenarioActionAssessment"></p></section>
-       <section class="scenario-action-detail"><h4>확인·보고</h4><p id="scenarioActionEscalation"></p></section>
-       <section class="scenario-action-detail"><h4>환자 교육</h4><p id="scenarioActionTeaching"></p></section>
-     </div>
-     <p id="scenarioActionEvidence" class="scenario-feedback-evidence"></p>
-  </section>
+    <p id="scenarioAnsweredActionPrompt" class="scenario-answered-question"></p>
+    <div class="scenario-answer-compare">
+      <div class="scenario-answer-card selected"><h4>내가 선택한 간호 행동</h4><p id="scenarioActionFeedbackSelected" class="scenario-feedback-selection"></p></div>
+      <div class="scenario-answer-card recommended"><h4>권장 간호 행동</h4><p id="scenarioActionFeedbackCorrect" class="scenario-feedback-correct"></p></div>
+    </div>
+    <h4 class="scenario-feedback-subtitle">내 선택에 대한 해설</h4>
+    <p id="scenarioActionFeedbackReason" class="scenario-choice-reason"></p>
+    <details id="scenarioActionEvidenceDetails" class="scenario-evidence-disclosure">
+      <summary>행동 근거 · 사정/보고/교육 · 참고문헌</summary>
+      <div class="scenario-disclosure-body">
+        <h4 class="scenario-feedback-subtitle">행동 판단 근거</h4><p id="scenarioActionFeedbackRationale" class="scenario-feedback-rationale"></p>
+        <h4 class="scenario-feedback-subtitle">후속 간호 행동</h4>
+        <div class="scenario-action-detail-grid">
+          <section class="scenario-action-detail"><h4>추가 사정</h4><p id="scenarioActionAssessment"></p></section>
+          <section class="scenario-action-detail"><h4>확인·보고</h4><p id="scenarioActionEscalation"></p></section>
+          <section class="scenario-action-detail"><h4>환자 교육</h4><p id="scenarioActionTeaching"></p></section>
+        </div>
+        <p id="scenarioActionEvidence" class="scenario-feedback-evidence"></p>
+      </div>
+    </details>
+    </section>
   <section id="scenarioResultPanel" aria-live="polite" hidden>
     <h3>학습 완료</h3>
     <p id="scenarioResultText"></p>
-    <h4>문항별 선택 복습</h4>
-    <p id="scenarioResultReview" class="scenario-result-review"></p>
+    <h4>문항별 임상 판단 복습</h4>
+    <p id="scenarioResultReview" class="scenario-result-review" hidden></p>
+    <div class="scenario-review-cards"><article id="scenarioKnowledgeReviewCard1" class="scenario-review-card" hidden><h5 id="scenarioKnowledgeReviewTitle1"></h5><p id="scenarioKnowledgeReviewStatus1" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioKnowledgeReviewSelected1"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioKnowledgeReviewExpected1"></p></div></div><p id="scenarioKnowledgeReviewNote1" class="scenario-review-note"></p></article>
+<article id="scenarioKnowledgeReviewCard2" class="scenario-review-card" hidden><h5 id="scenarioKnowledgeReviewTitle2"></h5><p id="scenarioKnowledgeReviewStatus2" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioKnowledgeReviewSelected2"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioKnowledgeReviewExpected2"></p></div></div><p id="scenarioKnowledgeReviewNote2" class="scenario-review-note"></p></article>
+<article id="scenarioKnowledgeReviewCard3" class="scenario-review-card" hidden><h5 id="scenarioKnowledgeReviewTitle3"></h5><p id="scenarioKnowledgeReviewStatus3" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioKnowledgeReviewSelected3"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioKnowledgeReviewExpected3"></p></div></div><p id="scenarioKnowledgeReviewNote3" class="scenario-review-note"></p></article></div>
     <h4>간호 행동 판단 복습</h4>
-    <p id="scenarioActionReview" class="scenario-action-review"></p>
-    <p>선택한 답안과 정답 근거를 확인했습니다. 필요하면 다시 풀거나 일반 학습으로 돌아갈 수 있습니다.</p>
+    <p id="scenarioActionReview" class="scenario-action-review" hidden></p>
+    <div class="scenario-review-cards"><article id="scenarioNursingReviewCard1" class="scenario-review-card" hidden><h5 id="scenarioNursingReviewTitle1"></h5><p id="scenarioNursingReviewStatus1" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioNursingReviewSelected1"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioNursingReviewExpected1"></p></div></div><p id="scenarioNursingReviewNote1" class="scenario-review-note"></p></article>
+<article id="scenarioNursingReviewCard2" class="scenario-review-card" hidden><h5 id="scenarioNursingReviewTitle2"></h5><p id="scenarioNursingReviewStatus2" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioNursingReviewSelected2"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioNursingReviewExpected2"></p></div></div><p id="scenarioNursingReviewNote2" class="scenario-review-note"></p></article>
+<article id="scenarioNursingReviewCard3" class="scenario-review-card" hidden><h5 id="scenarioNursingReviewTitle3"></h5><p id="scenarioNursingReviewStatus3" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioNursingReviewSelected3"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioNursingReviewExpected3"></p></div></div><p id="scenarioNursingReviewNote3" class="scenario-review-note"></p></article></div>
+    <button id="scenarioTakeawaysButton" class="scenario-takeaways-trigger" type="button" aria-haspopup="dialog" aria-controls="scenarioTakeawaysDialog">ⓘ 핵심 임상 포인트 요약 보기</button>
+    <p>핵심 임상 포인트를 확인하거나 같은 사례를 다시 풀어보세요.</p>
   </section>
   <div class="scenario-actions">
     <button id="scenarioActionStartButton" class="primary" type="button" hidden>다음: 간호 행동 판단</button>
     <button id="scenarioNextButton" class="primary" type="button" hidden>다음 문항</button>
-    <button id="scenarioRestartButton" type="button">다시 풀기</button>
-    <button id="scenarioBackToCasesButton" type="button">다른 사례 선택</button>
-    <button id="scenarioExitButton" type="button">일반 학습으로 돌아가기</button>
+    <button id="scenarioRestartButton" type="button">다시 풀기 · 답안 초기화</button>
+    <button id="scenarioBackToCasesButton" type="button">다른 사례 선택 · 답안 초기화</button>
+    <button id="scenarioExitButton" type="button">학습 종료 · 답안 초기화</button>
   </div>
   <p class="scenario-evidence">근거: <a id="scenarioSourcePrimary" href="https://kdigo.org/guidelines/ckd-evaluation-and-management/" target="_blank" rel="noopener noreferrer">KDIGO 2024 CKD Guideline</a><a id="scenarioSourceSecondary" href="https://www.nice.org.uk/guidance/ng106/chapter/recommendations" target="_blank" rel="noopener noreferrer" hidden></a> · 개별 환자 판단에는 상태와 기관 지침이 우선합니다.</p>
   </div>
 </section>
+
+<dialog id="scenarioTakeawaysDialog" class="help-dialog" aria-labelledby="scenarioTakeawaysTitle">
+  <div class="help-header"><h2 id="scenarioTakeawaysTitle">핵심 임상 포인트</h2><button id="scenarioTakeawaysCloseButton" type="button" class="help-close" aria-label="복습 팝업 닫기">×</button></div>
+  <div class="help-body">
+    <p class="help-note">교육용 복습이며 실제 환자 처방이나 검사 지시가 아닙니다. 담당 의료진과 기관 지침을 우선합니다.</p>
+    <h3>추가 사정</h3><p id="scenarioTakeawayAssessment"></p>
+    <h3>확인·보고</h3><p id="scenarioTakeawayEscalation"></p>
+    <h3>환자 교육</h3><p id="scenarioTakeawayTeaching"></p>
+    <p id="scenarioTakeawayEvidence" class="scenario-feedback-evidence"></p>
+  </div>
+</dialog>
 
 <!-- 사용 설명서: Canvas와 생리 계산 상태에 영향을 주지 않는 모달 -->
 <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle" aria-describedby="helpLead">
@@ -1033,9 +1162,13 @@ class="variableValue">
             <li id="reference-3">[3] National Institute for Health and Care Excellence. (2025). <em>Chronic heart failure in adults: Diagnosis and management</em> (NG106; updated 2025). <a href="https://www.nice.org.uk/guidance/ng106/chapter/recommendations" target="_blank" rel="noopener noreferrer">권고문 보기</a></li>
             <li id="reference-4">[4] Ernstmeyer, K., &amp; Christman, E. (Eds.). (2024). <em>Nursing fundamentals</em> (2nd ed.), Fluids and electrolytes. Chippewa Valley Technical College. <a href="https://www.ncbi.nlm.nih.gov/books/NBK610839/" target="_blank" rel="noopener noreferrer">간호교육 자료</a></li>
         </ol>
-        <h3>7. 임상 시나리오 모드 (v5.3)</h3>
+        <h3>7. 세 학습 영역과 임상 적용 (v5.5)</h3>
+        <p><strong>① 시뮬레이터</strong>는 RAAS 경로·약물·생리 변화를 조작합니다. <strong>② 학습</strong>은 9단계 기전 및 약물 6종의 의학·간호 설명을 정리합니다. <strong>③ 임상 적용</strong>은 CKD/ACEi 또는 HFrEF/MRA 사례에서 판단과 행동을 연습합니다.</p>
+        <p>임상 학습 순서: <strong>환자 파악 → 임상 판단 → 선택한 답/권장 답안 비교·근거 확인 → 간호 행동 → 행동 해설 → 다음 문항 → 완료 복습</strong>. 상세 근거는 접이식 영역에서 확인하고, 완료 후 ⓘ 핵심 임상 포인트 버튼으로 별도 팝업을 엽니다.</p>
+        <p>상단의 탭 이동은 풀이를 보존합니다. <strong>다시 풀기·다른 사례 선택·학습 종료</strong>는 답안을 초기화하며, 새로고침 시 풀이 기록은 사라집니다.</p>
+        <h3>7-1. 기존 임상 사례 안내</h3>
         <p>상단의 <strong>임상 시나리오</strong>에서 만성콩팥병 환자의 ACE 억제제 관련 3문항을 풀 수 있습니다. 임상 시나리오에 진입하면 <strong>CKD·ACE 억제제</strong> 또는 <strong>HFrEF·MRA</strong> 사례를 선택합니다. 풀이 중에는 <strong>다른 사례 선택</strong>으로 돌아갈 수 있지만 현재 답안은 삭제됩니다. 기존 선택지별 해설을 확인한 뒤 <strong>다음: 간호 행동 판단</strong>으로 추가 사정·보고·환자 교육에 관한 선택지를 풉니다. 행동 해설을 확인해야 다음 문항으로 이동할 수 있으며 완료 후 지식 판단과 간호 행동의 선택을 각각 복습할 수 있습니다.</p>
-        <p>일반 학습으로 돌아가면 시나리오의 답안 기록만 초기화하고 RAAS 진행·약물·생리 상태는 보존됩니다. 경로 시연 도중 전환하면 시연을 일시정지합니다. 새로고침 후에도 시나리오 답안은 보존되지 않습니다.</p>
+        <p>상단 탭을 이용해 시뮬레이터나 학습 화면으로 이동해도 진행 중인 답안은 유지됩니다. 답안을 삭제하려면 임상 적용의 ‘학습 종료·답안 초기화’, ‘다시 풀기·답안 초기화’, ‘다른 사례 선택·답안 초기화’를 사용합니다. 경로 시연 도중 전환하면 시연을 일시정지합니다. 새로고침 후에도 시나리오 답안은 보존되지 않습니다.</p>
         <h3>8. 교육용 모델의 한계</h3>
         <p class="help-note">시뮬레이터의 약물 및 RAAS 효과값은 교육을 위한 단순화된 수치입니다. 실제 환자의 혈압, 전해질, 혈액량 또는 신기능을 예측하거나 치료 결정을 내리는 데 사용할 수 없습니다.</p>
         <p>설명서를 닫으려면 <strong>×</strong> 버튼이나 <strong>Esc</strong> 키를 사용하세요. 팝업 바깥을 클릭해도 닫힙니다. 단계별 자세한 의학·간호 내용은 Canvas의 상자를 선택해 확인할 수 있습니다.</p>
@@ -1050,6 +1183,8 @@ class="variableValue">
     </div>
     <div class="help-body">
         <p id="changelogLead">교육용 시뮬레이터의 주요 변경 사항을 버전별로 요약했습니다. 이전 버전의 상세 기록은 프로젝트 DEVLOG.md를 참고하세요.</p>
+        <h3>v5.5 — 시뮬레이터·학습·임상 적용 3체제 및 임상학습 UX</h3>
+        <p>기존 시뮬레이터를 보존하면서 별도 읽기 전용 학습 영역을 신설했습니다. 탭 이동 중 임상 답안을 유지하고, 임상 학습의 로드맵·현재 행동 안내·선택 답안 비교·접이식 근거·문항별 결과 복습·핵심 임상 포인트 팝업·공통 사용법을 추가했습니다. 기존 두 사례 및 채점 근거는 변경하지 않았습니다.</p>
         <h3>v5.4.1 — RAAS 단계별 상세 설명 아코디언</h3>
         <p>단계 설명을 기전, 간호 사정, 약물·근거 세 영역으로 구분했습니다. 기전은 처음에 열려 있으며 영역을 각각 펼쳐 비교할 수 있습니다. 기존 Canvas 탐색, 약물, 생리 계산, 임상 사례는 그대로 유지합니다.</p>
         <h3>v5.4 — 임상 시나리오 정보 구조 개선</h3>
@@ -3558,11 +3693,14 @@ const helpOpenButton=document.getElementById("helpOpenButton");
 const helpCloseButton=document.getElementById("helpCloseButton");
 const helpDialog=document.getElementById("helpDialog");
 
-helpOpenButton.addEventListener("click",()=>{
-    if(!helpDialog.open){
-        helpDialog.showModal();
-    }
-});
+const globalHelpButton=document.getElementById("globalHelpButton");
+let helpReturnFocus=helpOpenButton;
+function openSharedHelp(origin){
+    helpReturnFocus=origin;
+    if(!helpDialog.open)helpDialog.showModal();
+}
+helpOpenButton.addEventListener("click",()=>openSharedHelp(helpOpenButton));
+globalHelpButton.addEventListener("click",()=>openSharedHelp(globalHelpButton));
 
 helpCloseButton.addEventListener("click",()=>{
     helpDialog.close();
@@ -3588,7 +3726,7 @@ helpDialog.addEventListener("click",(event)=>{
 
 helpDialog.addEventListener("close",()=>{
     // Esc, 바깥 클릭 및 닫기 버튼 모두 진입점으로 포커스 복귀.
-    helpOpenButton.focus();
+    helpReturnFocus.focus();
 });
 
 
@@ -3900,6 +4038,9 @@ flowDemoStop.addEventListener("click",stopFlowDemo);
 // v5.0 — isolated clinical scenario interface
 // =============================
 const normalStudyView=document.getElementById("normalStudyView");
+const learningStudyView=document.getElementById("learningStudyView");
+const learningModeButton=document.getElementById("learningModeButton");
+const studyModeNames=["normal","learning","scenario"];
 const scenarioStudyView=document.getElementById("scenarioStudyView");
 const normalModeButton=document.getElementById("normalModeButton");
 const scenarioModeButton=document.getElementById("scenarioModeButton");
@@ -3965,6 +4106,29 @@ function renderScenarioStudy(){
         "현재: "+phaseLabel+" · 임상 판단 "+knowledgeDone+"/"+definition.questions.length+
         " 완료 (남은 "+Math.max(0,definition.questions.length-knowledgeDone)+"문항) · 간호 행동 "+
         actionDone+"/"+actionTotal+" 완료 (남은 "+Math.max(0,actionTotal-actionDone)+"문항)";
+    const isFinished=session.status==="completed"&&!scenarioLatestFeedback;
+    const part=isFinished?"result":!scenarioLatestFeedback||scenarioActionPhase==="idle"?"judgement":"action";
+    const roadmapStates=[
+        ["scenarioRoadmapContext","done"],
+        ["scenarioRoadmapJudgement",part==="judgement"?"current":"done"],
+        ["scenarioRoadmapAction",part==="action"?"current":part==="result"?"done":"pending"],
+        ["scenarioRoadmapResult",part==="result"?"current":"pending"]
+    ];
+    roadmapStates.forEach(([id,status])=>{
+        const item=document.getElementById(id);
+        item.setAttribute("data-status",status);
+        item.setAttribute("aria-current",status==="current"?"step":"false");
+    });
+    const instructions={
+        judgement:"환자 정보에서 가장 중요한 임상 판단을 선택하세요. 답안 제출 후 자신의 선택과 권장 답안을 비교합니다.",
+        action:"임상적 판단을 실제 사정·보고·교육 행동으로 연결하세요. 행동을 선택한 뒤 근거를 복습합니다.",
+        result:"사례 학습 완료: 자신의 답과 권장 답안을 문항별로 비교하고, 핵심 임상 포인트를 복습하세요."
+    };
+    document.getElementById("scenarioCurrentTask").textContent="현재 할 일: "+
+        (isFinished?instructions.result:
+        !scenarioLatestFeedback?instructions.judgement:
+        scenarioActionPhase==="idle"?"임상 판단 해설에서 내 선택과 권장 답안을 비교한 뒤 '간호 행동 판단'으로 이동하세요.":
+        scenarioActionPhase==="select"?instructions.action:"간호 행동 해설을 확인한 뒤 다음 임상 판단 문항이나 결과 화면으로 이동하세요.");
     document.getElementById("scenarioObjectives").textContent=
         "학습 목표: "+definition.objectives.join(" / ");
     document.getElementById("scenarioContext").textContent=definition.caseContext;
@@ -3990,12 +4154,13 @@ function renderScenarioStudy(){
         scenarioFeedbackPanel.hidden=scenarioActionPhase!=="idle";
         document.getElementById("scenarioProgress").textContent=
             "문항 "+session.questionIndex+" / "+definition.questions.length+" · 해설";
+        document.getElementById("scenarioAnsweredQuestion").textContent=question.prompt;
         document.getElementById("scenarioFeedbackTitle").textContent=
-            feedback.correct?"정답입니다":"다시 생각해 볼 선택입니다";
-        document.getElementById("scenarioFeedbackSelected").textContent="내 선택: "+selectedChoice.text;
+            feedback.correct?"임상 판단 · 권장 답안과 일치":"임상 판단 · 보완이 필요한 선택";
+        document.getElementById("scenarioFeedbackSelected").textContent=selectedChoice.text;
         document.getElementById("scenarioFeedbackChoiceExplanation").textContent=
             "선택지별 해설: "+(selectedChoice.feedback||feedback.rationale);
-        document.getElementById("scenarioFeedbackCorrectAnswer").textContent="정답: "+rightChoice.text;
+        document.getElementById("scenarioFeedbackCorrectAnswer").textContent=rightChoice.text;
         document.getElementById("scenarioFeedbackNursing").textContent=
             "간호 사정·보고 핵심: "+(question.nursingFocus||
                 "현재 문항의 핵심 근거와 환자 상태를 함께 검토합니다.");
@@ -4009,7 +4174,7 @@ function renderScenarioStudy(){
         scenarioChoiceButtons.forEach(button=>{button.hidden=true;button.disabled=true;});
         document.getElementById("scenarioQuestion").textContent=
             "해설 확인 후 아래 버튼으로 간호 행동 판단을 진행하세요.";
-        scenarioNextButton.textContent=feedback.completed?"결과 보기":"다음 문항";
+        scenarioNextButton.textContent=feedback.completed?"학습 완료 · 결과 복습":"다음 문항 · 임상 판단";
 
         const exercise=question.actionExercise;
         if(!exercise){
@@ -4034,11 +4199,12 @@ function renderScenarioStudy(){
             const choice=exercise.choices.find(item=>item.id===scenarioActionAnswers[question.id]);
             const right=exercise.choices.find(item=>item.id===exercise.correctChoiceId);
             const correct=choice.id===right.id;
+            document.getElementById("scenarioAnsweredActionPrompt").textContent=exercise.prompt;
             document.getElementById("scenarioActionFeedbackTitle").textContent=
-                correct?"간호 행동 선택: 적절합니다":"간호 행동 선택: 보완이 필요합니다";
-            document.getElementById("scenarioActionFeedbackSelected").textContent="내 선택: "+choice.text;
+                correct?"간호 행동 · 권장 행동과 일치":"간호 행동 · 보완이 필요한 선택";
+            document.getElementById("scenarioActionFeedbackSelected").textContent=choice.text;
             document.getElementById("scenarioActionFeedbackReason").textContent="선택한 이유: "+choice.feedback;
-            document.getElementById("scenarioActionFeedbackCorrect").textContent="적절한 행동: "+right.text;
+            document.getElementById("scenarioActionFeedbackCorrect").textContent=right.text;
             document.getElementById("scenarioActionFeedbackRationale").textContent=exercise.rationale;
             document.getElementById("scenarioActionAssessment").textContent=exercise.assessment;
             document.getElementById("scenarioActionEscalation").textContent=exercise.escalation;
@@ -4080,6 +4246,8 @@ function renderScenarioStudy(){
                     "\n적절한 행동: "+expected.text+
                     "\n"+(selected?.id===action.correctChoiceId?"적절":"보완 필요");
             }).join("\n\n");
+        // Structured read-only review; preserve historical plain-text results for compatibility.
+        renderScenarioReviewCards(definition,session);
         return;
     }
 
@@ -4095,6 +4263,44 @@ function renderScenarioStudy(){
         if(choice)button.textContent=(index+1)+". "+choice.text;
     });
 }
+// v5.5 review uses pre-existing content and textContent only, avoiding dynamic HTML injection.
+function renderScenarioReviewCards(definition,session){
+    // Both current curated cases fit three cards. For future larger cases, also
+    // reveal the full text review so no answers are silently omitted.
+    document.getElementById("scenarioResultReview").hidden=definition.questions.length<=3;
+    document.getElementById("scenarioActionReview").hidden=
+        definition.questions.filter(q=>q.actionExercise).length<=3;
+    function showCard(prefix,index,prompt,selected,expected,correct,note){
+        const slot=index+1;
+        const card=document.getElementById(prefix+"Card"+slot);
+        if(!card)return;
+        card.hidden=false;
+        card.setAttribute("data-correct",String(correct));
+        document.getElementById(prefix+"Title"+slot).textContent=(index+1)+". "+prompt;
+        document.getElementById(prefix+"Status"+slot).textContent=correct?"권장 답안과 일치":"추가 복습 필요";
+        document.getElementById(prefix+"Selected"+slot).textContent=selected||"미응답";
+        document.getElementById(prefix+"Expected"+slot).textContent=expected;
+        document.getElementById(prefix+"Note"+slot).textContent=note;
+    }
+    for(let i=1;i<=3;i++){
+        document.getElementById("scenarioKnowledgeReviewCard"+i).hidden=true;
+        document.getElementById("scenarioNursingReviewCard"+i).hidden=true;
+    }
+    definition.questions.slice(0,3).forEach((q,i)=>{
+        const selected=q.choices.find(c=>c.id===session.answers[q.id]);
+        const right=q.choices.find(c=>c.id===q.correctChoiceId);
+        showCard("scenarioKnowledgeReview",i,q.prompt,selected?.text,right.text,
+            selected?.id===right.id,selected?.feedback||q.rationale);
+    });
+    definition.questions.filter(q=>q.actionExercise).slice(0,3).forEach((q,i)=>{
+        const ex=q.actionExercise;
+        const selected=ex.choices.find(c=>c.id===scenarioActionAnswers[q.id]);
+        const right=ex.choices.find(c=>c.id===ex.correctChoiceId);
+        showCard("scenarioNursingReview",i,ex.prompt,selected?.text,right.text,
+            selected?.id===right.id,selected?.feedback||ex.rationale);
+    });
+}
+
 function chooseScenarioAnswer(index){
     if(scenarioRuntime.mode!=="scenario"||scenarioLatestFeedback)return;
     const session=scenarioRuntime.session;
@@ -4127,6 +4333,9 @@ function selectClinicalCase(id){
     resetScenarioActions();
     scenarioCaseCatalog.hidden=true;
     scenarioSessionContent.hidden=false;
+    document.getElementById("scenarioCaseDetails").open=true;
+    document.getElementById("scenarioJudgementEvidenceDetails").open=false;
+    document.getElementById("scenarioActionEvidenceDetails").open=false;
     const primary=document.getElementById("scenarioSourcePrimary");
     const secondary=document.getElementById("scenarioSourceSecondary");
     primary.textContent=selected.sources[0].label;
@@ -4144,41 +4353,78 @@ function selectClinicalCase(id){
     scenarioChoiceButtons[0].focus();
     return Boolean(session);
 }
+// v5.5: navigation changes visible views only. Explicit case actions own session deletion.
 function switchStudyMode(mode){
+    if(!studyModeNames.includes(mode))return;
+    if(mode!=="normal"&&!normalStudyView.hidden&&flowDemo.timer!==null){
+        toggleFlowDemo(); // pause hidden auto-demo; keep its previous position
+    }
+    normalStudyView.hidden=mode!=="normal";
+    learningStudyView.hidden=mode!=="learning";
+    scenarioStudyView.hidden=mode!=="scenario";
+    normalModeButton.setAttribute("aria-pressed",String(mode==="normal"));
+    learningModeButton.setAttribute("aria-pressed",String(mode==="learning"));
+    scenarioModeButton.setAttribute("aria-pressed",String(mode==="scenario"));
+    if(mode==="learning")renderLearningLibrary();
     if(mode==="scenario"){
-        if(!normalStudyView.hidden&&flowDemo.timer!==null){
-            toggleFlowDemo(); // pause hidden demo; preserves progress and index
-        }
-        normalStudyView.hidden=true;
-        scenarioStudyView.hidden=false;
-        normalModeButton.setAttribute("aria-pressed","false");
-        scenarioModeButton.setAttribute("aria-pressed","true");
-        // When no session is active show the catalog rather than silently selecting a case.
-        if(scenarioRuntime.mode!=="scenario"){
-            showClinicalCaseCatalog(false);
-        }else{
+        if(scenarioRuntime.mode!=="scenario")showClinicalCaseCatalog(false);
+        else{
             scenarioCaseCatalog.hidden=true;
             scenarioSessionContent.hidden=false;
             renderScenarioStudy();
         }
-        scenarioModeButton.focus();
-        return;
     }
-    if(mode==="normal"){
-        showClinicalCaseCatalog(false); // discard previous case knowledge/action answers
-        scenarioStudyView.hidden=true;
-        normalStudyView.hidden=false;
-        normalModeButton.setAttribute("aria-pressed","true");
-        scenarioModeButton.setAttribute("aria-pressed","false");
-        normalModeButton.focus();
-    }
+    ({normal:normalModeButton,learning:learningModeButton,scenario:scenarioModeButton})[mode].focus();
 }
 normalModeButton.addEventListener("click",()=>switchStudyMode("normal"));
+learningModeButton.addEventListener("click",()=>switchStudyMode("learning"));
 scenarioModeButton.addEventListener("click",()=>switchStudyMode("scenario"));
-document.getElementById("scenarioExitButton").addEventListener("click",()=>switchStudyMode("normal"));
+document.getElementById("learningGoClinicalButton").addEventListener("click",()=>switchStudyMode("scenario"));
+document.getElementById("scenarioExitButton").addEventListener("click",()=>{
+    showClinicalCaseCatalog(false); // explicit termination, not tab navigation
+    switchStudyMode("normal");
+});
 document.getElementById("caseCKDButton").addEventListener("click",()=>selectClinicalCase(firstClinicalScenario.id));
 document.getElementById("caseMRAButton").addEventListener("click",()=>selectClinicalCase(secondClinicalScenario.id));
 document.getElementById("scenarioBackToCasesButton").addEventListener("click",()=>showClinicalCaseCatalog(true));
+const takeawaysDialog=document.getElementById("scenarioTakeawaysDialog");
+const takeawaysButton=document.getElementById("scenarioTakeawaysButton");
+const takeawaysCloseButton=document.getElementById("scenarioTakeawaysCloseButton");
+// Summaries reflect the two curated cases; do not add prescribing advice or change answer keys.
+const scenarioKeyTakeaways=Object.freeze({
+    [firstClinicalScenario.id]:{
+        assessment:"혈압·저혈압 증상, 크레아티닌/eGFR, 혈청 K⁺ 및 복용 중인 RAAS 관련 약물을 함께 확인합니다.",
+        escalation:"기초검사·추적검사 계획과 ACEi/ARB 등 처방 중복 가능성을 확인하고 필요한 사항을 담당 의료진과 공유합니다.",
+        teaching:"관련 검사·재방문 일정과 확인이 필요한 증상에 대해 기존 처방 및 기관 안내에 따라 설명합니다."
+    },
+    [secondClinicalScenario.id]:{
+        assessment:"MRA 고려 시 혈청 K⁺·신기능과 기존 복용 약물 및 환자 증상을 확인합니다.",
+        escalation:"검사 결과와 추적 모니터링 계획이 불명확하면 담당 의료진과 확인하고 환자별 위험을 함께 공유합니다.",
+        teaching:"투여 후 추적검사·재방문 계획 및 관련 증상 확인의 중요성을 기존 치료계획에 따라 안내합니다."
+    }
+});
+takeawaysButton.addEventListener("click",()=>{
+    if(scenarioRuntime.mode!=="scenario"||
+       scenarioRuntime.session?.status!=="completed"||scenarioLatestFeedback)return;
+    const definition=scenarioRuntime.definition;
+    const summary=scenarioKeyTakeaways[definition.id];
+    if(!summary)return;
+    document.getElementById("scenarioTakeawaysTitle").textContent=definition.title+" · 핵심 임상 포인트";
+    document.getElementById("scenarioTakeawayAssessment").textContent=summary.assessment;
+    document.getElementById("scenarioTakeawayEscalation").textContent=summary.escalation;
+    document.getElementById("scenarioTakeawayTeaching").textContent=summary.teaching;
+    document.getElementById("scenarioTakeawayEvidence").textContent=
+        "출처: "+definition.references.map(r=>r.citation).join(" / ");
+    if(!takeawaysDialog.open)takeawaysDialog.showModal();
+});
+takeawaysCloseButton.addEventListener("click",()=>takeawaysDialog.close());
+takeawaysDialog.addEventListener("close",()=>takeawaysButton.focus());
+takeawaysDialog.addEventListener("click",(event)=>{
+    if(event.target!==takeawaysDialog||!takeawaysDialog.open)return;
+    const rect=takeawaysDialog.getBoundingClientRect();
+    if(event.clientX<rect.left||event.clientX>rect.right||
+       event.clientY<rect.top||event.clientY>rect.bottom)takeawaysDialog.close();
+});
 document.getElementById("scenarioRestartButton").addEventListener("click",()=>{
     if(scenarioRuntime.mode!=="scenario")return;
     resetScenarioSession();
@@ -4212,6 +4458,32 @@ document.getElementById("scenarioActionStartButton").addEventListener("click",()
 });
 scenarioActionChoiceButtons.forEach((button,i)=>
     button.addEventListener("click",()=>chooseScenarioAction(i)));
+
+// v5.5 read-only RAAS library, driven by the same source data as the simulator.
+function renderLearningLibrary(){
+    document.getElementById("learningPathwayOverview").textContent=
+        stageData.map((stage,index)=>(index+1)+". "+stage.name).join(" → ");
+    const index=Number(document.getElementById("learningStageSelect").value||0);
+    const validIndex=Number.isInteger(index)&&index>=0&&index<stageData.length?index:0;
+    const stage=stageData[validIndex];
+    const clinical=clinicalStageNotes[validIndex];
+    document.getElementById("learningStageTitle").textContent=(validIndex+1)+". "+stage.name;
+    document.getElementById("learningStageSummary").textContent=stage.description;
+    document.getElementById("learningStageMechanism").textContent=stage.learningDetail;
+    document.getElementById("learningStageClinical").textContent=clinical.medical;
+    document.getElementById("learningStageNursing").textContent=clinical.nursing;
+    document.getElementById("learningStageSources").textContent="학습 근거: "+clinical.sourceIds+" · 자세한 원문은 설명서 참고문헌을 확인하세요.";
+
+    const selectedId=document.getElementById("learningDrugSelect").value||"acei";
+    const id=clinicalDrugNotes[selectedId]?selectedId:"acei";
+    const drug=drugData[id],detail=clinicalDrugNotes[id];
+    document.getElementById("learningDrugTitle").textContent=drug.name;
+    document.getElementById("learningDrugMechanism").textContent=detail.medical;
+    document.getElementById("learningDrugNursing").textContent=detail.nursing;
+    document.getElementById("learningDrugSources").textContent="학습 근거: "+detail.sourceIds+" · 원문은 설명서 참고문헌을 확인하세요.";
+}
+document.getElementById("learningStageSelect").addEventListener("change",renderLearningLibrary);
+document.getElementById("learningDrugSelect").addEventListener("change",renderLearningLibrary);
 
 // 초기 실행
 // =============================

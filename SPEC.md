@@ -1092,3 +1092,35 @@ v4.9의 시나리오 엔진은 이 함수를 호출하지 않는다. 미래 시�
 - 출처 및 교육용 생리 효과는 정보용이며 실제 환자 반응의 예측값이 아니다.
 - `tests/regression-v5.4.cjs`는 동결 `backups/v5.4.html`을 대상으로 하고 새 `tests/regression-v5.4.1.cjs`가 현재 `index.html`을 검사한다.
 - V8/모의 DOM·Canvas 기준 역사적 8,159개 + 신규 1,491개 = **9,650개** 통과. 브라우저 실제 native details 상호작용과 키보드·모바일·스크린리더 확인은 별도 미완료.
+
+---
+
+# 36. v5.5 3영역 학습 UX·세션 보존 계약
+
+## 36.1 화면 계약
+
+- `normalStudyView`: ① 시뮬레이터, 기존 9단계 Canvas / 계산 / 약물 / 그래프 / 시연 / v5.4.1 아코디언.
+- `learningStudyView`: ② 학습, 기존 `stageData` (9단계) · `clinicalStageNotes` (기전/간호/근거) · `drugData` 및 `clinicalDrugNotes` (6종 약물)을 **읽기만** 한다. 사용자의 단계·약물 학습 드롭다운은 시뮬레이터의 `state.drug` 또는 `state.currentStep`을 수정하지 않는다.
+- `scenarioStudyView`: ③ 임상 적용, 기존 스키마 1·두 임상 사례·근거·채점 유지. 기존 `normalModeButton`, `scenarioModeButton` ID 보존; `learningModeButton` 추가.
+- 탭 전환은 화면의 `hidden`·`aria-pressed` 표시만 갱신한다. 시뮬레이션 자동 시연이 켜진 상태에서 다른 탭으로 이동하면 일시정지하고 시연 위치는 보존한다.
+
+## 36.2 임상 학습 표시
+
+- 사례별 환자 상황·학습 목표 접이식 블록, '환자 파악 → 임상 판단 → 간호 행동 → 결과 복습' 로드맵, 단계별 현재 할 일 안내를 제공한다. 지표는 기존 `scenarioRuntime.session`, `scenarioLatestFeedback`, `scenarioActionPhase`, `scenarioActionAnswers`에서 파생한다.
+- 질문과 간호 행동 선택 후 **원래 질문 + 내 선택 + 권장 답안**을 각각 제목과 카드로 표시한다. 정오답 판단 및 해설·출처는 기존 시나리오 정의를 참조하며 답안 판정 함수를 변경하지 않는다. 근거·간호 사정/보고·교육·서지 표기는 접이식 `details`로 확인한다. 색상만으로 정오답을 구분하지 않는다.
+- 결과는 문항별 카드와 정오답 라벨을 표시한다. 현재 2개 사례의 최대 3문항을 담는 정적 카드 3칸이며, 향후 정의가 3문항을 초과하면 기존 전체 텍스트 복습을 추가 노출하여 내용 누락을 방지한다.
+- 완료 화면에서만 볼 수 있는 `scenarioTakeawaysDialog`는 두 사례에 근거한 추가 사정·확인/보고·환자 교육의 간결한 교육 요약을 제공한다. 처방 적합성 판단이나 개별 환자 반응 예측을 하지 않는다.
+- 설명서 `helpDialog`는 모든 탭에서 공통 접근하며 열었던 트리거에 포커스를 되돌린다. 기존 시뮬레이터용 `helpOpenButton`도 유지한다.
+
+## 36.3 세션·초기화 경계
+
+- **탭 이동 ≠ 학습 종료:** `switchStudyMode("normal"|"learning"|"scenario")`는 `showClinicalCaseCatalog()` / `exitScenarioMode()`를 호출하여 활성 세션을 초기화하면 안 된다.
+- **명시적 종료:** `scenarioRestartButton`은 같은 사례의 지식·간호 행동 답안 초기화, `scenarioBackToCasesButton`은 사례 세션 종료 후 카탈로그 표시, `scenarioExitButton`은 명시적 종료 및 시뮬레이터 복귀.
+- 새로고침/새 페이지는 임상 세션을 보존하지 않는다. 영구 저장, 브라우저 스토리지, 서버 저장 없음.
+- 시뮬레이터의 기존 생리 계산 / Canvas / 약물 / 그래프 / 모달 / 시연은 영향을 받지 않아야 한다. 임상 사례의 문항 내용·정답 데이터·참고문헌 ID와 `SCENARIO_SCHEMA_VERSION=1`은 동결한다.
+
+## 36.4 검증·미완료
+
+- 기존 v4.5~v5.4.1: **13개 스위트 / 9,650개 모의 DOM/Canvas 검사** 통과.
+- 신규 `tests/regression-v5.5.cjs`: **701개 검사** 통과. 7개 약물 상태, 단계 조회, 탭 전환 후 모델 일치, 2개 사례 전체 풀이 및 답안 보존, 오답 비교와 문헌, 간호 행동, 결과·팝업, 되풀기/종료, 시연 일시정지를 확인.
+- 총 **14개 스위트 / 10,351개** 자동 검사 통과. 실행 환경은 V8 + 메모리 fs 어댑터 + 가상 DOM/Canvas; Node.js CLI / 실제 브라우저 레이아웃·포커스·모바일 키보드/터치·스크린리더는 별도 수동 확인 필요.

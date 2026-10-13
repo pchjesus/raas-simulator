@@ -47,7 +47,7 @@ function boot(html){
     }};
 }
 
-const source=fs.readFileSync(path.join(root,"index.html"),"utf8");
+const source=fs.readFileSync(path.join(root,"backups","v5.4.1.html"),"utf8");
 const frozen=fs.readFileSync(path.join(root,"backups","v5.4.html"),"utf8");
 const app=boot(source),previous=boot(frozen);
 let count=0;
