@@ -4315,6 +4315,9 @@ function selectClinicalCase(id){
     resetScenarioActions();
     scenarioCaseCatalog.hidden=true;
     scenarioSessionContent.hidden=false;
+    document.getElementById("scenarioCaseDetails").open=true;
+    document.getElementById("scenarioJudgementEvidenceDetails").open=false;
+    document.getElementById("scenarioActionEvidenceDetails").open=false;
     const primary=document.getElementById("scenarioSourcePrimary");
     const secondary=document.getElementById("scenarioSourceSecondary");
     primary.textContent=selected.sources[0].label;
@@ -4366,6 +4369,44 @@ document.getElementById("scenarioExitButton").addEventListener("click",()=>{
 document.getElementById("caseCKDButton").addEventListener("click",()=>selectClinicalCase(firstClinicalScenario.id));
 document.getElementById("caseMRAButton").addEventListener("click",()=>selectClinicalCase(secondClinicalScenario.id));
 document.getElementById("scenarioBackToCasesButton").addEventListener("click",()=>showClinicalCaseCatalog(true));
+const takeawaysDialog=document.getElementById("scenarioTakeawaysDialog");
+const takeawaysButton=document.getElementById("scenarioTakeawaysButton");
+const takeawaysCloseButton=document.getElementById("scenarioTakeawaysCloseButton");
+// Summaries reflect the two curated cases; do not add prescribing advice or change answer keys.
+const scenarioKeyTakeaways=Object.freeze({
+    [firstClinicalScenario.id]:{
+        assessment:"혈압·저혈압 증상, 크레아티닌/eGFR, 혈청 K⁺ 및 복용 중인 RAAS 관련 약물을 함께 확인합니다.",
+        escalation:"기초검사·추적검사 계획과 ACEi/ARB 등 처방 중복 가능성을 확인하고 필요한 사항을 담당 의료진과 공유합니다.",
+        teaching:"관련 검사·재방문 일정과 확인이 필요한 증상에 대해 기존 처방 및 기관 안내에 따라 설명합니다."
+    },
+    [secondClinicalScenario.id]:{
+        assessment:"MRA 고려 시 혈청 K⁺·신기능과 기존 복용 약물 및 환자 증상을 확인합니다.",
+        escalation:"검사 결과와 추적 모니터링 계획이 불명확하면 담당 의료진과 확인하고 환자별 위험을 함께 공유합니다.",
+        teaching:"투여 후 추적검사·재방문 계획 및 관련 증상 확인의 중요성을 기존 치료계획에 따라 안내합니다."
+    }
+});
+takeawaysButton.addEventListener("click",()=>{
+    if(scenarioRuntime.mode!=="scenario"||
+       scenarioRuntime.session?.status!=="completed"||scenarioLatestFeedback)return;
+    const definition=scenarioRuntime.definition;
+    const summary=scenarioKeyTakeaways[definition.id];
+    if(!summary)return;
+    document.getElementById("scenarioTakeawaysTitle").textContent=definition.title+" · 핵심 임상 포인트";
+    document.getElementById("scenarioTakeawayAssessment").textContent=summary.assessment;
+    document.getElementById("scenarioTakeawayEscalation").textContent=summary.escalation;
+    document.getElementById("scenarioTakeawayTeaching").textContent=summary.teaching;
+    document.getElementById("scenarioTakeawayEvidence").textContent=
+        "출처: "+definition.references.map(r=>r.citation).join(" / ");
+    if(!takeawaysDialog.open)takeawaysDialog.showModal();
+});
+takeawaysCloseButton.addEventListener("click",()=>takeawaysDialog.close());
+takeawaysDialog.addEventListener("close",()=>takeawaysButton.focus());
+takeawaysDialog.addEventListener("click",(event)=>{
+    if(event.target!==takeawaysDialog||!takeawaysDialog.open)return;
+    const rect=takeawaysDialog.getBoundingClientRect();
+    if(event.clientX<rect.left||event.clientX>rect.right||
+       event.clientY<rect.top||event.clientY>rect.bottom)takeawaysDialog.close();
+});
 document.getElementById("scenarioRestartButton").addEventListener("click",()=>{
     if(scenarioRuntime.mode!=="scenario")return;
     resetScenarioSession();
