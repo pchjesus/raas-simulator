@@ -41,7 +41,7 @@ function boot(html){
 
 
 
-const current=fs.readFileSync(path.join(root,"index.html"),"utf8");
+const current=fs.readFileSync(path.join(root,"backups","v5.5.html"),"utf8");
 const frozen=fs.readFileSync(path.join(root,"backups","v5.4.1.html"),"utf8");
 const app=boot(current),old=boot(frozen);
 let count=0;
