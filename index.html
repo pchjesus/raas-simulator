@@ -917,6 +917,10 @@ class="variableValue">
   <span class="scenario-tag">v5.5 · 임상 적용</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
+    <div class="scenario-instructions"><h3>학습은 이렇게 진행돼요</h3>
+      <p><strong>환자 정보 → 임상 판단·해설 → 간호 행동·해설 → 결과 복습</strong> 순서로 연습합니다. 선택한 이유와 권장 행동을 확인한 후 다음으로 이동하세요.</p>
+      <p>상단 탭 이동은 풀이를 보존합니다. <strong>다시 풀기 / 다른 사례 선택 / 학습 종료</strong>는 답안을 초기화하며 새로고침하면 기록이 사라집니다.</p>
+    </div>
     <p>풀어볼 임상 사례를 선택하세요. 사례마다 독립적인 풀이 기록을 사용합니다.</p>
     <div class="scenario-case-grid">
       <button id="caseCKDButton" class="scenario-case-button" type="button">
@@ -937,11 +941,21 @@ class="variableValue">
   <div id="scenarioSessionContent" hidden>
   <p id="scenarioActiveCaseLabel" class="scenario-active-case"></p>
   <p id="scenarioOverview"></p>
+  <ol class="scenario-roadmap" aria-label="임상 학습 진행 순서">
+    <li id="scenarioRoadmapContext">① 환자 파악</li>
+    <li id="scenarioRoadmapJudgement">② 임상 판단</li>
+    <li id="scenarioRoadmapAction">③ 간호 행동</li>
+    <li id="scenarioRoadmapResult">④ 결과 복습</li>
+  </ol>
+  <p id="scenarioCurrentTask" class="scenario-current-task" aria-live="polite"></p>
   <p id="scenarioLearningProgress" class="scenario-learning-progress" aria-live="polite" aria-atomic="true"></p>
-  <p id="scenarioObjectives" class="scenario-caution"></p>
-  <h3>환자 상황</h3>
-  <p id="scenarioContext"></p>
-  <div id="scenarioObservations" class="scenario-observations"></div>
+  <details id="scenarioCaseDetails" class="scenario-case-details" open>
+    <summary>환자 상황과 학습 목표 (접기/펼치기)</summary>
+    <div class="scenario-case-details-body"><p id="scenarioObjectives" class="scenario-caution"></p>
+      <h3>환자 상황</h3><p id="scenarioContext"></p>
+      <div id="scenarioObservations" class="scenario-observations"></div>
+    </div>
+  </details>
   <p class="scenario-caution">이 사례는 실제 환자 기록이 아닌 교육용 가상 상황입니다. 기존 RAAS 그래프의 BP·Na⁺·혈액량·GFR 숫자는 이 환자의 검사 결과나 약물 반응이 아닙니다. 실제 처방·투여 변경에 사용하지 마세요.</p>
   <section id="scenarioQuestionSection" aria-labelledby="scenarioProgress">
     <h3 id="scenarioProgress"></h3>
@@ -954,14 +968,22 @@ class="variableValue">
   </section>
   <section id="scenarioFeedbackPanel" class="scenario-feedback" aria-live="polite" aria-atomic="true" hidden>
     <h3 id="scenarioFeedbackTitle"></h3>
-    <p id="scenarioFeedbackSelected" class="scenario-feedback-selection"></p>
+    <div class="scenario-answer-compare">
+      <div class="scenario-answer-card selected"><h4>내가 선택한 답</h4><p id="scenarioFeedbackSelected" class="scenario-feedback-selection"></p></div>
+      <div class="scenario-answer-card recommended"><h4>권장 답안</h4><p id="scenarioFeedbackCorrectAnswer" class="scenario-feedback-correct"></p></div>
+    </div>
+    <h4 class="scenario-feedback-subtitle">내 선택에 대한 해설</h4>
     <p id="scenarioFeedbackChoiceExplanation" class="scenario-choice-reason"></p>
-    <p id="scenarioFeedbackCorrectAnswer" class="scenario-feedback-correct"></p>
-    <h4 class="scenario-feedback-subtitle">판단 근거</h4>
-     <p id="scenarioFeedbackText" class="scenario-feedback-rationale"></p>
-    <p id="scenarioFeedbackNursing" class="scenario-nursing-focus"></p>
-    <p id="scenarioFeedbackSource" class="scenario-feedback-evidence"></p>
-  </section>
+    <details id="scenarioJudgementEvidenceDetails" class="scenario-evidence-disclosure">
+      <summary>판단 근거 · 간호 사정 · 참고문헌</summary>
+      <div class="scenario-disclosure-body">
+        <h4 class="scenario-feedback-subtitle">판단 근거</h4>
+        <p id="scenarioFeedbackText" class="scenario-feedback-rationale"></p>
+        <p id="scenarioFeedbackNursing" class="scenario-nursing-focus"></p>
+        <p id="scenarioFeedbackSource" class="scenario-feedback-evidence"></p>
+      </div>
+    </details>
+    </section>
   <section id="scenarioActionStep" class="scenario-action-step" aria-labelledby="scenarioActionProgress" hidden>
     <h3 id="scenarioActionProgress">다음 간호 행동 판단</h3>
     <p id="scenarioActionPrompt"></p>
@@ -973,34 +995,48 @@ class="variableValue">
   </section>
   <section id="scenarioActionFeedbackPanel" class="scenario-action-feedback" aria-live="polite" aria-atomic="true" hidden>
     <h3 id="scenarioActionFeedbackTitle"></h3>
-    <p id="scenarioActionFeedbackSelected" class="scenario-feedback-selection"></p>
-     <p id="scenarioActionFeedbackReason" class="scenario-choice-reason"></p>
-     <p id="scenarioActionFeedbackCorrect" class="scenario-feedback-correct"></p>
-     <h4 class="scenario-feedback-subtitle">행동 판단 근거</h4>
-     <p id="scenarioActionFeedbackRationale" class="scenario-feedback-rationale"></p>
-     <h4 class="scenario-feedback-subtitle">후속 간호 행동</h4>
-     <div class="scenario-action-detail-grid">
-       <section class="scenario-action-detail"><h4>추가 사정</h4><p id="scenarioActionAssessment"></p></section>
-       <section class="scenario-action-detail"><h4>확인·보고</h4><p id="scenarioActionEscalation"></p></section>
-       <section class="scenario-action-detail"><h4>환자 교육</h4><p id="scenarioActionTeaching"></p></section>
-     </div>
-     <p id="scenarioActionEvidence" class="scenario-feedback-evidence"></p>
-  </section>
+    <div class="scenario-answer-compare">
+      <div class="scenario-answer-card selected"><h4>내가 선택한 간호 행동</h4><p id="scenarioActionFeedbackSelected" class="scenario-feedback-selection"></p></div>
+      <div class="scenario-answer-card recommended"><h4>권장 간호 행동</h4><p id="scenarioActionFeedbackCorrect" class="scenario-feedback-correct"></p></div>
+    </div>
+    <h4 class="scenario-feedback-subtitle">내 선택에 대한 해설</h4>
+    <p id="scenarioActionFeedbackReason" class="scenario-choice-reason"></p>
+    <details id="scenarioActionEvidenceDetails" class="scenario-evidence-disclosure">
+      <summary>행동 근거 · 사정/보고/교육 · 참고문헌</summary>
+      <div class="scenario-disclosure-body">
+        <h4 class="scenario-feedback-subtitle">행동 판단 근거</h4><p id="scenarioActionFeedbackRationale" class="scenario-feedback-rationale"></p>
+        <h4 class="scenario-feedback-subtitle">후속 간호 행동</h4>
+        <div class="scenario-action-detail-grid">
+          <section class="scenario-action-detail"><h4>추가 사정</h4><p id="scenarioActionAssessment"></p></section>
+          <section class="scenario-action-detail"><h4>확인·보고</h4><p id="scenarioActionEscalation"></p></section>
+          <section class="scenario-action-detail"><h4>환자 교육</h4><p id="scenarioActionTeaching"></p></section>
+        </div>
+        <p id="scenarioActionEvidence" class="scenario-feedback-evidence"></p>
+      </div>
+    </details>
+    </section>
   <section id="scenarioResultPanel" aria-live="polite" hidden>
     <h3>학습 완료</h3>
     <p id="scenarioResultText"></p>
-    <h4>문항별 선택 복습</h4>
-    <p id="scenarioResultReview" class="scenario-result-review"></p>
+    <h4>문항별 임상 판단 복습</h4>
+    <p id="scenarioResultReview" class="scenario-result-review" hidden></p>
+    <div class="scenario-review-cards"><article id="scenarioKnowledgeReviewCard1" class="scenario-review-card" hidden><h5 id="scenarioKnowledgeReviewTitle1"></h5><p id="scenarioKnowledgeReviewStatus1" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioKnowledgeReviewSelected1"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioKnowledgeReviewExpected1"></p></div></div><p id="scenarioKnowledgeReviewNote1" class="scenario-review-note"></p></article>
+<article id="scenarioKnowledgeReviewCard2" class="scenario-review-card" hidden><h5 id="scenarioKnowledgeReviewTitle2"></h5><p id="scenarioKnowledgeReviewStatus2" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioKnowledgeReviewSelected2"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioKnowledgeReviewExpected2"></p></div></div><p id="scenarioKnowledgeReviewNote2" class="scenario-review-note"></p></article>
+<article id="scenarioKnowledgeReviewCard3" class="scenario-review-card" hidden><h5 id="scenarioKnowledgeReviewTitle3"></h5><p id="scenarioKnowledgeReviewStatus3" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioKnowledgeReviewSelected3"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioKnowledgeReviewExpected3"></p></div></div><p id="scenarioKnowledgeReviewNote3" class="scenario-review-note"></p></article></div>
     <h4>간호 행동 판단 복습</h4>
-    <p id="scenarioActionReview" class="scenario-action-review"></p>
-    <p>선택한 답안과 정답 근거를 확인했습니다. 필요하면 다시 풀거나 일반 학습으로 돌아갈 수 있습니다.</p>
+    <p id="scenarioActionReview" class="scenario-action-review" hidden></p>
+    <div class="scenario-review-cards"><article id="scenarioNursingReviewCard1" class="scenario-review-card" hidden><h5 id="scenarioNursingReviewTitle1"></h5><p id="scenarioNursingReviewStatus1" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioNursingReviewSelected1"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioNursingReviewExpected1"></p></div></div><p id="scenarioNursingReviewNote1" class="scenario-review-note"></p></article>
+<article id="scenarioNursingReviewCard2" class="scenario-review-card" hidden><h5 id="scenarioNursingReviewTitle2"></h5><p id="scenarioNursingReviewStatus2" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioNursingReviewSelected2"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioNursingReviewExpected2"></p></div></div><p id="scenarioNursingReviewNote2" class="scenario-review-note"></p></article>
+<article id="scenarioNursingReviewCard3" class="scenario-review-card" hidden><h5 id="scenarioNursingReviewTitle3"></h5><p id="scenarioNursingReviewStatus3" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioNursingReviewSelected3"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioNursingReviewExpected3"></p></div></div><p id="scenarioNursingReviewNote3" class="scenario-review-note"></p></article></div>
+    <button id="scenarioTakeawaysButton" class="scenario-takeaways-trigger" type="button" aria-haspopup="dialog" aria-controls="scenarioTakeawaysDialog">ⓘ 핵심 임상 포인트 요약 보기</button>
+    <p>핵심 임상 포인트를 확인하거나 같은 사례를 다시 풀어보세요.</p>
   </section>
   <div class="scenario-actions">
     <button id="scenarioActionStartButton" class="primary" type="button" hidden>다음: 간호 행동 판단</button>
     <button id="scenarioNextButton" class="primary" type="button" hidden>다음 문항</button>
     <button id="scenarioRestartButton" type="button">다시 풀기</button>
-    <button id="scenarioBackToCasesButton" type="button">다른 사례 선택</button>
-    <button id="scenarioExitButton" type="button">일반 학습으로 돌아가기</button>
+    <button id="scenarioBackToCasesButton" type="button">다른 사례 선택 · 답안 초기화</button>
+    <button id="scenarioExitButton" type="button">학습 종료 · 답안 초기화</button>
   </div>
   <p class="scenario-evidence">근거: <a id="scenarioSourcePrimary" href="https://kdigo.org/guidelines/ckd-evaluation-and-management/" target="_blank" rel="noopener noreferrer">KDIGO 2024 CKD Guideline</a><a id="scenarioSourceSecondary" href="https://www.nice.org.uk/guidance/ng106/chapter/recommendations" target="_blank" rel="noopener noreferrer" hidden></a> · 개별 환자 판단에는 상태와 기관 지침이 우선합니다.</p>
   </div>
