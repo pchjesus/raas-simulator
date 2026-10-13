@@ -24,7 +24,8 @@ function boot(source){
 }
 const root=path.join(__dirname,"..");
 const v46=boot(fs.readFileSync(path.join(root,"backups","v4.6.html"),"utf8"));
-const v47=boot(fs.readFileSync(path.join(root,"index.html"),"utf8"));
+// Historical v4.7 parity must compare the frozen v4.7 artifact, not latest UI copy.
+const v47=boot(fs.readFileSync(path.join(root,"backups","v4.7.html"),"utf8"));
 let checks=0;function check(ok,label){checks++;if(!ok)throw Error("FAIL "+label);}
 function snapshot(a){return JSON.stringify({
  state:a.api.state,phys:a.api.physiology,
