@@ -5,9 +5,7 @@
 
 <meta charset="UTF-8">
 
-<title>
-RAAS Simulator v5.5.2
-</title>
+<title>RAAS Simulator v5.6</title>
 
 
 <style>
@@ -560,6 +558,39 @@ line-height:1.4;
 .stage-model-note>summary{cursor:pointer;box-sizing:border-box;padding:10px 12px;min-height:44px;font-weight:700;color:#315b79}
 .stage-model-note>p{padding:10px 12px;margin:0}
 .scenario-safety-compact{font-size:13px!important;color:#45586b;line-height:1.6}
+
+/* v5.6 responsive shell; intrinsic 900px Canvas & hit coordinates unchanged */
+.main{box-sizing:border-box;width:min(1100px,calc(100% - 24px));grid-template-columns:150px minmax(0,1fr)}
+.canvas-learning-area{box-sizing:border-box;width:100%;max-width:900px;min-width:0}
+.stage-detail-panel{max-width:100%;width:100%}
+.physiologyPanel{width:min(1100px,calc(100% - 24px))}
+.mobile-stage-navigator{display:none}
+.mobile-canvas-explorer{width:100%;min-width:0}
+.mobile-canvas-explorer>summary{display:none}
+.mobile-canvas-pan{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.mobile-canvas-pan canvas{display:block;max-width:none}
+@media(max-width:700px){
+  .main{display:flex;flex-direction:column;align-items:stretch;gap:10px;margin:8px auto}
+  .controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}
+  .controls button,.controls select{box-sizing:border-box;width:100%;min-width:0;min-height:44px;font-size:14px;white-space:normal}
+  .canvas-learning-area{max-width:100%;width:100%}
+  .mobile-stage-navigator{display:block;box-sizing:border-box;border:1px solid #c3d4e0;border-radius:8px;padding:12px;background:#f7fbfd;margin:6px 0 12px}
+  .mobile-stage-navigator h3{margin:0 0 6px;font-size:16px}
+  .mobile-stage-navigator p{font-size:13px;line-height:1.5;margin:0 0 9px}
+  .mobile-stage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .mobile-stage-grid button{box-sizing:border-box;width:100%;min-width:0;min-height:48px;text-align:left;padding:8px;font-size:13px;line-height:1.35;border:1px solid #97b1c6;background:#fff;border-radius:6px;white-space:normal;overflow-wrap:anywhere}
+  .mobile-canvas-explorer{box-sizing:border-box;border:1px solid #a1bbcb;border-radius:8px;background:#fff;padding:8px}
+  .mobile-canvas-explorer>summary{display:list-item;padding:9px;min-height:44px;box-sizing:border-box;font-weight:700;color:#184a70;cursor:pointer}
+  .mobile-canvas-pan{margin-top:8px;touch-action:pan-x pan-y}
+  .stage-detail-panel{padding:11px 12px}
+  .physiologyPanel{margin:10px auto;padding:10px}
+  .variableGrid{grid-template-columns:1fr}
+  .model-graph{min-width:0}
+  .model-graph-header select{width:100%;max-width:230px}
+  .flow-demo-controls button{min-height:44px}
+}
+@media(max-width:360px){.mobile-stage-grid{grid-template-columns:1fr}}
+
 </style>
 
 
@@ -574,9 +605,7 @@ line-height:1.4;
 
 
 
-<h1>
-RAAS Simulator v5.5.2
-</h1>
+<h1>RAAS Simulator v5.6</h1>
 
 
 
@@ -740,7 +769,8 @@ Thiazide diuretic
 
 
 <div class="canvas-learning-area">
-
+<section class="mobile-stage-navigator" aria-label="모바일 RAAS 단계별 탐색"><h3>RAAS 9단계 바로보기</h3><p>카드를 누르면 기전과 간호 설명을 확인합니다. 학습용 조회는 생리 계산과 약물 상태를 바꾸지 않습니다.</p><div class="mobile-stage-grid"><button type="button" data-mobile-stage="0" onclick="showStageLearning(0)">1. 혈압 감소</button><button type="button" data-mobile-stage="1" onclick="showStageLearning(1)">2. Renin</button><button type="button" data-mobile-stage="2" onclick="showStageLearning(2)">3. Angiotensin I</button><button type="button" data-mobile-stage="3" onclick="showStageLearning(3)">4. ACE</button><button type="button" data-mobile-stage="4" onclick="showStageLearning(4)">5. Angiotensin II</button><button type="button" data-mobile-stage="5" onclick="showStageLearning(5)">6. AT1 receptor</button><button type="button" data-mobile-stage="6" onclick="showStageLearning(6)">7. Aldosterone</button><button type="button" data-mobile-stage="7" onclick="showStageLearning(7)">8. Na⁺ / Water</button><button type="button" data-mobile-stage="8" onclick="showStageLearning(8)">9. 혈압 회복</button></div></section>
+<details class="mobile-canvas-explorer" id="mobileCanvasExplorer" open><summary>전체 RAAS 경로 탐색 (좌우 스크롤)</summary><div class="mobile-canvas-pan">
 <canvas id="canvas"
 width="900"
 height="380"
@@ -748,7 +778,7 @@ tabindex="0"
 role="group"
 aria-label="RAAS 9개 단계: 클릭 또는 방향키로 단계별 학습 정보 보기"
 aria-describedby="stageKeyboardGuide stageLearningHint">
-</canvas>
+</canvas></div></details>
 
 <div class="flow-demo-controls" role="group" aria-label="RAAS 경로 시연">
 <button id="flowDemoToggle" type="button" aria-pressed="false">▶ 경로 시연</button>
@@ -966,7 +996,7 @@ class="variableValue">
 </section>
 
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.5.2 · 임상 적용</span>
+  <span class="scenario-tag">v5.6 · 임상 적용</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
     <div class="scenario-instructions"><h3>학습은 이렇게 진행돼요</h3>
@@ -4555,13 +4585,14 @@ document.getElementById("learningDrugSelect").addEventListener("change",renderLe
 
 
 refreshScreen();
-
-
-
-
-
-
-
+// Desktop retains the visible original canvas; mobile starts with the card-first layout.
+if(typeof window!=="undefined"&&typeof window.matchMedia==="function"){
+ const mobileQuery=window.matchMedia("(max-width:700px)");
+ const mobileCanvas=document.getElementById("mobileCanvasExplorer");
+ if(mobileCanvas){mobileCanvas.open=!mobileQuery.matches;
+  if(typeof mobileQuery.addEventListener==="function")mobileQuery.addEventListener("change",event=>{if(!event.matches)mobileCanvas.open=true;});
+ }
+}
 </script>
 
 
