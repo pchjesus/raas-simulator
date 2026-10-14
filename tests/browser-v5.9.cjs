@@ -28,6 +28,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),path
   }
   await page.locator('.mobile-stage-grid button[data-mobile-stage="6"]').click();
   ok(await page.locator('#stageDetailTitle').innerText().then(t=>t.includes('Aldosterone')),'mobile card opens correct stage');
+  ok(await page.evaluate(()=>document.activeElement?.id==='stageDetailPanel'),'mobile card scroll/focus lands on stage explanation');
   ok(await page.locator('.mobile-stage-grid button[data-mobile-stage="6"]').getAttribute('aria-pressed')==='true','mobile selected indicator');
   const snapshot=await page.evaluate(()=>JSON.stringify({progress:state.progress,drug:state.drug,physiology}));
   await page.locator('#stageDetailCloseButton').click();
@@ -48,9 +49,11 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),path
   await page.locator('#caseCKDButton').click();
   ok(await page.locator('#scenarioLabPanel').evaluate(x=>x.hidden),'no Lab spoilers before answer');
   await page.locator('#scenarioChoice1').click();
+  ok(await page.evaluate(()=>document.activeElement?.id==='scenarioFeedbackTitle'),'judgment answer focuses explanation rather than next button');
   ok(await page.locator('#scenarioLabPanel').evaluate(x=>x.hidden),'no Lab spoilers after judgment only');
   await page.locator('#scenarioActionStartButton').click();
   await page.locator('#scenarioActionChoice1').click();
+  ok(await page.evaluate(()=>document.activeElement?.id==='scenarioActionFeedbackTitle'),'nursing answer focuses feedback before Lab/next');
   ok(await page.locator('#scenarioLabPanel').isVisible(),'Lab after judgment and nursing action');
   ok((await page.locator('#scenarioLabItems').innerText()).includes('K⁺'),'CKD relevant test rendered');
   await page.locator('#scenarioNextButton').click();
