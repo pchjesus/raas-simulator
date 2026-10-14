@@ -24,11 +24,11 @@ RAAS의 기본적인 생리적 흐름을 시각적으로 이해하고, 주요 �
 
 ## 2. 현재 버전
 
-**v5.9 (통합 개발 후보 · QA 검증 필요)**
+**v5.9 (자동 회귀·Chromium PASS · 실기기 수동 QA 미검증)**
 
 현재 단계:
 
-**v5.6 모바일 단계 카드와 Canvas 별도 탐색, v5.7 5단원 안내형 학습과 자유 탐색·검사 의미, v5.8 Lab 예시·오답 우선 복습·학습 복귀, v5.9 수치 안전 안내와 통합 검증 코드를 추가했다. 실제 안정 릴리스 여부는 GitHub Actions와 수동 QA 판정에 따른다.**
+**v5.6 모바일 단계 카드와 Canvas 별도 탐색, v5.7 5단원 안내형 학습과 자유 탐색·검사 의미, v5.8 Lab 예시·오답 우선 복습·학습 복귀, v5.9 수치 안전 안내와 통합 검증 코드를 추가했다. GitHub PR #7의 Actions에서 Node 17스위트/11,006개 및 Chromium 86개가 통과했다. 실기기·Safari·수동 스크린리더는 미검증이다.**
 
 ---
 
@@ -604,3 +604,7 @@ DEVLOG.md
 - 주의: RAAS 그래프의 Na⁺/GFR/BP는 임상 환자별 Lab 예측값이 아니다. 앱은 실제 처방·치료 결정 도구가 아니다.
 - 설계: `DESIGN_V5.7_V5.8_EDUCATION_LABS.md`. 자동 QA: `tests/regression-v5.9.cjs`, `tests/browser-v5.9.cjs` 및 역사적 회귀 스위트. 동결 백업: `backups/v5.6.html`부터 `backups/v5.9.html`까지.
 - 실제 모바일 기기/Safari/스크린리더와 200%/400% 확대의 수동 검증은 자동 Chromium 테스트로 대체하지 않는다.
+
+### 2026-10-14 통합 검증
+
+PR #7 브랜치 Actions: https://github.com/pchjesus/raas-simulator/actions/runs/38552208431 (PASS). 정확한 통과 항목·잔여 위험: `V5.9_QA_REPORT.md`. 병합 후 `main`의 최종 CI는 별도 검증한다.
