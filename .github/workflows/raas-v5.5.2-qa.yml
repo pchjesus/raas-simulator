@@ -1,0 +1,43 @@
+name: RAAS v5.5.2 full regression and Chromium smoke
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR commit
+        uses: actions/checkout@v4
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run all historical and current Node regression suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in tests/regression-*.cjs; do
+            echo "::group::$test"
+            node "$test"
+            echo "::endgroup::"
+          done
+      - name: Prepare Chromium for actual browser integration test
+        shell: bash
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Run headless Chromium checks
+        run: node tests/browser-v5.5.2.cjs
+      - name: Upload browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-v5.5.2-browser-screens
+          path: |
+            browser-desktop-v5.5.2.png
+            browser-mobile-nav-v5.5.2.png
+          if-no-files-found: ignore
