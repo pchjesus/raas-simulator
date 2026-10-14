@@ -607,6 +607,23 @@ line-height:1.4;
 .learning-lab-item p{font-size:13px}
 .learning-source-links a{display:inline-block;margin:5px 14px 5px 0;color:#145c91;text-decoration:underline}
 @media(max-width:600px){.learning-course button{flex:1 1 125px}.learning-lab-grid{grid-template-columns:1fr}}
+
+/* v5.8: optional clinical Lab is revealed only AFTER answering the existing action.
+   Mobile values stack, no wide clipped table; source and stage are explicit. */
+.scenario-lab-panel{box-sizing:border-box;padding:13px;margin:14px 0;border:1px solid #8fa9bb;background:#f5fafc;border-radius:8px;min-width:0}
+.scenario-lab-panel h4{margin:0 0 7px}
+.scenario-lab-panel p{line-height:1.65;overflow-wrap:anywhere}
+.scenario-lab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:9px}
+.scenario-lab-item{min-width:0;padding:10px;border:1px solid #c9d9e4;background:#fff;border-radius:7px;line-height:1.6;overflow-wrap:anywhere}
+.scenario-lab-item strong{display:block;color:#234f6a}
+.scenario-lab-item span{display:block;font-size:13px}
+.scenario-review-card details{margin-top:9px;border-top:1px solid #d1dfeb;padding-top:8px}
+.scenario-review-card summary{cursor:pointer;min-height:44px;padding:9px 0;font-weight:700}
+.scenario-review-card button{box-sizing:border-box;width:auto;min-height:44px;padding:9px 12px;background:#eff6fb;color:#1b4e73;border:1px solid #8aacc3;border-radius:6px;cursor:pointer;margin:8px 0}
+.scenario-review-card[data-correct=false]{background:#fffaf4}
+.scenario-review-link{border:1px solid #adc4d7;padding:12px;margin-bottom:14px;border-radius:8px;background:#eff7fc}
+.scenario-review-link button{box-sizing:border-box;width:auto;min-height:44px}
+@media(max-width:600px){.scenario-lab-grid{grid-template-columns:1fr}.scenario-lab-panel{padding:10px}.scenario-review-card{padding:10px}}
 </style>
 
 
@@ -985,6 +1002,7 @@ class="variableValue">
 </div>
 <section id="learningStudyView" class="scenario-view learning-view" aria-labelledby="learningHeading" hidden>
   <span class="scenario-tag">② RAAS 이론·간호 학습</span>
+  <div id="learningClinicalReturn" class="scenario-review-link" hidden><p>임상 사례에서 복습할 개념을 살펴보고 있어요. 기존 선택 기록은 그대로 유지됩니다.</p><button id="learningBackToClinicalButton" type="button">← 임상 결과 복습으로 돌아가기</button></div>
   <h2 id="learningHeading">기전 이해부터 임상 간호까지</h2>
   <p class="learning-intro">학습 순서: <strong>RAAS 전체 흐름 → 9단계 기전·간호 사정 → 약물 6종 → 임상 적용</strong>. </p>
 <section id="learningCourse" class="learning-course" aria-labelledby="learningCourseHeading"><h3 id="learningCourseHeading">RAAS 5단원 학습 코스</h3>
@@ -1128,18 +1146,19 @@ class="variableValue">
         <p id="scenarioActionEvidence" class="scenario-feedback-evidence"></p>
       </div>
     </details>
+    <section id="scenarioLabPanel" class="scenario-lab-panel" aria-labelledby="scenarioLabTitle" hidden><h4 id="scenarioLabTitle">추가 평가 시점의 가상 검사 자료</h4><p id="scenarioLabContext"></p><div id="scenarioLabItems" class="scenario-lab-grid"></div><details class="scenario-evidence-disclosure"><summary>검사 해석과 안전한 간호 확인</summary><div class="scenario-disclosure-body"><p id="scenarioLabInterpretation"></p><p id="scenarioLabSource" class="scenario-feedback-evidence"></p></div></details></section>
     </section>
-  <section id="scenarioResultPanel" aria-live="polite" hidden>
+  <section id="scenarioResultPanel" tabindex="-1" aria-live="polite" hidden>
     <h3>학습 완료</h3>
     <p id="scenarioResultText"></p>
     <h4>문항별 임상 판단 복습</h4>
     <p id="scenarioResultReview" class="scenario-result-review" hidden></p>
-    <div class="scenario-review-cards"><article id="scenarioKnowledgeReviewCard1" class="scenario-review-card" hidden><h5 id="scenarioKnowledgeReviewTitle1"></h5><p id="scenarioKnowledgeReviewStatus1" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioKnowledgeReviewSelected1"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioKnowledgeReviewExpected1"></p></div></div><p id="scenarioKnowledgeReviewNote1" class="scenario-review-note"></p></article>
+    <div id="scenarioKnowledgeDynamicReviews" class="scenario-review-cards"></div><div class="scenario-review-cards" hidden><article id="scenarioKnowledgeReviewCard1" class="scenario-review-card" hidden><h5 id="scenarioKnowledgeReviewTitle1"></h5><p id="scenarioKnowledgeReviewStatus1" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioKnowledgeReviewSelected1"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioKnowledgeReviewExpected1"></p></div></div><p id="scenarioKnowledgeReviewNote1" class="scenario-review-note"></p></article>
 <article id="scenarioKnowledgeReviewCard2" class="scenario-review-card" hidden><h5 id="scenarioKnowledgeReviewTitle2"></h5><p id="scenarioKnowledgeReviewStatus2" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioKnowledgeReviewSelected2"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioKnowledgeReviewExpected2"></p></div></div><p id="scenarioKnowledgeReviewNote2" class="scenario-review-note"></p></article>
 <article id="scenarioKnowledgeReviewCard3" class="scenario-review-card" hidden><h5 id="scenarioKnowledgeReviewTitle3"></h5><p id="scenarioKnowledgeReviewStatus3" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioKnowledgeReviewSelected3"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioKnowledgeReviewExpected3"></p></div></div><p id="scenarioKnowledgeReviewNote3" class="scenario-review-note"></p></article></div>
     <h4>간호 행동 판단 복습</h4>
     <p id="scenarioActionReview" class="scenario-action-review" hidden></p>
-    <div class="scenario-review-cards"><article id="scenarioNursingReviewCard1" class="scenario-review-card" hidden><h5 id="scenarioNursingReviewTitle1"></h5><p id="scenarioNursingReviewStatus1" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioNursingReviewSelected1"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioNursingReviewExpected1"></p></div></div><p id="scenarioNursingReviewNote1" class="scenario-review-note"></p></article>
+    <div id="scenarioNursingDynamicReviews" class="scenario-review-cards"></div><div class="scenario-review-cards" hidden><article id="scenarioNursingReviewCard1" class="scenario-review-card" hidden><h5 id="scenarioNursingReviewTitle1"></h5><p id="scenarioNursingReviewStatus1" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioNursingReviewSelected1"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioNursingReviewExpected1"></p></div></div><p id="scenarioNursingReviewNote1" class="scenario-review-note"></p></article>
 <article id="scenarioNursingReviewCard2" class="scenario-review-card" hidden><h5 id="scenarioNursingReviewTitle2"></h5><p id="scenarioNursingReviewStatus2" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioNursingReviewSelected2"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioNursingReviewExpected2"></p></div></div><p id="scenarioNursingReviewNote2" class="scenario-review-note"></p></article>
 <article id="scenarioNursingReviewCard3" class="scenario-review-card" hidden><h5 id="scenarioNursingReviewTitle3"></h5><p id="scenarioNursingReviewStatus3" class="scenario-review-status"></p><div class="scenario-answer-compare"><div class="scenario-answer-card selected"><h6>내 선택</h6><p id="scenarioNursingReviewSelected3"></p></div><div class="scenario-answer-card recommended"><h6>권장 답안</h6><p id="scenarioNursingReviewExpected3"></p></div></div><p id="scenarioNursingReviewNote3" class="scenario-review-note"></p></article></div>
     <button id="scenarioTakeawaysButton" class="scenario-takeaways-trigger" type="button" aria-haspopup="dialog" aria-controls="scenarioTakeawaysDialog">ⓘ 핵심 임상 포인트 요약 보기</button>
