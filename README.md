@@ -28,7 +28,7 @@ RAAS의 기본적인 생리적 흐름을 시각적으로 이해하고, 주요 �
 
 현재 단계:
 
-**v5.6 모바일 단계 카드와 Canvas 별도 탐색, v5.7 5단원 안내형 학습과 자유 탐색·검사 의미, v5.8 Lab 예시·오답 우선 복습·학습 복귀, v5.9 수치 안전 안내와 통합 검증 코드를 추가했다. GitHub PR #7의 Actions에서 Node 17스위트/11,006개 및 Chromium 86개가 통과했다. 실기기·Safari·수동 스크린리더는 미검증이다.**
+**v5.6 모바일 단계 카드와 Canvas 별도 탐색, v5.7 5단원 안내형 학습과 자유 탐색·검사 의미, v5.8 Lab 예시·오답 우선 복습·학습 복귀, v5.9 수치 안전 안내와 통합 검증 코드를 추가했다. GitHub PR #7의 Actions에서 Node 17스위트/11,006개 및 Chromium 89개가 통과했다. 실기기·Safari·수동 스크린리더는 미검증이다.**
 
 ---
 
@@ -607,4 +607,4 @@ DEVLOG.md
 
 ### 2026-10-14 통합 검증
 
-PR #7 브랜치 Actions: https://github.com/pchjesus/raas-simulator/actions/runs/38552208431 (PASS). 정확한 통과 항목·잔여 위험: `V5.9_QA_REPORT.md`. 병합 후 `main`의 최종 CI는 별도 검증한다.
+PR #7 브랜치 Actions: https://github.com/pchjesus/raas-simulator/actions/runs/38552987600 (PASS). 정확한 통과 항목·잔여 위험: `V5.9_QA_REPORT.md`. 병합 후 `main`의 최종 CI는 별도 검증한다.
