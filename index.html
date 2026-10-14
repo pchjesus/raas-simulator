@@ -755,6 +755,10 @@ canvas{border:1px solid var(--ui-border)}
  .study-mode-primary button{font-size:15px}
 }
 
+
+.learning-pathway>summary{cursor:pointer;min-height:44px;box-sizing:border-box;font-weight:700;color:var(--ui-navy);font-size:15px;padding:8px 0}
+.learning-summary[hidden],.learning-focus-tools[hidden],.learning-block[hidden]{display:none!important}
+.learning-summary p{margin:12px 0}
 </style>
 
 
@@ -861,7 +865,7 @@ aria-describedby="stageKeyboardGuide stageLearningHint">
       <details class="stage-model-note"><summary>ⓘ 시뮬레이션 수치 변화</summary><p id="stageDetailEffect"></p></details>
     </div>
   </details>
-  <details id="stageNursingDetails" class="stage-detail-accordion">
+  <details id="stageNursingDetails" class="stage-detail-accordion" open>
     <summary>간호 사정</summary>
     <div class="stage-detail-accordion-body">
       <p class="stage-detail-section-title">간호 사정·안전 포인트</p>
@@ -1036,27 +1040,38 @@ class="variableValue">
 <div class="learning-course-controls" role="group" aria-label="학습 방식"><button id="learningGuidedButton" type="button" aria-pressed="true">안내형 코스</button><button id="learningFreeButton" type="button" aria-pressed="false">자유 탐색</button></div>
 <p id="learningCourseStatus" class="learning-course-status" role="status" aria-live="polite"></p>
 <div class="learning-course-buttons"><button type="button" id="learningCoursePrev">← 이전 학습</button><button type="button" id="learningCourseNext">다음 학습 →</button></div></section>
-  <section class="learning-pathway"><h3>RAAS 전체 흐름</h3><p id="learningPathwayOverview"></p></section>
+  <details class="learning-pathway"><summary>RAAS 전체 9단계 흐름 펼쳐보기</summary><p id="learningPathwayOverview"></p></details>
+  <nav class="learning-focus-tools" id="learningFocusTools" aria-label="자유 탐색 학습 주제" hidden>
+  <button id="learningFreeStageButton" type="button" aria-pressed="true">RAAS 단계 학습</button>
+  <button id="learningFreeDrugButton" type="button" aria-pressed="false">약물 학습</button>
+  </nav>
   <div class="learning-grid">
-    <section class="learning-block" aria-labelledby="learningStageHeading">
+    <section class="learning-block" id="learningStagePanel" aria-labelledby="learningStageHeading">
       <h3 id="learningStageHeading">1. RAAS 단계별 이해</h3>
       <label for="learningStageSelect">학습할 단계</label>
-      <select id="learningStageSelect"><option value="0">1단계</option><option value="1">2단계</option><option value="2">3단계</option><option value="3">4단계</option><option value="4">5단계</option><option value="5">6단계</option><option value="6">7단계</option><option value="7">8단계</option><option value="8">9단계</option></select>
-      <h4 id="learningStageTitle"></h4><p id="learningStageSummary"></p>
+      <select id="learningStageSelect"><option value="0">1. 혈압 감소</option><option value="1">2. Renin</option><option value="2">3. Angiotensin I</option><option value="3">4. ACE</option><option value="4">5. Angiotensin II</option><option value="5">6. AT1 receptor</option><option value="6">7. Aldosterone</option><option value="7">8. Na⁺ / Water</option><option value="8">9. 혈압 회복</option></select>
+      <h4 id="learningStageTitle" tabindex="-1"></h4><p id="learningStageSummary"></p>
       <details class="learning-disclosure" open><summary>기전·의학적 의미</summary><p id="learningStageMechanism"></p><p id="learningStageClinical"></p></details>
-      <details class="learning-disclosure"><summary>간호 사정과 안전 포인트</summary><p id="learningStageNursing"></p></details>
+      <details class="learning-disclosure" open><summary>간호 사정과 안전 포인트</summary><p id="learningStageNursing"></p></details>
       <p id="learningStageSources" class="scenario-feedback-evidence"></p>
     </section>
-    <section class="learning-block" aria-labelledby="learningDrugHeading">
+    <section class="learning-block" id="learningDrugPanel" aria-labelledby="learningDrugHeading">
       <h3 id="learningDrugHeading">2. 약물 작용과 간호</h3>
       <label for="learningDrugSelect">학습할 약물</label>
       <select id="learningDrugSelect"><option value="acei">ACE 억제제</option><option value="arb">ARB</option><option value="aldo">알도스테론 길항제(MRA)</option><option value="beta">베타차단제</option><option value="loop">고리이뇨제</option><option value="thiazide">티아지드이뇨제</option></select>
-      <h4 id="learningDrugTitle"></h4><p id="learningDrugMechanism"></p>
+      <h4 id="learningDrugTitle" tabindex="-1"></h4><p id="learningDrugMechanism"></p>
       <h4>간호 확인 사항</h4><p id="learningDrugNursing"></p>
       <p id="learningDrugSources" class="scenario-feedback-evidence"></p>
       
     </section>
   </div>
+  <section id="learningSummaryPanel" class="learning-summary" aria-labelledby="learningSummaryTitle" hidden>
+    <h3 id="learningSummaryTitle" tabindex="-1">5단원 · 임상 적용 준비</h3>
+    <p><strong>기전 연결:</strong> 혈압·신장 관류 변화에 따른 레닌 분비, 안지오텐신 II와 알도스테론의 작용을 구분해 설명할 수 있는지 확인하세요.</p>
+    <p><strong>약물 안전:</strong> ACE 억제제·ARB·MRA에서 혈청 K⁺와 신기능 검사를 왜 확인하는지, 이뇨제에서 전해질·체액량을 왜 추적하는지 복습하세요.</p>
+    <p><strong>임상 판단:</strong> 환자 상태·기저 결과·병용 약물·추적 계획을 함께 확인하고, 불명확한 검사 및 위험은 기관 절차에 따라 담당 의료진과 의사소통하세요.</p>
+    <p>아래 검사 참고 자료를 살펴본 다음 CKD/ACEi 또는 HFrEF/MRA 임상 사례에서 판단과 간호 행동을 연습할 수 있습니다.</p>
+  </section>
 <details class="learning-disclosure" id="learningLabReference"><summary>주요 검사·활력징후와 RAAS 약물 연결</summary>
 <p>검사실 참고범위와 개별 환자 상태를 함께 확인해야 합니다. 아래 정보는 교육용이며 시뮬레이터의 가상 Na⁺·GFR 값과 연동되지 않습니다.</p>
 <div class="learning-lab-grid">
@@ -4516,7 +4531,7 @@ function openScenarioRelatedLearning(questionId){
  const link=scenarioLearningLinks[scenarioRuntime.definition.id+":"+questionId];
  if(!link||!scenarioRuntime.session||scenarioRuntime.session.status!=="completed")return;
  document.getElementById("learningClinicalReturn").hidden=false;
- learningCourseMode="free"; // clinical review is direct exploration; guided position is retained
+ learningCourseMode="free"; learningFreeTopic="drug"; // clinical review is direct exploration; guided position is retained
  switchStudyMode("learning");
  document.getElementById("learningStageSelect").value=String(link.stage);
  document.getElementById("learningDrugSelect").value=link.drug;
@@ -4760,8 +4775,8 @@ function renderLearningLibrary(){
     document.getElementById("learningDrugSources").textContent="학습 근거: "+detail.sourceIds+" · 원문은 설명서 참고문헌을 확인하세요.";
     renderLearningCourse();
 }
-document.getElementById("learningStageSelect").addEventListener("change",renderLearningLibrary);
-document.getElementById("learningDrugSelect").addEventListener("change",renderLearningLibrary);
+document.getElementById("learningStageSelect").addEventListener("change",()=>{learningFreeTopic="stage";renderLearningLibrary();});
+document.getElementById("learningDrugSelect").addEventListener("change",()=>{learningFreeTopic="drug";renderLearningLibrary();});
 
 // v5.7: read-only five-unit curriculum, isolated from RAAS/clinical states.
 const learningCourseSteps=[
@@ -4772,7 +4787,7 @@ const learningCourseSteps=[
  {unit:4,type:"summary",value:null}
 ];
 const learningUnitTitles=["RAAS 활성 조건","레닌–안지오텐신 전환","수용체·알도스테론·체액/혈압","주요 약물 6종","임상 적용 준비"];
-let learningCourseMode="guided",learningCoursePosition=0;
+let learningCourseMode="guided",learningCoursePosition=0,learningFreeTopic="stage";
 function renderLearningCourse(){
  const guided=learningCourseMode==="guided",step=learningCourseSteps[learningCoursePosition];
  document.getElementById("learningGuidedButton").setAttribute("aria-pressed",String(guided));
@@ -4786,7 +4801,24 @@ function renderLearningCourse(){
  document.getElementById("learningCourseStatus").textContent=guided?
   "단원 "+(step.unit+1)+"/5 · "+learningUnitTitles[step.unit]+" · 학습 "+(learningCoursePosition+1)+"/"+learningCourseSteps.length+"\n이번 항목: "+topic:
   "자유 탐색 중 · 아래의 단계와 약물을 원하는 순서로 선택하세요. 안내형 진도는 유지됩니다.";
+ renderLearningFocus();
 }
+function renderLearningFocus(){
+ const guided=learningCourseMode==="guided",entry=learningCourseSteps[learningCoursePosition];
+ const kind=guided?entry.type:learningFreeTopic;
+ document.getElementById("learningFocusTools").hidden=guided;
+ document.getElementById("learningStagePanel").hidden=kind!=="stage";
+ document.getElementById("learningDrugPanel").hidden=kind!=="drug";
+ document.getElementById("learningSummaryPanel").hidden=kind!=="summary";
+ document.getElementById("learningFreeStageButton").setAttribute("aria-pressed",String(learningFreeTopic==="stage"));
+ document.getElementById("learningFreeDrugButton").setAttribute("aria-pressed",String(learningFreeTopic==="drug"));
+}
+document.getElementById("learningFreeStageButton").addEventListener("click",()=>{
+ learningCourseMode="free";learningFreeTopic="stage";renderLearningCourse();document.getElementById("learningStageTitle").focus();
+});
+document.getElementById("learningFreeDrugButton").addEventListener("click",()=>{
+ learningCourseMode="free";learningFreeTopic="drug";renderLearningCourse();document.getElementById("learningDrugTitle").focus();
+});
 function goLearningCourse(position){
  if(position<0||position>=learningCourseSteps.length)return;
  learningCoursePosition=position;
@@ -4794,11 +4826,14 @@ function goLearningCourse(position){
  if(step.type==="stage")document.getElementById("learningStageSelect").value=String(step.value);
  if(step.type==="drug")document.getElementById("learningDrugSelect").value=step.value;
  renderLearningLibrary();
+ const target=step.type==="stage"?"learningStageTitle":step.type==="drug"?"learningDrugTitle":"learningSummaryTitle";
+ document.getElementById(target).focus();
 }
 document.getElementById("learningGuidedButton").addEventListener("click",()=>{
  learningCourseMode="guided";goLearningCourse(learningCoursePosition);
 });
 document.getElementById("learningFreeButton").addEventListener("click",()=>{
+ learningFreeTopic=learningCourseSteps[learningCoursePosition].type==="drug"?"drug":"stage";
  learningCourseMode="free";renderLearningCourse();
 });
 document.getElementById("learningCoursePrev").addEventListener("click",()=>goLearningCourse(learningCoursePosition-1));
