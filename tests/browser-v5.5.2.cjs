@@ -22,10 +22,12 @@ await page.waitForFunction(()=>!document.getElementById('helpDialog').open&&docu
 ok(true,'Esc closes dialog and focus restored');
 await page.locator('#modelPolicyButton').click();
 ok(await page.locator('#modelPolicyDialog').evaluate(el=>el.open),'policy dialog opens');
+await page.evaluate(()=>{window.__policyCloseFired=false;document.getElementById('modelPolicyDialog').addEventListener('close',()=>{window.__policyCloseFired=true},{once:true});});
 await page.locator('#modelPolicyCloseButton').click();
-await page.waitForFunction(()=>document.activeElement.id==='modelPolicyButton');
-ok(true,'policy dialog close returns focus');
+await page.waitForFunction(()=>window.__policyCloseFired===true&&document.activeElement.id==='modelPolicyButton');
+ok(true,'policy dialog close event and focus return settled');
 await page.locator('#canvas').focus();
+await page.waitForFunction(()=>document.activeElement?.id==='canvas');
 await page.keyboard.press('ArrowRight');
 const canvasDebug=await page.evaluate(()=>({focus:document.activeElement?.id,hidden:document.getElementById('stageDetailPanel').hidden,detail:document.getElementById('stageDetailTitle').textContent,log:document.getElementById('stageLearningHint').textContent,selected:typeof learningFocusIndex==='undefined'?'undefined':learningFocusIndex}));
 console.log('Chromium Canvas keyboard diagnostics:',JSON.stringify(canvasDebug),'page errors:',JSON.stringify(errors));
