@@ -6,7 +6,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),path
  try{
   const page=await browser.newPage({viewport:{width:1365,height:880}});
   page.on('pageerror',e=>errors.push(e.stack||e.message));
-  await page.goto('file://'+path.resolve(__dirname,'../index.html'));
+  await page.goto('file://'+path.resolve(__dirname,'../backups/v5.9.html'));
   ok(await page.title()==='RAAS Simulator v5.9','release document title');
   ok(await page.locator('#canvas').isVisible(),'original Canvas on desktop');
   ok(await page.locator('#mobileStageExplorer').count()===0,'no duplicate Canvas');

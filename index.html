@@ -5,7 +5,7 @@
 
 <meta charset="UTF-8">
 
-<title>RAAS Simulator v5.9</title>
+<title>RAAS Simulator v5.9.1</title>
 
 
 <style>
@@ -625,6 +625,147 @@ line-height:1.4;
 .scenario-review-link{border:1px solid #adc4d7;padding:12px;margin-bottom:14px;border-radius:8px;background:#eff7fc}
 .scenario-review-link button{box-sizing:border-box;width:auto;min-height:44px}
 @media(max-width:600px){.scenario-lab-grid{grid-template-columns:1fr}.scenario-lab-panel{padding:10px}.scenario-review-card{padding:10px}}
+
+/* v5.9.1 — user-approved B / P1 / T1 / K2 / G1 readability system.
+   Scope is visual presentation only; existing pathway colors, model and answer data remain unchanged. */
+:root{--ui-navy:#1d4a6c;--ui-navy-deep:#123650;--ui-ink:#202f3d;--ui-muted:#4e6374;--ui-border:#cbd6df;--ui-page:#f5f7fa;--ui-surface:#fff;--ui-soft:#f4f8fb;--ui-focus:#0b5cab;--ui-radius:10px}
+body{font-family:Arial,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:var(--ui-page);color:var(--ui-ink);font-size:16px;line-height:1.65}
+h1{font-size:clamp(23px,3vw,28px);line-height:1.3;margin:18px 12px 5px;color:var(--ui-navy-deep)}
+button,select{font-family:inherit;font-size:15px;line-height:1.45}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--ui-focus);outline-offset:3px}
+.study-mode-nav{max-width:1200px;margin:14px auto 8px}
+.study-mode-primary button{min-height:48px;min-width:170px;font-size:16px;border-color:var(--ui-border)}
+.study-mode-primary button[aria-pressed=true]{background:var(--ui-navy);border-color:var(--ui-navy)}
+.study-mode-secondary button{min-height:44px;font-size:14px;background:#fff}
+.study-mode-intro{font-size:15px;max-width:900px;line-height:1.65;margin-bottom:18px}
+.main{width:calc(100% - 32px);max-width:1200px;grid-template-columns:220px minmax(0,1fr);gap:20px;align-items:start}
+.controls{min-width:0;box-sizing:border-box;border:1px solid var(--ui-border);border-radius:var(--ui-radius);padding:14px;background:#fff;gap:14px}
+.control-group{display:flex;flex-direction:column;gap:9px;padding-bottom:14px;border-bottom:1px solid var(--ui-border);text-align:left}
+.control-group:last-child{border-bottom:none;padding-bottom:0}
+.control-group h2{margin:0;font-size:16px;line-height:1.4;color:var(--ui-navy)}
+.control-group label{font-weight:700;font-size:14px}
+.control-group button,.control-group select{box-sizing:border-box;min-width:0;width:100%;min-height:44px;padding:9px;border:1px solid #93a9ba;border-radius:7px;background:#fff;color:var(--ui-ink);white-space:normal;cursor:pointer}
+.control-group .control-primary{background:var(--ui-navy);color:#fff;border-color:var(--ui-navy);font-weight:700}
+.control-group .control-muted{background:#f5f7f9}
+.control-group .control-danger{color:#834631;border-color:#d5ac9a}
+.control-group .help-trigger{margin:0}
+.control-group .patch-trigger{margin:0}
+.canvas-learning-area{width:100%;max-width:none;min-width:0}
+.mobile-canvas-explorer{box-sizing:border-box;min-width:0;max-width:100%}
+.mobile-canvas-pan{box-sizing:border-box;max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain}
+.mobile-canvas-pan canvas{display:block;max-width:none}
+canvas{border:1px solid var(--ui-border)}
+.stage-detail-panel{box-sizing:border-box;max-width:100%;width:100%;border:1px solid #9eb9cf;padding:18px;border-radius:var(--ui-radius);font-size:16px}
+.stage-detail-header h3{font-size:19px;color:var(--ui-navy)}
+.stage-detail-accordion,.learning-disclosure,.scenario-evidence-disclosure,.scenario-case-details{border:1px solid var(--ui-border);border-radius:var(--ui-radius)}
+.stage-detail-accordion>summary,.learning-disclosure>summary,.scenario-evidence-disclosure>summary{font-size:15px}
+.stage-detail-accordion-body{font-size:15px;line-height:1.7}
+.stage-learning-hint,.flow-demo-explain,.model-graph-note{font-size:14px;line-height:1.65}
+.flow-demo-controls button{min-height:44px;font-size:15px}
+.physiologyPanel{max-width:1200px;width:calc(100% - 32px);border:1px solid var(--ui-border);border-radius:var(--ui-radius);padding:18px}
+.variableGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.variableBox{box-sizing:border-box;min-width:0;min-height:126px;background:#fff;border:1px solid var(--ui-border);border-radius:8px;padding:13px}
+.variableBox h4{color:var(--ui-navy);font-size:17px}
+.variableValue{font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+.model-graph{min-width:0}
+.model-graph-pan{max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain;padding:4px 2px 8px}
+.model-graph-pan canvas{box-sizing:border-box;width:1000px;height:290px;max-width:none;display:block}
+.model-graph-pan:focus-visible{outline:3px solid var(--ui-focus);outline-offset:2px}
+.scenario-view{max-width:1200px;width:calc(100% - 32px);margin:16px auto 30px;padding:24px;border:1px solid var(--ui-border);border-radius:12px;background:#fff;font-size:16px;line-height:1.7}
+.learning-view > *,#scenarioCaseCatalog,#scenarioSessionContent{max-width:860px;margin-left:auto;margin-right:auto}
+.scenario-view h2{font-size:24px;color:var(--ui-navy-deep)}
+.scenario-view h3{font-size:19px}
+.scenario-view h4{font-size:17px}
+.scenario-view p{line-height:1.7}
+.scenario-tag,.scenario-case-button .scenario-case-meta{font-size:14px}
+.learning-course{background:var(--ui-soft);border:1px solid var(--ui-border);padding:18px;border-radius:var(--ui-radius)}
+.learning-course h3{font-size:19px}
+.learning-course-controls button,.learning-course-buttons button{font-size:15px}
+.learning-course-controls button[aria-pressed=true]{background:var(--ui-navy)}
+.learning-course-status{font-size:15px}
+.learning-pathway{background:#fff;border:1px solid var(--ui-border);padding:13px 17px}
+.learning-pathway p{font-size:14px;line-height:1.65}
+.learning-grid{display:block;max-width:860px;margin:0 auto}
+.learning-block,.learning-next{background:#fff;border:1px solid var(--ui-border);border-radius:var(--ui-radius);padding:20px}
+.learning-block h3{margin-top:0}
+.learning-block label{font-size:15px}
+.learning-block select{font-size:16px;min-height:45px}
+.learning-block>p,.learning-block details>p{font-size:16px}
+.learning-focus-tools{display:flex;gap:9px;flex-wrap:wrap;margin:14px auto;padding:12px;border:1px solid var(--ui-border);border-radius:var(--ui-radius);background:var(--ui-soft)}
+.learning-focus-tools button{flex:1 1 145px;box-sizing:border-box;min-height:44px;width:auto;padding:9px 13px;font-size:15px;border:1px solid #92aec2;border-radius:7px;background:#fff;color:var(--ui-navy);font-weight:700;cursor:pointer}
+.learning-focus-tools button[aria-pressed=true]{background:var(--ui-navy);color:#fff}
+.learning-summary{background:var(--ui-soft);border:1px solid var(--ui-border);padding:18px;border-radius:var(--ui-radius);max-width:860px;margin:0 auto}
+.learning-summary h3{margin-top:0}
+.learning-summary p{font-size:16px}
+.learning-lab-grid{padding:12px;gap:12px}
+.learning-lab-item{border:1px solid var(--ui-border);background:#fff;padding:13px}
+.learning-lab-item p{font-size:15px}
+.learning-source-links{font-size:14px}
+.scenario-options button,.scenario-action-options button{font-size:16px;line-height:1.6;padding:13px 15px;min-height:48px;border-color:#a0b3c2}
+.scenario-feedback,.scenario-action-step,.scenario-action-feedback{border:1px solid var(--ui-border);border-radius:var(--ui-radius);padding:16px}
+.scenario-feedback[data-correct=true],.scenario-feedback[data-correct=false]{border-width:1px;border-left-width:4px}
+.scenario-case-button{border:1px solid #9bafbf;border-radius:var(--ui-radius);padding:19px}
+.scenario-case-button strong{font-size:17px}
+.scenario-case-button .scenario-case-description{font-size:15px}
+.scenario-caution,.scenario-safety-compact,.scenario-feedback-evidence,.scenario-review-note{font-size:14px!important}
+.scenario-current-task{font-size:16px;background:var(--ui-soft)}
+.scenario-learning-progress{font-weight:500;font-size:14px;line-height:1.5;background:transparent;border:0;padding:0;margin:0 0 12px!important;color:var(--ui-muted)}
+.scenario-roadmap li{font-size:14px;min-height:44px;box-sizing:border-box;display:flex;align-items:center;justify-content:center}
+.scenario-answer-card{border:1px solid var(--ui-border);padding:14px}
+.scenario-answer-card h4,.scenario-answer-card h6{font-size:15px!important}
+.scenario-answered-question{font-size:16px}
+.scenario-lab-panel{border:1px solid #98b2c5;background:var(--ui-soft);padding:16px;border-radius:var(--ui-radius)}
+.scenario-lab-item{border:1px solid var(--ui-border);padding:13px}
+.scenario-lab-item strong{font-size:16px}
+.scenario-lab-item span{font-size:15px}
+.scenario-lab-interpretation{padding:12px 14px;border-left:4px solid #a47637;background:#fff;border-radius:5px;font-size:15px}
+.scenario-review-card{border:1px solid var(--ui-border);padding:16px}
+.scenario-review-card[data-correct=false]{border-left:4px solid #a6763d}
+.scenario-review-card[data-correct=true]{border-left:4px solid #348054}
+.scenario-review-card summary{font-size:15px}
+.help-body{font-size:15px}
+.model-note-trigger{font-size:14px}
+@media(max-width:1050px) and (min-width:701px){
+ .main{grid-template-columns:200px minmax(0,1fr)}
+ .variableGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+ .main{width:calc(100% - 16px);max-width:none;display:flex;flex-direction:column;gap:12px}
+ .controls{width:100%;display:flex;flex-direction:column;gap:12px;padding:12px}
+ .control-group{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:8px;padding-bottom:12px}
+ .control-group h2,.control-group label{grid-column:1/-1}
+ .control-group .control-wide,.control-group select{grid-column:1/-1}
+ .control-group button,.control-group select{font-size:15px;min-height:46px}
+ .mobile-stage-grid button{font-size:15px;min-height:49px}
+ .mobile-stage-navigator h3{font-size:18px}
+ .mobile-stage-navigator p{font-size:14px}
+ .stage-detail-panel{padding:15px}
+ .physiologyPanel{width:calc(100% - 16px);padding:14px}
+ .variableGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .scenario-view{width:calc(100% - 16px);margin:10px auto 20px;padding:15px}
+ .scenario-roadmap{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .scenario-roadmap li{font-size:13px}
+ .learning-block{padding:15px}
+ .learning-course{padding:14px}
+ .scenario-actions button{font-size:15px}
+}
+@media(max-width:420px){
+ .variableGrid{grid-template-columns:1fr}
+ .scenario-view{padding:12px}
+ .study-mode-primary button{font-size:15px}
+}
+
+
+.learning-pathway>summary{cursor:pointer;min-height:44px;box-sizing:border-box;font-weight:700;color:var(--ui-navy);font-size:15px;padding:8px 0}
+.learning-summary[hidden],.learning-focus-tools[hidden],.learning-block[hidden]{display:none!important}
+.learning-summary p{margin:12px 0}
+
+.scenario-patient-brief{box-sizing:border-box;border:1px solid var(--ui-border);border-radius:var(--ui-radius);background:#f7fafd;padding:15px 17px;margin:10px 0 14px}
+.scenario-patient-brief h3{font-size:17px;margin:0 0 8px}
+.scenario-patient-brief p{font-size:15px;margin:6px 0;overflow-wrap:anywhere}
+.scenario-patient-brief #scenarioPatientObservations{font-weight:600;color:var(--ui-navy-deep)}
+.scenario-lab-item span:last-child{font-weight:700;color:var(--ui-navy-deep);font-size:16px;margin-top:4px}
+.scenario-lab-panel h4{font-size:17px}
 </style>
 
 
@@ -639,7 +780,7 @@ line-height:1.4;
 
 
 
-<h1>RAAS Simulator v5.9</h1>
+<h1>RAAS Simulator v5.9.1</h1>
 
 
 
@@ -672,135 +813,27 @@ RAAS + Drug + Physiological Variables
 
 
 
-<div class="controls">
-
-
-
-<select id="drugSelect">
-
-
-<option value="none">
-약물 없음
-</option>
-
-
-<option value="acei">
-ACE inhibitor
-</option>
-
-
-<option value="aldo">
-Aldosterone antagonist
-</option>
-
-
-<option value="arb">
-ARB
-</option>
-
-
-<option value="beta">
-β blocker
-</option>
-
-
-<option value="loop">
-Loop diuretic
-</option>
-
-
-<option value="thiazide">
-Thiazide diuretic
-</option>
-
-
-</select>
-
-
-
-
-
-
-<button onclick="applyDrug()">
-
-💊 약물 적용
-
-</button>
-
-
-
-
-
-
-<button onclick="previousStep()">
-
-◀ 이전 단계
-
-</button>
-
-
-
-
-
-
-<button onclick="nextStep()">
-
-▶ 다음 단계
-
-</button>
-
-
-
-
-
-
-<button onclick="resetProgress()">
-
-🔄 진행 초기화
-
-</button>
-
-
-
-
-
-
-<button onclick="removeDrug()">
-
-💉 약물 제거
-
-</button>
-
-
-
-
-
-
-<button onclick="resetAll()">
-
-⚠ 전체 초기화
-
-</button>
-
-<button type="button" id="helpOpenButton" class="help-trigger" aria-haspopup="dialog" aria-controls="helpDialog">
-ⓘ 사용법
-</button>
-<button type="button" id="changelogOpenButton" class="help-trigger patch-trigger" aria-haspopup="dialog" aria-controls="changelogDialog" aria-label="패치 내역 열기">
-▤ 패치 내역
-</button>
-
-
-
-
-
-
+<div class="controls" aria-label="시뮬레이터 조작 패널">
+<section class="control-group" aria-label="RAAS 단계 조작">
+<h2>1. RAAS 진행</h2>
+<button class="control-muted" type="button" onclick="previousStep()">◀ 이전 단계</button>
+<button class="control-primary" type="button" onclick="nextStep()">다음 단계 ▶</button>
+</section>
+<section class="control-group" aria-label="약물 적용 및 제거">
+<h2>2. 약물 조작</h2>
+<label for="drugSelect">적용할 약물</label>
+<select id="drugSelect"><option value="none">약물 없음</option><option value="acei">ACE inhibitor</option><option value="aldo">Aldosterone antagonist</option><option value="arb">ARB</option><option value="beta">β blocker</option><option value="loop">Loop diuretic</option><option value="thiazide">Thiazide diuretic</option></select>
+<button class="control-primary" type="button" onclick="applyDrug()">약물 적용</button>
+<button class="control-muted" type="button" onclick="removeDrug()">약물 제거</button>
+</section>
+<section class="control-group" aria-label="초기화 및 도움말">
+<h2>3. 초기화·도움말</h2>
+<button class="control-muted" type="button" onclick="resetProgress()">진행 초기화</button>
+<button class="control-danger" type="button" onclick="resetAll()">전체 초기화</button>
+<button type="button" id="helpOpenButton" class="help-trigger control-wide" aria-haspopup="dialog" aria-controls="helpDialog">ⓘ 사용법</button>
+<button type="button" id="changelogOpenButton" class="help-trigger patch-trigger control-wide" aria-haspopup="dialog" aria-controls="changelogDialog" aria-label="패치 내역 열기">▤ 패치 내역</button>
+</section>
 </div>
-
-
-
-
-
-
 
 <div class="canvas-learning-area">
 <section class="mobile-stage-navigator" aria-label="모바일 RAAS 단계별 탐색"><h3>RAAS 9단계 바로보기</h3><p>카드를 누르면 기전과 간호 설명을 확인합니다. 학습용 조회는 생리 계산과 약물 상태를 바꾸지 않습니다.</p><div class="mobile-stage-grid"><button type="button" data-mobile-stage="0" onclick="openMobileStage(0)" aria-pressed="false">1. 혈압 감소</button><button type="button" data-mobile-stage="1" onclick="openMobileStage(1)" aria-pressed="false">2. Renin</button><button type="button" data-mobile-stage="2" onclick="openMobileStage(2)" aria-pressed="false">3. Angiotensin I</button><button type="button" data-mobile-stage="3" onclick="openMobileStage(3)" aria-pressed="false">4. ACE</button><button type="button" data-mobile-stage="4" onclick="openMobileStage(4)" aria-pressed="false">5. Angiotensin II</button><button type="button" data-mobile-stage="5" onclick="openMobileStage(5)" aria-pressed="false">6. AT1 receptor</button><button type="button" data-mobile-stage="6" onclick="openMobileStage(6)" aria-pressed="false">7. Aldosterone</button><button type="button" data-mobile-stage="7" onclick="openMobileStage(7)" aria-pressed="false">8. Na⁺ / Water</button><button type="button" data-mobile-stage="8" onclick="openMobileStage(8)" aria-pressed="false">9. 혈압 회복</button></div></section>
@@ -839,7 +872,7 @@ aria-describedby="stageKeyboardGuide stageLearningHint">
       <details class="stage-model-note"><summary>ⓘ 시뮬레이션 수치 변화</summary><p id="stageDetailEffect"></p></details>
     </div>
   </details>
-  <details id="stageNursingDetails" class="stage-detail-accordion">
+  <details id="stageNursingDetails" class="stage-detail-accordion" open>
     <summary>간호 사정</summary>
     <div class="stage-detail-accordion-body">
       <p class="stage-detail-section-title">간호 사정·안전 포인트</p>
@@ -986,7 +1019,8 @@ class="variableValue">
       </select>
     </label>
   </div>
-  <canvas id="physiologyGraph" width="1000" height="290" role="img" aria-label="RAAS의 9단계별 가상 생리 변화 비교 그래프입니다."></canvas>
+  <p class="model-graph-note">전체 비교 그래프는 원래 크기로 표시됩니다. 화면이 좁으면 그래프 영역 안을 좌우로 움직여 확인하세요.</p>
+<div class="model-graph-pan" role="region" tabindex="0" aria-label="RAAS 단계별 생리 변화 전체 그래프, 좌우로 스크롤할 수 있습니다"><canvas id="physiologyGraph" width="1000" height="290" role="img" aria-label="RAAS의 9단계별 가상 생리 변화 비교 그래프입니다."></canvas></div>
   <p class="model-graph-note">실제 환자의 혈액검사·약효 시간 경과를 나타내지 않는 가상 단계 비교입니다.</p>
   <p class="model-graph-note">파랑: 약물 없음 · 보라: 적용 약물 · 세로 점선: 최대 진행 단계. <button id="graphPolicyButton" class="model-note-trigger" type="button" aria-haspopup="dialog" aria-controls="modelPolicyDialog">ⓘ 그래프 수치 안내</button></p>
 </section>
@@ -1013,27 +1047,38 @@ class="variableValue">
 <div class="learning-course-controls" role="group" aria-label="학습 방식"><button id="learningGuidedButton" type="button" aria-pressed="true">안내형 코스</button><button id="learningFreeButton" type="button" aria-pressed="false">자유 탐색</button></div>
 <p id="learningCourseStatus" class="learning-course-status" role="status" aria-live="polite"></p>
 <div class="learning-course-buttons"><button type="button" id="learningCoursePrev">← 이전 학습</button><button type="button" id="learningCourseNext">다음 학습 →</button></div></section>
-  <section class="learning-pathway"><h3>RAAS 전체 흐름</h3><p id="learningPathwayOverview"></p></section>
+  <details class="learning-pathway"><summary>RAAS 전체 9단계 흐름 펼쳐보기</summary><p id="learningPathwayOverview"></p></details>
+  <nav class="learning-focus-tools" id="learningFocusTools" aria-label="자유 탐색 학습 주제" hidden>
+  <button id="learningFreeStageButton" type="button" aria-pressed="true">RAAS 단계 학습</button>
+  <button id="learningFreeDrugButton" type="button" aria-pressed="false">약물 학습</button>
+  </nav>
   <div class="learning-grid">
-    <section class="learning-block" aria-labelledby="learningStageHeading">
+    <section class="learning-block" id="learningStagePanel" aria-labelledby="learningStageHeading">
       <h3 id="learningStageHeading">1. RAAS 단계별 이해</h3>
       <label for="learningStageSelect">학습할 단계</label>
-      <select id="learningStageSelect"><option value="0">1단계</option><option value="1">2단계</option><option value="2">3단계</option><option value="3">4단계</option><option value="4">5단계</option><option value="5">6단계</option><option value="6">7단계</option><option value="7">8단계</option><option value="8">9단계</option></select>
-      <h4 id="learningStageTitle"></h4><p id="learningStageSummary"></p>
+      <select id="learningStageSelect"><option value="0">1. 혈압 감소</option><option value="1">2. Renin</option><option value="2">3. Angiotensin I</option><option value="3">4. ACE</option><option value="4">5. Angiotensin II</option><option value="5">6. AT1 receptor</option><option value="6">7. Aldosterone</option><option value="7">8. Na⁺ / Water</option><option value="8">9. 혈압 회복</option></select>
+      <h4 id="learningStageTitle" tabindex="-1"></h4><p id="learningStageSummary"></p>
       <details class="learning-disclosure" open><summary>기전·의학적 의미</summary><p id="learningStageMechanism"></p><p id="learningStageClinical"></p></details>
-      <details class="learning-disclosure"><summary>간호 사정과 안전 포인트</summary><p id="learningStageNursing"></p></details>
+      <details class="learning-disclosure" open><summary>간호 사정과 안전 포인트</summary><p id="learningStageNursing"></p></details>
       <p id="learningStageSources" class="scenario-feedback-evidence"></p>
     </section>
-    <section class="learning-block" aria-labelledby="learningDrugHeading">
+    <section class="learning-block" id="learningDrugPanel" aria-labelledby="learningDrugHeading">
       <h3 id="learningDrugHeading">2. 약물 작용과 간호</h3>
       <label for="learningDrugSelect">학습할 약물</label>
       <select id="learningDrugSelect"><option value="acei">ACE 억제제</option><option value="arb">ARB</option><option value="aldo">알도스테론 길항제(MRA)</option><option value="beta">베타차단제</option><option value="loop">고리이뇨제</option><option value="thiazide">티아지드이뇨제</option></select>
-      <h4 id="learningDrugTitle"></h4><p id="learningDrugMechanism"></p>
+      <h4 id="learningDrugTitle" tabindex="-1"></h4><p id="learningDrugMechanism"></p>
       <h4>간호 확인 사항</h4><p id="learningDrugNursing"></p>
       <p id="learningDrugSources" class="scenario-feedback-evidence"></p>
       
     </section>
   </div>
+  <section id="learningSummaryPanel" class="learning-summary" aria-labelledby="learningSummaryTitle" hidden>
+    <h3 id="learningSummaryTitle" tabindex="-1">5단원 · 임상 적용 준비</h3>
+    <p><strong>기전 연결:</strong> 혈압·신장 관류 변화에 따른 레닌 분비, 안지오텐신 II와 알도스테론의 작용을 구분해 설명할 수 있는지 확인하세요.</p>
+    <p><strong>약물 안전:</strong> ACE 억제제·ARB·MRA에서 혈청 K⁺와 신기능 검사를 왜 확인하는지, 이뇨제에서 전해질·체액량을 왜 추적하는지 복습하세요.</p>
+    <p><strong>임상 판단:</strong> 환자 상태·기저 결과·병용 약물·추적 계획을 함께 확인하고, 불명확한 검사 및 위험은 기관 절차에 따라 담당 의료진과 의사소통하세요.</p>
+    <p>아래 검사 참고 자료를 살펴본 다음 CKD/ACEi 또는 HFrEF/MRA 임상 사례에서 판단과 간호 행동을 연습할 수 있습니다.</p>
+  </section>
 <details class="learning-disclosure" id="learningLabReference"><summary>주요 검사·활력징후와 RAAS 약물 연결</summary>
 <p>검사실 참고범위와 개별 환자 상태를 함께 확인해야 합니다. 아래 정보는 교육용이며 시뮬레이터의 가상 Na⁺·GFR 값과 연동되지 않습니다.</p>
 <div class="learning-lab-grid">
@@ -1047,7 +1092,7 @@ class="variableValue">
 </section>
 
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.9 · 임상 적용</span>
+  <span class="scenario-tag">v5.9.1 · 임상 적용</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
     <div class="scenario-instructions"><h3>학습은 이렇게 진행돼요</h3>
@@ -1082,8 +1127,9 @@ class="variableValue">
   </ol>
   <p id="scenarioCurrentTask" class="scenario-current-task" aria-live="polite"></p>
   <p id="scenarioLearningProgress" class="scenario-learning-progress" aria-live="polite" aria-atomic="true"></p>
-  <details id="scenarioCaseDetails" class="scenario-case-details" open>
-    <summary>환자 상황과 학습 목표 (접기/펼치기)</summary>
+  <section class="scenario-patient-brief" aria-label="현재 제공된 환자 핵심 정보"><h3>환자 핵심 정보 · 현재 확인된 자료</h3><p id="scenarioPatientEssential"></p><p id="scenarioPatientObservations"></p></section>
+  <details id="scenarioCaseDetails" class="scenario-case-details">
+    <summary>환자 상세 맥락과 학습 목표 펼쳐보기</summary>
     <div class="scenario-case-details-body"><p id="scenarioObjectives" class="scenario-caution"></p>
       <h3>환자 상황</h3><p id="scenarioContext"></p>
       <div id="scenarioObservations" class="scenario-observations"></div>
@@ -1149,7 +1195,11 @@ class="variableValue">
         <p id="scenarioActionEvidence" class="scenario-feedback-evidence"></p>
       </div>
     </details>
-    <section id="scenarioLabPanel" class="scenario-lab-panel" aria-labelledby="scenarioLabTitle" hidden><h4 id="scenarioLabTitle">추가 평가 시점의 가상 검사 자료</h4><p id="scenarioLabContext"></p><div id="scenarioLabItems" class="scenario-lab-grid"></div><details class="scenario-evidence-disclosure"><summary>검사 해석과 안전한 간호 확인</summary><div class="scenario-disclosure-body"><p id="scenarioLabInterpretation"></p><p id="scenarioLabSource" class="scenario-feedback-evidence"></p></div></details></section>
+    <section id="scenarioLabPanel" class="scenario-lab-panel" aria-labelledby="scenarioLabTitle" hidden>
+<h4 id="scenarioLabTitle">추가 평가 시점의 가상 검사 자료</h4><p id="scenarioLabContext"></p>
+<div id="scenarioLabItems" class="scenario-lab-grid"></div>
+<h4>검사 해석 · 우선 확인할 간호 사항</h4><p id="scenarioLabInterpretation" class="scenario-lab-interpretation"></p>
+<details class="scenario-evidence-disclosure"><summary>검사 해석 참고 근거 확인</summary><div class="scenario-disclosure-body"><p id="scenarioLabSource" class="scenario-feedback-evidence"></p></div></details></section>
     </section>
   <section id="scenarioResultPanel" tabindex="-1" aria-live="polite" hidden>
     <h3>학습 완료</h3>
@@ -1202,7 +1252,7 @@ class="variableValue">
     <h3>기전과 단계</h3>
     <p>단계별 수치 효과를 표시하지 않은 항목도 생리학적으로 중요합니다. ‘혈압 회복’은 보상 기전의 흐름을 나타내며 환자의 혈압이 반드시 정상화됨을 의미하지 않습니다.</p>
     <h3>학습 및 임상 적용</h3>
-    <p>CKD·ACEi와 HFrEF·MRA 사례는 실제 환자 기록이 아닌 가상 상황입니다. 환자별 검사 수치와 약물 반응은 제공되지 않으며, 시뮬레이터 그래프 값을 사례의 환자 수치로 해석하면 안 됩니다.</p>
+    <p>CKD·ACEi와 HFrEF·MRA 사례는 실제 환자 기록이 아닌 가상 상황입니다. 일부 임상 문항에서는 판단과 간호 행동을 제출한 뒤 별도의 평가 시점에 확보되었다고 가정한 정적 가상 Lab 결과를 제공합니다. 기존 문항에서 검사 결과가 미확인이라는 조건은 바뀌지 않습니다. 해당 수치는 실제 환자 결과나 RAAS 그래프 계산값이 아닙니다.</p>
     <p>선택지의 권장 답과 복습 점수는 학습 피드백입니다. 실제 검사·투약·치료 결정 및 임상 역량 평가에 사용하지 않으며, 환자 상태와 담당 의료진·기관 지침을 우선합니다.</p>
   </div>
 </dialog>
@@ -1285,8 +1335,8 @@ class="variableValue">
         <h3>7. 세 학습 영역과 임상 적용</h3>
         <p><strong>① 시뮬레이터</strong>에서는 RAAS 경로·약물·생리 변화를 조작하고, <strong>② 학습</strong>에서는 9단계·약물 6종의 기전과 간호 내용을 확인합니다. <strong>③ 임상 적용</strong>에서는 CKD/ACEi(3문항) 또는 HFrEF/MRA(2문항) 가상 사례를 선택합니다.</p>
         <p><strong>학습 순서:</strong> 환자 파악 → 임상 판단 → 내 선택·권장 답안과 근거 비교 → 간호 행동 선택 → 행동 해설 → 필요한 경우 별도 추가 평가 시점의 가상 Lab 확인 → 다음 문항 → 오답 우선 완료 복습. 각 해설의 근거를 펼쳐 볼 수 있고, 완료 후 <strong>ⓘ 핵심 임상 포인트</strong>를 확인할 수 있습니다.</p>
-        <p>모바일에서는 9단계 카드로 기전을 선택하고, 전체 Canvas는 별도로 펼쳐 가로 탐색할 수 있습니다. 학습 탭에는 5단원 안내형 코스와 자유 탐색이 있으며, 임상 결과에서 관련 학습으로 이동한 뒤 복귀해도 원래 임상 답안은 보존됩니다.</p>
-        <p>모바일에서는 단계별 카드를 선택하거나 전체 Canvas를 펼칠 수 있습니다. 학습에는 5단원 코스와 자유 탐색이 있고, 임상 복습에서 관련 단계·약물을 살펴본 뒤 원래 답안으로 복귀할 수 있습니다. 세 상위 탭을 오가도 답안은 유지됩니다. <strong>다시 풀기·다른 사례 선택·학습 종료</strong>를 누른 경우에만 임상 답안이 초기화되며, 새로고침 후에는 복원되지 않습니다. 시연 중 다른 탭으로 이동하면 시연만 일시정지됩니다.</p>
+        <p>모바일에서는 9단계 카드를 선택하거나 원본 RAAS Canvas와 생리 그래프를 각각 좌우로 탐색할 수 있습니다. 안내형 학습에서는 현재 주제 하나에 집중하고, 자유 탐색에서는 RAAS 단계/약물 화면을 전환합니다. 임상 복습에서 관련 학습으로 이동한 뒤 복귀해도 기존 답안은 보존됩니다.</p>
+        <p>세 상위 탭을 오가도 답안은 유지됩니다. <strong>다시 풀기·다른 사례 선택·학습 종료</strong>를 누른 경우에만 임상 답안이 초기화되며, 새로고침 후에는 복원되지 않습니다. 시연 중 다른 탭으로 이동하면 시연만 일시정지됩니다.</p>
         <h3>8. 교육용 모델의 한계</h3>
         <p>세 화면 상단의 <strong>ⓘ 모델·안전 안내</strong>에서 시뮬레이션 수치, 혈청 Na⁺와 체내 Na⁺의 차이, K⁺ 미계산, 임상 사례의 가상 설정 및 실제 진료 주의사항을 확인할 수 있습니다.</p>
         <p class="help-note">시뮬레이터의 약물 및 RAAS 효과값은 교육을 위한 단순화된 수치입니다. 실제 환자의 혈압, 전해질, 혈액량 또는 신기능을 예측하거나 치료 결정을 내리는 데 사용할 수 없습니다.</p>
@@ -1306,6 +1356,7 @@ class="variableValue">
 <h3>v5.8 — 임상 Lab 해석과 오답 우선 복습</h3><p>기존 문항 정답을 유지하면서 간호 행동 제출 이후 별도 평가 시점의 가상 검사 사례를 제공합니다. 모든 판단·행동 문항을 오답 우선으로 복습하고 연관 학습 후 기록을 보존해 돌아옵니다.</p>
 <h3>v5.7 — 5단원 안내형 학습 및 자유 탐색·Lab 학습</h3><p>9단계와 6약물을 묶은 안내형 코스 및 별도 자유 탐색, K⁺/Cr/eGFR/UACR/혈압 설명과 출처 링크를 추가했습니다.</p>
 <h3>v5.6 — 반응형 모바일 RAAS 단계 카드</h3><p>좁은 화면은 카드로 기전과 간호를 조회하고, 900px 전체 Canvas는 별도의 가로 탐색으로 유지했습니다.</p>
+<h3>v5.9.1 — B/P1/T1/K2/G1 가독성 개선</h3><p>네이비·부드러운 테두리·16px 본문을 적용하고 조작 패널과 주요 정보의 순서를 정돈했습니다. 안내형 코스에서는 현재 단계/약물/최종 정리 하나만 보여주고, 자유 탐색도 주제별로 전환할 수 있습니다. 모바일 그래프는 원본 크기를 유지한 채 좌우로 탐색하며, 임상 안전 해석은 기본 표시하도록 개선했습니다.</p>
 <h3>v5.9 — 모델 안전 설명·접근성·검증</h3><p>교육용 생리 수치와 가상 임상 검사 자료의 차이를 명시하고 모바일 카드·키보드 초점을 개선했습니다.</p><h3>v5.8 — 임상 Lab 및 오답 복습</h3><p>답안 제출 뒤 별도 평가 시점의 가상 검사를 표시하고 오답 우선 복습·관련 학습 이동을 추가했습니다.</p><h3>v5.7 — 코스·자유 탐색</h3><p>5단원 학습 코스와 K⁺·Cr·eGFR 등의 검사 의미를 추가했습니다.</p><h3>v5.6 — 모바일 단계 카드</h3><p>모바일에서 9단계 카드를 제공하고 원본 Canvas는 별도 탐색으로 보존했습니다.</p><h3>v5.5.2 — 제목·상단 메뉴·사용 설명서 정비</h3>
         <p>화면과 문서 버전 표시를 맞추고 주요 학습 탭과 보조 안내 버튼을 시각적으로 분리했습니다. 과거 명칭과 중복 설명을 정리했으며 생리 계산·임상 답안·탭 이동 상태는 변경하지 않았습니다.</p>
         <h3>v5.5.1 — 본문 중심의 교육 설명과 모델 안내 분리</h3>
@@ -4320,8 +4371,7 @@ function renderScenarioStudy(){
     document.getElementById("scenarioActiveCaseLabel").textContent="선택한 사례 · "+definition.title;
     document.getElementById("scenarioLearningProgress").textContent=
         "현재: "+phaseLabel+" · 임상 판단 "+knowledgeDone+"/"+definition.questions.length+
-        " 완료 (남은 "+Math.max(0,definition.questions.length-knowledgeDone)+"문항) · 간호 행동 "+
-        actionDone+"/"+actionTotal+" 완료 (남은 "+Math.max(0,actionTotal-actionDone)+"문항)";
+        " · 간호 행동 "+actionDone+"/"+actionTotal;
     const isFinished=session.status==="completed"&&!scenarioLatestFeedback;
     const part=isFinished?"result":!scenarioLatestFeedback||scenarioActionPhase==="idle"?"judgement":"action";
     const roadmapStates=[
@@ -4349,6 +4399,9 @@ function renderScenarioStudy(){
         "학습 목표: "+definition.objectives.join(" / ");
     document.getElementById("scenarioContext").textContent=definition.caseContext;
     document.getElementById("scenarioObservations").textContent=
+        definition.observations.map(item=>item.label+": "+item.value).join(" · ");
+    document.getElementById("scenarioPatientEssential").textContent=definition.caseContext;
+    document.getElementById("scenarioPatientObservations").textContent=
         definition.observations.map(item=>item.label+": "+item.value).join(" · ");
 
     const actionStep=document.getElementById("scenarioActionStep");
@@ -4493,7 +4546,7 @@ function openScenarioRelatedLearning(questionId){
  const link=scenarioLearningLinks[scenarioRuntime.definition.id+":"+questionId];
  if(!link||!scenarioRuntime.session||scenarioRuntime.session.status!=="completed")return;
  document.getElementById("learningClinicalReturn").hidden=false;
- learningCourseMode="free"; // clinical review is direct exploration; guided position is retained
+ learningCourseMode="free"; learningFreeTopic="drug"; // clinical review is direct exploration; guided position is retained
  switchStudyMode("learning");
  document.getElementById("learningStageSelect").value=String(link.stage);
  document.getElementById("learningDrugSelect").value=link.drug;
@@ -4587,7 +4640,7 @@ function selectClinicalCase(id){
     resetScenarioActions();
     scenarioCaseCatalog.hidden=true;
     scenarioSessionContent.hidden=false;
-    document.getElementById("scenarioCaseDetails").open=true;
+    document.getElementById("scenarioCaseDetails").open=false;
     document.getElementById("scenarioJudgementEvidenceDetails").open=false;
     document.getElementById("scenarioActionEvidenceDetails").open=false;
     const primary=document.getElementById("scenarioSourcePrimary");
@@ -4737,8 +4790,8 @@ function renderLearningLibrary(){
     document.getElementById("learningDrugSources").textContent="학습 근거: "+detail.sourceIds+" · 원문은 설명서 참고문헌을 확인하세요.";
     renderLearningCourse();
 }
-document.getElementById("learningStageSelect").addEventListener("change",renderLearningLibrary);
-document.getElementById("learningDrugSelect").addEventListener("change",renderLearningLibrary);
+document.getElementById("learningStageSelect").addEventListener("change",()=>{learningFreeTopic="stage";renderLearningLibrary();});
+document.getElementById("learningDrugSelect").addEventListener("change",()=>{learningFreeTopic="drug";renderLearningLibrary();});
 
 // v5.7: read-only five-unit curriculum, isolated from RAAS/clinical states.
 const learningCourseSteps=[
@@ -4749,7 +4802,7 @@ const learningCourseSteps=[
  {unit:4,type:"summary",value:null}
 ];
 const learningUnitTitles=["RAAS 활성 조건","레닌–안지오텐신 전환","수용체·알도스테론·체액/혈압","주요 약물 6종","임상 적용 준비"];
-let learningCourseMode="guided",learningCoursePosition=0;
+let learningCourseMode="guided",learningCoursePosition=0,learningFreeTopic="stage";
 function renderLearningCourse(){
  const guided=learningCourseMode==="guided",step=learningCourseSteps[learningCoursePosition];
  document.getElementById("learningGuidedButton").setAttribute("aria-pressed",String(guided));
@@ -4763,7 +4816,24 @@ function renderLearningCourse(){
  document.getElementById("learningCourseStatus").textContent=guided?
   "단원 "+(step.unit+1)+"/5 · "+learningUnitTitles[step.unit]+" · 학습 "+(learningCoursePosition+1)+"/"+learningCourseSteps.length+"\n이번 항목: "+topic:
   "자유 탐색 중 · 아래의 단계와 약물을 원하는 순서로 선택하세요. 안내형 진도는 유지됩니다.";
+ renderLearningFocus();
 }
+function renderLearningFocus(){
+ const guided=learningCourseMode==="guided",entry=learningCourseSteps[learningCoursePosition];
+ const kind=guided?entry.type:learningFreeTopic;
+ document.getElementById("learningFocusTools").hidden=guided;
+ document.getElementById("learningStagePanel").hidden=kind!=="stage";
+ document.getElementById("learningDrugPanel").hidden=kind!=="drug";
+ document.getElementById("learningSummaryPanel").hidden=kind!=="summary";
+ document.getElementById("learningFreeStageButton").setAttribute("aria-pressed",String(learningFreeTopic==="stage"));
+ document.getElementById("learningFreeDrugButton").setAttribute("aria-pressed",String(learningFreeTopic==="drug"));
+}
+document.getElementById("learningFreeStageButton").addEventListener("click",()=>{
+ learningCourseMode="free";learningFreeTopic="stage";renderLearningCourse();document.getElementById("learningStageTitle").focus();
+});
+document.getElementById("learningFreeDrugButton").addEventListener("click",()=>{
+ learningCourseMode="free";learningFreeTopic="drug";renderLearningCourse();document.getElementById("learningDrugTitle").focus();
+});
 function goLearningCourse(position){
  if(position<0||position>=learningCourseSteps.length)return;
  learningCoursePosition=position;
@@ -4771,11 +4841,14 @@ function goLearningCourse(position){
  if(step.type==="stage")document.getElementById("learningStageSelect").value=String(step.value);
  if(step.type==="drug")document.getElementById("learningDrugSelect").value=step.value;
  renderLearningLibrary();
+ const target=step.type==="stage"?"learningStageTitle":step.type==="drug"?"learningDrugTitle":"learningSummaryTitle";
+ document.getElementById(target).focus();
 }
 document.getElementById("learningGuidedButton").addEventListener("click",()=>{
  learningCourseMode="guided";goLearningCourse(learningCoursePosition);
 });
 document.getElementById("learningFreeButton").addEventListener("click",()=>{
+ learningFreeTopic=learningCourseSteps[learningCoursePosition].type==="drug"?"drug":"stage";
  learningCourseMode="free";renderLearningCourse();
 });
 document.getElementById("learningCoursePrev").addEventListener("click",()=>goLearningCourse(learningCoursePosition-1));

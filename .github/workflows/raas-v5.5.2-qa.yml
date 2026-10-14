@@ -1,4 +1,4 @@
-name: RAAS integrated v5.9 regression and Chromium smoke
+name: RAAS v5.9.1 readability and historical regression
 on:
   pull_request:
     branches: [main]
@@ -34,13 +34,18 @@ jobs:
         run: node tests/browser-v5.5.2.cjs
       - name: Run current v5.9 interactive Chromium checks
         run: node tests/browser-v5.9.cjs
+      - name: Run current v5.9.1 readability and session Chromium checks
+        run: node tests/browser-v5.9.1.cjs
       - name: Upload browser screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: raas-v5.9-browser-screens
+          name: raas-v5.9.1-browser-screens
           path: |
             browser-desktop-v5.5.2.png
             browser-mobile-nav-v5.5.2.png
             browser-integrated-v5.9.png
+            browser-v5.9.1-mobile-readability.png
+            browser-v5.9.1-clinical-readability.png
+            browser-v5.9.1-desktop-readability.png
           if-no-files-found: ignore

@@ -1,7 +1,7 @@
 // v5.9 integrated QA: actual Node CLI, no browser claims.
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
-const live=read('index.html'),old=read('backups/v5.5.2.html');
+const live=read('backups/v5.9.html'),old=read('backups/v5.5.2.html');
 let n=0;function ok(v,why){n++;assert.ok(v,why)}
 for(const v of ['5.6','5.7','5.8','5.9']){
  const html=read('backups/v'+v+'.html');
