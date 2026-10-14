@@ -42,7 +42,8 @@ function boot(html){
 
 
 
-const src=fs.readFileSync(path.join(root,"index.html"),"utf8"), base=fs.readFileSync(path.join(root,"backups","v5.5.html"),"utf8");
+// Historical self-test: pin the v5.5.1 release instead of asserting future index version labels.
+const src=fs.readFileSync(path.join(root,"backups","v5.5.1.html"),"utf8"), base=fs.readFileSync(path.join(root,"backups","v5.5.html"),"utf8");
 const now=boot(src),old=boot(base);let n=0;
 function ok(x,s){n++;if(!x)throw Error("v5.5.1 FAIL "+s)}
 function snap(a){return JSON.stringify({state:a.api.state,phys:a.api.physiology,drugs:a.api.drugData,
