@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-RAAS Simulator v5.5.1
+RAAS Simulator v5.5.2
 </title>
 
 
@@ -418,10 +418,21 @@ line-height:1.4;
 
 /* v5.0: scenario mode uses a separate view; legacy layout remains untouched. */
 [hidden]{display:none !important}
-.study-mode-nav{max-width:1100px;margin:14px auto 5px;display:flex;justify-content:center;gap:9px;flex-wrap:wrap}
-.study-mode-nav button{width:auto;min-width:170px;border:1px solid #64758b;border-radius:8px;background:#fff;color:#18324b;cursor:pointer;font-weight:bold}
-.study-mode-nav button[aria-pressed="true"]{background:#194e78;color:#fff;border-color:#194e78}
+/* v5.5.2: keep primary navigation separate from read-only dialogs. */
+.study-mode-nav{box-sizing:border-box;max-width:1100px;margin:12px auto 6px;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
+.study-mode-primary,.study-mode-secondary{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;min-width:0}
+.study-mode-primary{padding:4px 0}
+.study-mode-primary button{box-sizing:border-box;width:auto;min-width:163px;min-height:43px;padding:9px 12px;border:1px solid #64758b;border-radius:8px;background:#fff;color:#18324b;cursor:pointer;font-weight:700}
+.study-mode-primary button[aria-pressed="true"]{background:#194e78;color:#fff;border-color:#194e78}
+.study-mode-secondary{padding:4px 0 4px 14px;border-left:1px solid #c3cdd8}
+.study-mode-secondary button{box-sizing:border-box;width:auto;min-width:110px;min-height:38px;padding:8px 12px;border:1px solid #a3b5c3;border-radius:7px;background:#f5f8fb;color:#244965;font-size:12px;font-weight:600;cursor:pointer}
 .study-mode-nav button:focus-visible,.scenario-view button:focus-visible{outline:3px solid #184ea7;outline-offset:3px}
+@media(max-width:700px){
+  .study-mode-nav{gap:6px;margin:10px auto 6px;padding:0 8px}
+  .study-mode-primary,.study-mode-secondary{width:100%}
+  .study-mode-primary button{flex:1 1 140px;min-width:140px}
+  .study-mode-secondary{border-left:0;border-top:1px solid #c3cdd8;padding:8px 0 0}
+}
 .scenario-view{box-sizing:border-box;max-width:900px;margin:20px auto 28px;padding:20px;text-align:left;background:#fff;border:2px solid #2c526b;border-radius:12px;line-height:1.65}
 .scenario-view h2{font-size:22px;margin:0 0 6px}
 .scenario-view h3{font-size:17px;margin:18px 0 8px}
@@ -493,7 +504,7 @@ line-height:1.4;
 
 /* v5.5: separated educational view with no change to simulation Canvas sizing */
 .study-mode-intro{max-width:1060px;margin:5px auto 14px;padding:0 14px;text-align:center;color:#365368;font-size:13px;line-height:1.65}
-#globalHelpButton{min-width:120px;background:#edf5fc}
+.study-mode-secondary #globalHelpButton{min-width:120px;background:#f5f8fb}
 .learning-intro{background:#f1f6fb;padding:12px;border-left:4px solid #245578}
 .learning-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .learning-block,.learning-next{padding:15px;border:1px solid #bfd1dd;border-radius:9px;background:#fafcfe;min-width:0}
@@ -507,7 +518,7 @@ line-height:1.4;
 .learning-next{margin-top:15px}
 .learning-next button,.scenario-takeaways-trigger{min-height:44px;width:auto;padding:10px 16px;border:1px solid #194e78;background:#194e78;color:white;border-radius:6px;cursor:pointer}
 .learning-view button:focus-visible,.learning-view summary:focus-visible,.scenario-view summary:focus-visible,#globalHelpButton:focus-visible{outline:3px solid #1556a1;outline-offset:3px}
-@media(max-width:700px){.learning-grid{grid-template-columns:1fr}.study-mode-nav button{min-width:140px}}
+@media(max-width:700px){.learning-grid{grid-template-columns:1fr}.study-mode-primary button{min-width:140px}}
 
 /* v5.5: clinical roadmap, evidence disclosure, readable comparison */
 .scenario-instructions{padding:12px 14px;background:#eff6fb;border:1px solid #bbcedd;border-radius:9px;margin-bottom:15px}
@@ -542,6 +553,7 @@ line-height:1.4;
 
 /* v5.5.1: secondary model disclosures and compact safety notes */
 .model-policy-trigger{background:#f5f7fa!important;border-style:dashed!important;min-width:155px!important}
+.study-mode-secondary .model-policy-trigger{min-width:144px!important}
 .model-policy-trigger:focus-visible,.model-note-trigger:focus-visible,.stage-model-note summary:focus-visible{outline:3px solid #235ea0;outline-offset:3px}
 .model-note-trigger{display:inline-block;width:auto;min-height:36px;padding:5px 10px;margin:3px 0;background:#f3f7fb;color:#234c71;border:1px solid #9db5c9;border-radius:6px;font-weight:700;cursor:pointer}
 .stage-model-note{margin:10px 0;border:1px solid #d2dfeb;border-radius:6px;background:#f8fbfd}
@@ -563,7 +575,7 @@ line-height:1.4;
 
 
 <h1>
-RAAS Simulator v5.3
+RAAS Simulator v5.5.2
 </h1>
 
 
@@ -580,14 +592,18 @@ RAAS + Drug + Physiological Variables
 
 
 
-<nav class="study-mode-nav" aria-label="RAAS 학습 영역 선택">
-  <button id="normalModeButton" type="button" aria-pressed="true" aria-controls="normalStudyView">① 시뮬레이터</button>
-  <button id="learningModeButton" type="button" aria-pressed="false" aria-controls="learningStudyView">② 학습</button>
-  <button id="scenarioModeButton" type="button" aria-pressed="false" aria-controls="scenarioStudyView">③ 임상 적용</button>
-  <button id="globalHelpButton" type="button" aria-haspopup="dialog" aria-controls="helpDialog">ⓘ 사용법</button>
-  <button id="modelPolicyButton" class="model-policy-trigger" type="button" aria-haspopup="dialog" aria-controls="modelPolicyDialog" aria-label="모델 한계와 임상 안전 주의사항">ⓘ 모델·안전 안내</button>
+<nav class="study-mode-nav" aria-label="RAAS 학습 영역 선택과 도움말">
+  <div class="study-mode-primary" role="group" aria-label="주요 학습 영역">
+    <button id="normalModeButton" type="button" aria-pressed="true" aria-controls="normalStudyView">① 시뮬레이터</button>
+    <button id="learningModeButton" type="button" aria-pressed="false" aria-controls="learningStudyView">② 학습</button>
+    <button id="scenarioModeButton" type="button" aria-pressed="false" aria-controls="scenarioStudyView">③ 임상 적용</button>
+  </div>
+  <div class="study-mode-secondary" role="group" aria-label="도움말과 모델 안내">
+    <button id="globalHelpButton" type="button" aria-haspopup="dialog" aria-controls="helpDialog">ⓘ 사용법</button>
+    <button id="modelPolicyButton" class="model-policy-trigger" type="button" aria-haspopup="dialog" aria-controls="modelPolicyDialog" aria-label="모델 한계와 임상 안전 주의사항">ⓘ 모델·안전 안내</button>
+  </div>
 </nav>
-<p class="study-mode-intro">시뮬레이터에서 흐름을 관찰하고, 학습에서 기전·간호를 정리한 뒤, 임상 적용에서 판단을 연습하세요. </p>
+<p class="study-mode-intro">RAAS 흐름을 관찰하고 → 기전·간호를 학습하고 → 가상 사례에서 판단을 연습하세요.</p>
 <div id="normalStudyView">
 <div class="main">
 
@@ -704,7 +720,7 @@ Thiazide diuretic
 </button>
 
 <button type="button" id="helpOpenButton" class="help-trigger" aria-haspopup="dialog" aria-controls="helpDialog">
-ⓘ 설명서
+ⓘ 사용법
 </button>
 <button type="button" id="changelogOpenButton" class="help-trigger patch-trigger" aria-haspopup="dialog" aria-controls="changelogDialog" aria-label="패치 내역 열기">
 ▤ 패치 내역
@@ -950,7 +966,7 @@ class="variableValue">
 </section>
 
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.5.1 · 임상 적용</span>
+  <span class="scenario-tag">v5.5.2 · 임상 적용</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
     <div class="scenario-instructions"><h3>학습은 이렇게 진행돼요</h3>
@@ -1116,7 +1132,7 @@ class="variableValue">
         <button type="button" id="helpCloseButton" class="help-close" aria-label="설명서 닫기" autofocus>×</button>
     </div>
     <div class="help-body">
-        <p id="helpLead">RAAS 경로의 진행, 약물 작용 위치, 생리 변수 변화를 확인하는 교육용 시뮬레이터입니다.</p>
+        <p id="helpLead">RAAS 9단계와 약물·생리 변수, 기전·간호 학습, 가상 임상 사례를 함께 탐색하는 교육용 도구입니다.</p>
 
         <h3>1. 기본 조작</h3>
         <ul>
@@ -1184,13 +1200,10 @@ class="variableValue">
             <li id="reference-3">[3] National Institute for Health and Care Excellence. (2025). <em>Chronic heart failure in adults: Diagnosis and management</em> (NG106; updated 2025). <a href="https://www.nice.org.uk/guidance/ng106/chapter/recommendations" target="_blank" rel="noopener noreferrer">권고문 보기</a></li>
             <li id="reference-4">[4] Ernstmeyer, K., &amp; Christman, E. (Eds.). (2024). <em>Nursing fundamentals</em> (2nd ed.), Fluids and electrolytes. Chippewa Valley Technical College. <a href="https://www.ncbi.nlm.nih.gov/books/NBK610839/" target="_blank" rel="noopener noreferrer">간호교육 자료</a></li>
         </ol>
-        <h3>7. 세 학습 영역과 임상 적용 (v5.5)</h3>
-        <p><strong>① 시뮬레이터</strong>는 RAAS 경로·약물·생리 변화를 조작합니다. <strong>② 학습</strong>은 9단계 기전 및 약물 6종의 의학·간호 설명을 정리합니다. <strong>③ 임상 적용</strong>은 CKD/ACEi 또는 HFrEF/MRA 사례에서 판단과 행동을 연습합니다.</p>
-        <p>임상 학습 순서: <strong>환자 파악 → 임상 판단 → 선택한 답/권장 답안 비교·근거 확인 → 간호 행동 → 행동 해설 → 다음 문항 → 완료 복습</strong>. 상세 근거는 접이식 영역에서 확인하고, 완료 후 ⓘ 핵심 임상 포인트 버튼으로 별도 팝업을 엽니다.</p>
-        <p>상단의 탭 이동은 풀이를 보존합니다. <strong>다시 풀기·다른 사례 선택·학습 종료</strong>는 답안을 초기화하며, 새로고침 시 풀이 기록은 사라집니다.</p>
-        <h3>7-1. 기존 임상 사례 안내</h3>
-        <p>상단의 <strong>임상 시나리오</strong>에서 만성콩팥병 환자의 ACE 억제제 관련 3문항을 풀 수 있습니다. 임상 시나리오에 진입하면 <strong>CKD·ACE 억제제</strong> 또는 <strong>HFrEF·MRA</strong> 사례를 선택합니다. 풀이 중에는 <strong>다른 사례 선택</strong>으로 돌아갈 수 있지만 현재 답안은 삭제됩니다. 기존 선택지별 해설을 확인한 뒤 <strong>다음: 간호 행동 판단</strong>으로 추가 사정·보고·환자 교육에 관한 선택지를 풉니다. 행동 해설을 확인해야 다음 문항으로 이동할 수 있으며 완료 후 지식 판단과 간호 행동의 선택을 각각 복습할 수 있습니다.</p>
-        <p>상단 탭을 이용해 시뮬레이터나 학습 화면으로 이동해도 진행 중인 답안은 유지됩니다. 답안을 삭제하려면 임상 적용의 ‘학습 종료·답안 초기화’, ‘다시 풀기·답안 초기화’, ‘다른 사례 선택·답안 초기화’를 사용합니다. 경로 시연 도중 전환하면 시연을 일시정지합니다. 새로고침 후에도 시나리오 답안은 보존되지 않습니다.</p>
+        <h3>7. 세 학습 영역과 임상 적용</h3>
+        <p><strong>① 시뮬레이터</strong>에서는 RAAS 경로·약물·생리 변화를 조작하고, <strong>② 학습</strong>에서는 9단계·약물 6종의 기전과 간호 내용을 확인합니다. <strong>③ 임상 적용</strong>에서는 CKD/ACEi(3문항) 또는 HFrEF/MRA(2문항) 가상 사례를 선택합니다.</p>
+        <p><strong>학습 순서:</strong> 환자 파악 → 임상 판단 → 내 선택·권장 답안과 근거 비교 → 간호 행동 선택 → 행동 해설 → 다음 문항 → 완료 복습. 각 해설의 근거를 펼쳐 볼 수 있고, 완료 후 <strong>ⓘ 핵심 임상 포인트</strong>를 확인할 수 있습니다.</p>
+        <p>세 상위 탭을 오가도 답안은 유지됩니다. <strong>다시 풀기·다른 사례 선택·학습 종료</strong>를 누른 경우에만 임상 답안이 초기화되며, 새로고침 후에는 복원되지 않습니다. 시연 중 다른 탭으로 이동하면 시연만 일시정지됩니다.</p>
         <h3>8. 교육용 모델의 한계</h3>
         <p>세 화면 상단의 <strong>ⓘ 모델·안전 안내</strong>에서 시뮬레이션 수치, 혈청 Na⁺와 체내 Na⁺의 차이, K⁺ 미계산, 임상 사례의 가상 설정 및 실제 진료 주의사항을 확인할 수 있습니다.</p>
         <p class="help-note">시뮬레이터의 약물 및 RAAS 효과값은 교육을 위한 단순화된 수치입니다. 실제 환자의 혈압, 전해질, 혈액량 또는 신기능을 예측하거나 치료 결정을 내리는 데 사용할 수 없습니다.</p>
@@ -1206,6 +1219,8 @@ class="variableValue">
     </div>
     <div class="help-body">
         <p id="changelogLead">교육용 시뮬레이터의 주요 변경 사항을 버전별로 요약했습니다. 이전 버전의 상세 기록은 프로젝트 DEVLOG.md를 참고하세요.</p>
+        <h3>v5.5.2 — 제목·상단 메뉴·사용 설명서 정비</h3>
+        <p>화면과 문서 버전 표시를 맞추고 주요 학습 탭과 보조 안내 버튼을 시각적으로 분리했습니다. 과거 명칭과 중복 설명을 정리했으며 생리 계산·임상 답안·탭 이동 상태는 변경하지 않았습니다.</p>
         <h3>v5.5.1 — 본문 중심의 교육 설명과 모델 안내 분리</h3>
         <p>기전·간호 학습 문장에서 모델 구현 방식에 관한 반복 설명을 덜어내고, 수치 해석·임상 안전 주의사항을 ⓘ 모델·안전 안내 팝업으로 모았습니다. 생리 계산과 임상 사례 채점은 변경하지 않았습니다.</p>
         <h3>v5.5 — 시뮬레이터·학습·임상 적용 3체제 및 임상학습 UX</h3>
