@@ -803,7 +803,7 @@ Thiazide diuretic
 
 
 <div class="canvas-learning-area">
-<section class="mobile-stage-navigator" aria-label="모바일 RAAS 단계별 탐색"><h3>RAAS 9단계 바로보기</h3><p>카드를 누르면 기전과 간호 설명을 확인합니다. 학습용 조회는 생리 계산과 약물 상태를 바꾸지 않습니다.</p><div class="mobile-stage-grid"><button type="button" data-mobile-stage="0" onclick="showStageLearning(0)" aria-pressed="false">1. 혈압 감소</button><button type="button" data-mobile-stage="1" onclick="showStageLearning(1)" aria-pressed="false">2. Renin</button><button type="button" data-mobile-stage="2" onclick="showStageLearning(2)" aria-pressed="false">3. Angiotensin I</button><button type="button" data-mobile-stage="3" onclick="showStageLearning(3)" aria-pressed="false">4. ACE</button><button type="button" data-mobile-stage="4" onclick="showStageLearning(4)" aria-pressed="false">5. Angiotensin II</button><button type="button" data-mobile-stage="5" onclick="showStageLearning(5)" aria-pressed="false">6. AT1 receptor</button><button type="button" data-mobile-stage="6" onclick="showStageLearning(6)" aria-pressed="false">7. Aldosterone</button><button type="button" data-mobile-stage="7" onclick="showStageLearning(7)" aria-pressed="false">8. Na⁺ / Water</button><button type="button" data-mobile-stage="8" onclick="showStageLearning(8)" aria-pressed="false">9. 혈압 회복</button></div></section>
+<section class="mobile-stage-navigator" aria-label="모바일 RAAS 단계별 탐색"><h3>RAAS 9단계 바로보기</h3><p>카드를 누르면 기전과 간호 설명을 확인합니다. 학습용 조회는 생리 계산과 약물 상태를 바꾸지 않습니다.</p><div class="mobile-stage-grid"><button type="button" data-mobile-stage="0" onclick="openMobileStage(0)" aria-pressed="false">1. 혈압 감소</button><button type="button" data-mobile-stage="1" onclick="openMobileStage(1)" aria-pressed="false">2. Renin</button><button type="button" data-mobile-stage="2" onclick="openMobileStage(2)" aria-pressed="false">3. Angiotensin I</button><button type="button" data-mobile-stage="3" onclick="openMobileStage(3)" aria-pressed="false">4. ACE</button><button type="button" data-mobile-stage="4" onclick="openMobileStage(4)" aria-pressed="false">5. Angiotensin II</button><button type="button" data-mobile-stage="5" onclick="openMobileStage(5)" aria-pressed="false">6. AT1 receptor</button><button type="button" data-mobile-stage="6" onclick="openMobileStage(6)" aria-pressed="false">7. Aldosterone</button><button type="button" data-mobile-stage="7" onclick="openMobileStage(7)" aria-pressed="false">8. Na⁺ / Water</button><button type="button" data-mobile-stage="8" onclick="openMobileStage(8)" aria-pressed="false">9. 혈압 회복</button></div></section>
 <details class="mobile-canvas-explorer" id="mobileCanvasExplorer" open><summary>전체 RAAS 경로 탐색 (좌우 스크롤)</summary><div class="mobile-canvas-pan">
 <canvas id="canvas"
 width="900"
@@ -823,7 +823,7 @@ aria-describedby="stageKeyboardGuide stageLearningHint">
 <p id="stageKeyboardGuide" class="stage-learning-hint"><strong>키보드:</strong> Tab으로 RAAS 경로 선택 · ←/→ 단계 이동 · Esc 설명 닫기 (자세한 조작: ⓘ 사용법)</p>
 <p id="stageLearningHint" class="stage-learning-hint" aria-live="polite">상자를 클릭하거나 키보드로 단계를 선택하면 아래 상세 설명이 표시됩니다.</p>
 
-<section id="stageDetailPanel" class="stage-detail-panel" aria-labelledby="stageDetailTitle" aria-live="polite" hidden>
+<section id="stageDetailPanel" tabindex="-1" class="stage-detail-panel" aria-labelledby="stageDetailTitle" aria-live="polite" hidden>
   <div class="stage-detail-header">
     <h3 id="stageDetailTitle"></h3>
     <button id="stageDetailCloseButton" class="stage-detail-close" type="button">닫기</button>
@@ -1100,7 +1100,7 @@ class="variableValue">
     </div>
   </section>
   <section id="scenarioFeedbackPanel" class="scenario-feedback" aria-live="polite" aria-atomic="true" hidden>
-    <h3 id="scenarioFeedbackTitle"></h3>
+    <h3 id="scenarioFeedbackTitle" tabindex="-1"></h3>
     <p id="scenarioAnsweredQuestion" class="scenario-answered-question"></p>
     <div class="scenario-answer-compare">
       <div class="scenario-answer-card selected"><h4>내가 선택한 답</h4><p id="scenarioFeedbackSelected" class="scenario-feedback-selection"></p></div>
@@ -1128,7 +1128,7 @@ class="variableValue">
     </div>
   </section>
   <section id="scenarioActionFeedbackPanel" class="scenario-action-feedback" aria-live="polite" aria-atomic="true" hidden>
-    <h3 id="scenarioActionFeedbackTitle"></h3>
+    <h3 id="scenarioActionFeedbackTitle" tabindex="-1"></h3>
     <p id="scenarioAnsweredActionPrompt" class="scenario-answered-question"></p>
     <div class="scenario-answer-compare">
       <div class="scenario-answer-card selected"><h4>내가 선택한 간호 행동</h4><p id="scenarioActionFeedbackSelected" class="scenario-feedback-selection"></p></div>
@@ -4013,6 +4013,15 @@ function showStageLearning(index){
     if(typeof document.querySelectorAll==="function")document.querySelectorAll(".mobile-stage-grid button").forEach(button=>button.setAttribute("aria-pressed",String(Number(button.dataset.mobileStage)===index)));
 }
 
+// Card-only navigation: reveal the explanation in the viewport without advancing RAAS.
+function openMobileStage(index){
+ showStageLearning(index);
+ if(!stageDetailPanel.hidden){
+  if(typeof stageDetailPanel.scrollIntoView==="function")stageDetailPanel.scrollIntoView({block:"start",behavior:"smooth"});
+  stageDetailPanel.focus?.({preventScroll:true});
+ }
+}
+
 canvas.addEventListener("click",(event)=>{
     const index=getStageIndexAtPoint(event);
 
@@ -4288,7 +4297,7 @@ function chooseScenarioAction(index){
     scenarioActionAnswers={...scenarioActionAnswers,[question.id]:choice.id};
     scenarioActionPhase="review";
     renderScenarioStudy();
-    scenarioNextButton.focus();
+    document.getElementById("scenarioActionFeedbackTitle").focus();
 }
 
 function renderScenarioStudy(){
@@ -4556,9 +4565,7 @@ function chooseScenarioAnswer(index){
     if(!choice)return;
     scenarioLatestFeedback=submitScenarioAnswer(choice.id);
     renderScenarioStudy();
-    if(!document.getElementById("scenarioActionStartButton").hidden){
-        document.getElementById("scenarioActionStartButton").focus();
-    }else scenarioNextButton.focus();
+    document.getElementById("scenarioFeedbackTitle").focus();
 }
 
 function showClinicalCaseCatalog(shouldFocus){
