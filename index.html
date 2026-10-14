@@ -759,6 +759,13 @@ canvas{border:1px solid var(--ui-border)}
 .learning-pathway>summary{cursor:pointer;min-height:44px;box-sizing:border-box;font-weight:700;color:var(--ui-navy);font-size:15px;padding:8px 0}
 .learning-summary[hidden],.learning-focus-tools[hidden],.learning-block[hidden]{display:none!important}
 .learning-summary p{margin:12px 0}
+
+.scenario-patient-brief{box-sizing:border-box;border:1px solid var(--ui-border);border-radius:var(--ui-radius);background:#f7fafd;padding:15px 17px;margin:10px 0 14px}
+.scenario-patient-brief h3{font-size:17px;margin:0 0 8px}
+.scenario-patient-brief p{font-size:15px;margin:6px 0;overflow-wrap:anywhere}
+.scenario-patient-brief #scenarioPatientObservations{font-weight:600;color:var(--ui-navy-deep)}
+.scenario-lab-item span:last-child{font-weight:700;color:var(--ui-navy-deep);font-size:16px;margin-top:4px}
+.scenario-lab-panel h4{font-size:17px}
 </style>
 
 
@@ -1120,8 +1127,9 @@ class="variableValue">
   </ol>
   <p id="scenarioCurrentTask" class="scenario-current-task" aria-live="polite"></p>
   <p id="scenarioLearningProgress" class="scenario-learning-progress" aria-live="polite" aria-atomic="true"></p>
-  <details id="scenarioCaseDetails" class="scenario-case-details" open>
-    <summary>환자 상황과 학습 목표 (접기/펼치기)</summary>
+  <section class="scenario-patient-brief" aria-label="현재 제공된 환자 핵심 정보"><h3>환자 핵심 정보 · 현재 확인된 자료</h3><p id="scenarioPatientEssential"></p><p id="scenarioPatientObservations"></p></section>
+  <details id="scenarioCaseDetails" class="scenario-case-details">
+    <summary>환자 상세 맥락과 학습 목표 펼쳐보기</summary>
     <div class="scenario-case-details-body"><p id="scenarioObjectives" class="scenario-caution"></p>
       <h3>환자 상황</h3><p id="scenarioContext"></p>
       <div id="scenarioObservations" class="scenario-observations"></div>
@@ -1187,7 +1195,11 @@ class="variableValue">
         <p id="scenarioActionEvidence" class="scenario-feedback-evidence"></p>
       </div>
     </details>
-    <section id="scenarioLabPanel" class="scenario-lab-panel" aria-labelledby="scenarioLabTitle" hidden><h4 id="scenarioLabTitle">추가 평가 시점의 가상 검사 자료</h4><p id="scenarioLabContext"></p><div id="scenarioLabItems" class="scenario-lab-grid"></div><details class="scenario-evidence-disclosure"><summary>검사 해석과 안전한 간호 확인</summary><div class="scenario-disclosure-body"><p id="scenarioLabInterpretation"></p><p id="scenarioLabSource" class="scenario-feedback-evidence"></p></div></details></section>
+    <section id="scenarioLabPanel" class="scenario-lab-panel" aria-labelledby="scenarioLabTitle" hidden>
+<h4 id="scenarioLabTitle">추가 평가 시점의 가상 검사 자료</h4><p id="scenarioLabContext"></p>
+<div id="scenarioLabItems" class="scenario-lab-grid"></div>
+<h4>검사 해석 · 우선 확인할 간호 사항</h4><p id="scenarioLabInterpretation" class="scenario-lab-interpretation"></p>
+<details class="scenario-evidence-disclosure"><summary>검사 해석 참고 근거 확인</summary><div class="scenario-disclosure-body"><p id="scenarioLabSource" class="scenario-feedback-evidence"></p></div></details></section>
     </section>
   <section id="scenarioResultPanel" tabindex="-1" aria-live="polite" hidden>
     <h3>학습 완료</h3>
@@ -4358,8 +4370,7 @@ function renderScenarioStudy(){
     document.getElementById("scenarioActiveCaseLabel").textContent="선택한 사례 · "+definition.title;
     document.getElementById("scenarioLearningProgress").textContent=
         "현재: "+phaseLabel+" · 임상 판단 "+knowledgeDone+"/"+definition.questions.length+
-        " 완료 (남은 "+Math.max(0,definition.questions.length-knowledgeDone)+"문항) · 간호 행동 "+
-        actionDone+"/"+actionTotal+" 완료 (남은 "+Math.max(0,actionTotal-actionDone)+"문항)";
+        " · 간호 행동 "+actionDone+"/"+actionTotal;
     const isFinished=session.status==="completed"&&!scenarioLatestFeedback;
     const part=isFinished?"result":!scenarioLatestFeedback||scenarioActionPhase==="idle"?"judgement":"action";
     const roadmapStates=[
@@ -4387,6 +4398,9 @@ function renderScenarioStudy(){
         "학습 목표: "+definition.objectives.join(" / ");
     document.getElementById("scenarioContext").textContent=definition.caseContext;
     document.getElementById("scenarioObservations").textContent=
+        definition.observations.map(item=>item.label+": "+item.value).join(" · ");
+    document.getElementById("scenarioPatientEssential").textContent=definition.caseContext;
+    document.getElementById("scenarioPatientObservations").textContent=
         definition.observations.map(item=>item.label+": "+item.value).join(" · ");
 
     const actionStep=document.getElementById("scenarioActionStep");
@@ -4625,7 +4639,7 @@ function selectClinicalCase(id){
     resetScenarioActions();
     scenarioCaseCatalog.hidden=true;
     scenarioSessionContent.hidden=false;
-    document.getElementById("scenarioCaseDetails").open=true;
+    document.getElementById("scenarioCaseDetails").open=false;
     document.getElementById("scenarioJudgementEvidenceDetails").open=false;
     document.getElementById("scenarioActionEvidenceDetails").open=false;
     const primary=document.getElementById("scenarioSourcePrimary");
