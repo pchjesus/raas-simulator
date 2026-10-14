@@ -5,7 +5,7 @@
 
 <meta charset="UTF-8">
 
-<title>RAAS Simulator v5.7</title>
+<title>RAAS Simulator v5.8</title>
 
 
 <style>
@@ -638,7 +638,7 @@ line-height:1.4;
 
 
 
-<h1>RAAS Simulator v5.7</h1>
+<h1>RAAS Simulator v5.8</h1>
 
 
 
@@ -1044,7 +1044,7 @@ class="variableValue">
 </section>
 
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.7 · 임상 적용</span>
+  <span class="scenario-tag">v5.8 · 임상 적용</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
     <div class="scenario-instructions"><h3>학습은 이렇게 진행돼요</h3>
@@ -4457,42 +4457,80 @@ function renderScenarioStudy(){
         if(choice)button.textContent=(index+1)+". "+choice.text;
     });
 }
-// v5.5 review uses pre-existing content and textContent only, avoiding dynamic HTML injection.
+// v5.8: all answers (not the first three) are rendered from source data.
+const scenarioLearningLinks=Object.freeze({
+ "ckd-acei-nursing-monitoring:monitoring":{stage:3,drug:"acei"},
+ "ckd-acei-nursing-monitoring:follow-up":{stage:3,drug:"acei"},
+ "ckd-acei-nursing-monitoring:dual-raas":{stage:5,drug:"arb"},
+ "hf-mra-monitoring:mra-safety":{stage:6,drug:"aldo"},
+ "hf-mra-monitoring:mra-followup":{stage:6,drug:"aldo"}
+});
+function openScenarioRelatedLearning(questionId){
+ const link=scenarioLearningLinks[scenarioRuntime.definition.id+":"+questionId];
+ if(!link||!scenarioRuntime.session||scenarioRuntime.session.status!=="completed")return;
+ document.getElementById("learningClinicalReturn").hidden=false;
+ learningCourseMode="free"; // clinical review is direct exploration; guided position is retained
+ switchStudyMode("learning");
+ document.getElementById("learningStageSelect").value=String(link.stage);
+ document.getElementById("learningDrugSelect").value=link.drug;
+ renderLearningLibrary();
+ document.getElementById("learningBackToClinicalButton").focus();
+}
+document.getElementById("learningBackToClinicalButton").addEventListener("click",()=>{
+ document.getElementById("learningClinicalReturn").hidden=true;
+ switchStudyMode("scenario");
+ document.getElementById("scenarioResultPanel").focus();
+});
 function renderScenarioReviewCards(definition,session){
-    // Both current curated cases fit three cards. For future larger cases, also
-    // reveal the full text review so no answers are silently omitted.
-    document.getElementById("scenarioResultReview").hidden=definition.questions.length<=3;
-    document.getElementById("scenarioActionReview").hidden=
-        definition.questions.filter(q=>q.actionExercise).length<=3;
-    function showCard(prefix,index,prompt,selected,expected,correct,note){
-        const slot=index+1;
-        const card=document.getElementById(prefix+"Card"+slot);
-        if(!card)return;
-        card.hidden=false;
-        card.setAttribute("data-correct",String(correct));
-        document.getElementById(prefix+"Title"+slot).textContent=(index+1)+". "+prompt;
-        document.getElementById(prefix+"Status"+slot).textContent=correct?"권장 답안과 일치":"추가 복습 필요";
-        document.getElementById(prefix+"Selected"+slot).textContent=selected||"미응답";
-        document.getElementById(prefix+"Expected"+slot).textContent=expected;
-        document.getElementById(prefix+"Note"+slot).textContent=note;
-    }
-    for(let i=1;i<=3;i++){
-        document.getElementById("scenarioKnowledgeReviewCard"+i).hidden=true;
-        document.getElementById("scenarioNursingReviewCard"+i).hidden=true;
-    }
-    definition.questions.slice(0,3).forEach((q,i)=>{
-        const selected=q.choices.find(c=>c.id===session.answers[q.id]);
-        const right=q.choices.find(c=>c.id===q.correctChoiceId);
-        showCard("scenarioKnowledgeReview",i,q.prompt,selected?.text,right.text,
-            selected?.id===right.id,selected?.feedback||q.rationale);
-    });
-    definition.questions.filter(q=>q.actionExercise).slice(0,3).forEach((q,i)=>{
-        const ex=q.actionExercise;
-        const selected=ex.choices.find(c=>c.id===scenarioActionAnswers[q.id]);
-        const right=ex.choices.find(c=>c.id===ex.correctChoiceId);
-        showCard("scenarioNursingReview",i,ex.prompt,selected?.text,right.text,
-            selected?.id===right.id,selected?.feedback||ex.rationale);
-    });
+ const judge=document.getElementById("scenarioKnowledgeDynamicReviews");
+ const nursing=document.getElementById("scenarioNursingDynamicReviews");
+ judge.replaceChildren();nursing.replaceChildren();
+ // Deprecated static templates remain hidden for historical QA compatibility.
+ document.getElementById("scenarioResultReview").hidden=true;
+ document.getElementById("scenarioActionReview").hidden=true;
+ function renderGroup(container,rows){
+  rows.sort((a,b)=>Number(a.correct)-Number(b.correct)||a.index-b.index);
+  rows.forEach(row=>{
+   const card=document.createElement("article");card.className="scenario-review-card";
+   card.setAttribute("data-correct",String(row.correct));
+   const head=document.createElement("h5");head.textContent=(row.index+1)+". "+row.prompt;card.appendChild(head);
+   const status=document.createElement("p");status.className="scenario-review-status";
+   status.textContent=row.correct?"권장 답안과 일치 · 펼쳐 복습 가능":"오답 우선 복습 · 추가 확인 필요";
+   card.appendChild(status);
+   const details=document.createElement("details");details.open=!row.correct;
+   const summary=document.createElement("summary");summary.textContent="내 선택 · 권장 답안 · 해설 및 근거";details.appendChild(summary);
+   for(const [name,value] of [["내 선택",row.selected||"미응답"],["권장 답안",row.expected],["내 선택 해설",row.note],["판단 근거",row.rationale],["관련 문헌",row.source]]){
+    const p=document.createElement("p");const label=document.createElement("strong");
+    label.textContent=name+": ";p.appendChild(label);p.appendChild(document.createTextNode(value||""));
+    details.appendChild(p);
+   }
+   card.appendChild(details);
+   if(scenarioLearningLinks[definition.id+":"+row.questionId]){
+    const button=document.createElement("button");button.type="button";
+    button.textContent="관련 RAAS 단계·약물 학습으로 이동 →";
+    button.addEventListener("click",()=>openScenarioRelatedLearning(row.questionId));
+    card.appendChild(button);
+   }
+   container.appendChild(card);
+  });
+ }
+ const refs=ids=>ids.map(id=>definition.references.find(r=>r.id===id)?.citation||id).join(" / ");
+ const judgments=definition.questions.map((q,index)=>{
+  const selected=q.choices.find(c=>c.id===session.answers[q.id]);
+  const expected=q.choices.find(c=>c.id===q.correctChoiceId);
+  return {questionId:q.id,index,prompt:q.prompt,correct:selected?.id===expected?.id,
+   selected:selected?.text,expected:expected?.text,note:selected?.feedback,
+   rationale:q.rationale+" "+(q.nursingFocus||""),source:refs(q.sourceIds)};
+ });
+ const actions=definition.questions.map((q,index)=>{
+  if(!q.actionExercise)return null;
+  const ex=q.actionExercise,selected=ex.choices.find(c=>c.id===scenarioActionAnswers[q.id]);
+  const expected=ex.choices.find(c=>c.id===ex.correctChoiceId);
+  return {questionId:q.id,index,prompt:ex.prompt,correct:selected?.id===expected?.id,
+   selected:selected?.text,expected:expected?.text,note:selected?.feedback,
+   rationale:ex.rationale+" 사정: "+ex.assessment+" 보고: "+ex.escalation+" 교육: "+ex.teaching,source:refs(ex.sourceIds)};
+ }).filter(Boolean);
+ renderGroup(judge,judgments);renderGroup(nursing,actions);
 }
 
 function chooseScenarioAnswer(index){
