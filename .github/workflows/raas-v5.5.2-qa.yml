@@ -1,4 +1,4 @@
-name: RAAS v5.5.2 full regression and Chromium smoke
+name: RAAS integrated v5.9 regression and Chromium smoke
 on:
   pull_request:
     branches: [main]
@@ -32,12 +32,15 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Run headless Chromium checks
         run: node tests/browser-v5.5.2.cjs
+      - name: Run current v5.9 interactive Chromium checks
+        run: node tests/browser-v5.9.cjs
       - name: Upload browser screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: raas-v5.5.2-browser-screens
+          name: raas-v5.9-browser-screens
           path: |
             browser-desktop-v5.5.2.png
             browser-mobile-nav-v5.5.2.png
+            browser-integrated-v5.9.png
           if-no-files-found: ignore

@@ -1187,3 +1187,31 @@ v4.9의 시나리오 엔진은 이 함수를 호출하지 않는다. 미래 시�
 - `helpDialog`에서 사용 중인 상위 명칭은 **시뮬레이터/학습/임상 적용**이다. 답안 보존/명시적 초기화/시연 일시정지를 명확하게 유지한다.
 - v5.5.1의 JavaScript 엔진, RAAS 9단계, 약물 6종, 4개 변수/그래프, Canvas/키보드, 모든 임상 질문·정답·출처·모달/탭 세션 이벤트는 변경하지 않는다.
 - 기존 Canvas 900px/레이아웃 1100px는 v5.6 모바일 적응 전까지 미해결이다. 수동 브라우저 QA와 자동 헤드리스 Chromium 결과를 혼동하지 않는다.
+
+
+---
+
+## v5.6–v5.9 교육 플랫폼 추가 규칙 (2026-10-14)
+
+### v5.6 레이아웃과 Canvas
+- 700px 이하 CSS viewport에서 9개의 모바일 카드가 표시된다. 각 카드는 원래의 `stageData` 인덱스로 기존 `showStageLearning`을 호출하므로 학습 조회는 `state.progress`, `state.drug`, `physiology`, 그래프 계산을 변경하지 않는다.
+- 원래의 900×380 Canvas는 단일 노드로 유지하며, 모바일에서는 접이식 별도 전체 탐색 영역을 통해 가로로 스크롤한다. 데스크톱에서는 펼쳐진 원본 Canvas를 사용한다.
+- 화면 확대·크기 변경 시 Canvas hit-test와 키보드·마우스 조작을 보호한다. 모바일 접힌 Canvas 대신 카드 선택 시 닫기 후 해당 카드에 초점을 되돌린다.
+
+### v5.7 학습 상태
+- `learningCourseSteps`는 9개 단계, 6개 약물, 요약 1개(16학습 항목)를 5단원에 분류한다. `learningCoursePosition`과 `learningCourseMode`는 교육 UI 전용이다. 자유 탐색 중 코스 위치는 보존된다.
+- 단계 학습과 약물 학습은 원래 `stageData`·`drugData`·`clinicalStageNotes`·`clinicalDrugNotes`를 읽고 별도의 생리/임상 상태를 수정하지 않는다.
+- 혈청 K⁺/Cr, eGFR, UACR, 혈압의 의미를 소개한다. UACR은 소변검사이고 BP는 활력징후이며 eGFR은 추정값이다. 검사실·환자 상태별 해석 차이를 명시한다.
+
+### v5.8 임상 Lab·복습
+- `scenarioLabExamples`는 curated 정적 가상 검사 사례 데이터이다. RAAS 생리 계산/시간 예측/환자 데이터와 완전히 독립된다.
+- Lab은 **기존 임상 판단과 해당 간호 행동이 제출되고 행동 해설 단계가 열린 뒤**에만, 해당 문항에 값이 있는 경우에 표시한다. 원래 문항이 미확인 검사 자료를 전제로 하므로 Lab은 '별도 추가 평가 시점' 예시로 표시하고 원 질문의 조건과 정답을 소급 변경하지 않는다.
+- CKD monitoring, follow-up 및 HFrEF MRA safety, follow-up에만 값이 있다. CKD dual-raas 병용 문항에는 관련 없는 Lab 결과를 삽입하지 않는다.
+- `renderScenarioReviewCards`는 고정 3개 슬롯 대신 모든 문항에 대한 동적 목록을 생성한다. 오답을 먼저 표시하고, 정답은 접을 수 있으며, 선택별 해설·정답·근거를 유지한다.
+- `scenarioLearningLinks`는 정적으로 검토된 문제 ID ↔ 단계/약물 인덱스 연결이다. 링크 이동 및 복귀는 `scenarioRuntime.session.answers`, `scenarioActionAnswers`, `scenarioLatestFeedback`, `scenarioActionPhase`에 어떠한 대입도 하지 않는다. 명시적 재시작/종료만 임상 세션을 삭제한다.
+- 의료적 적응증/약물 사용 여부·용량/중단은 앱이 결정하지 않는다. 가상 검사 결과는 재검·사정·보고·처방 의료진과의 확인을 연습하는 교육 사례이다.
+
+### v5.9 품질·안전
+- UI에서 시뮬레이터 Na⁺/GFR 등 수치가 실제 혈청 검사 또는 환자별 결과 예측이 아님을 명시한다. 엔진·기존 정답·출처는 변경하지 않는다.
+- 각 버전 HTML을 `backups/v5.6.html`부터 `backups/v5.9.html`까지 동결한다. 과거 테스트는 당시 동결 백업을 검증하고 현재 테스트는 최신 `index.html`을 검증한다.
+- `DESIGN_V5.7_V5.8_EDUCATION_LABS.md`와 `V5.9_QA_REPORT.md`를 동작/위험/검증 기록과 연결한다. 실기기 터치·Safari·수동 보조공학 검증을 자동 테스트 성공으로 간주하지 않는다.
