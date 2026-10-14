@@ -4010,7 +4010,7 @@ function showStageLearning(index){
     draw(); // 학습용 강조선만 다시 렌더링, 생리 계산·그래프 갱신 없음
     stageLearningHint.textContent=
         "선택한 단계: "+stage.name+" ("+(index+1)+"/"+stageData.length+")";
-    document.querySelectorAll(".mobile-stage-grid button").forEach(button=>button.setAttribute("aria-pressed",String(Number(button.dataset.mobileStage)===index)));
+    if(typeof document.querySelectorAll==="function")document.querySelectorAll(".mobile-stage-grid button").forEach(button=>button.setAttribute("aria-pressed",String(Number(button.dataset.mobileStage)===index)));
 }
 
 canvas.addEventListener("click",(event)=>{
@@ -4062,12 +4062,12 @@ function closeStageLearning(){
     learningFocusIndex=-1;
     stageLearningHint.textContent=INITIAL_STAGE_LEARNING_HINT;
     draw(); // 기존 진행 상태·생리 계산·그래프에는 영향 없이 선택 마커 제거
-    const selectedMobile=document.querySelector('.mobile-stage-grid button[aria-pressed="true"]');
-    document.querySelectorAll(".mobile-stage-grid button").forEach(button=>button.setAttribute("aria-pressed","false"));
+    const selectedMobile=typeof document.querySelector==="function"?document.querySelector('.mobile-stage-grid button[aria-pressed="true"]'):null;
+    if(typeof document.querySelectorAll==="function")document.querySelectorAll(".mobile-stage-grid button").forEach(button=>button.setAttribute("aria-pressed","false"));
     const explorer=document.getElementById("mobileCanvasExplorer");
     if(typeof window!=="undefined"&&typeof window.matchMedia==="function"&&
        window.matchMedia("(max-width:700px)").matches&&explorer&&!explorer.open){
-        (selectedMobile||document.querySelector(".mobile-stage-grid button"))?.focus();
+        (selectedMobile||(typeof document.querySelector==="function"?document.querySelector(".mobile-stage-grid button"):null))?.focus();
     }else canvas.focus();
 }
 stageDetailCloseButton.addEventListener("click",closeStageLearning);
