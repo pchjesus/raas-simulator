@@ -5,7 +5,7 @@
 
 <meta charset="UTF-8">
 
-<title>RAAS Simulator v5.9</title>
+<title>RAAS Simulator v5.9.1</title>
 
 
 <style>
@@ -625,6 +625,136 @@ line-height:1.4;
 .scenario-review-link{border:1px solid #adc4d7;padding:12px;margin-bottom:14px;border-radius:8px;background:#eff7fc}
 .scenario-review-link button{box-sizing:border-box;width:auto;min-height:44px}
 @media(max-width:600px){.scenario-lab-grid{grid-template-columns:1fr}.scenario-lab-panel{padding:10px}.scenario-review-card{padding:10px}}
+
+/* v5.9.1 — user-approved B / P1 / T1 / K2 / G1 readability system.
+   Scope is visual presentation only; existing pathway colors, model and answer data remain unchanged. */
+:root{--ui-navy:#1d4a6c;--ui-navy-deep:#123650;--ui-ink:#202f3d;--ui-muted:#4e6374;--ui-border:#cbd6df;--ui-page:#f5f7fa;--ui-surface:#fff;--ui-soft:#f4f8fb;--ui-focus:#0b5cab;--ui-radius:10px}
+body{font-family:Arial,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:var(--ui-page);color:var(--ui-ink);font-size:16px;line-height:1.65}
+h1{font-size:clamp(23px,3vw,28px);line-height:1.3;margin:18px 12px 5px;color:var(--ui-navy-deep)}
+button,select{font-family:inherit;font-size:15px;line-height:1.45}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--ui-focus);outline-offset:3px}
+.study-mode-nav{max-width:1200px;margin:14px auto 8px}
+.study-mode-primary button{min-height:48px;min-width:170px;font-size:16px;border-color:var(--ui-border)}
+.study-mode-primary button[aria-pressed=true]{background:var(--ui-navy);border-color:var(--ui-navy)}
+.study-mode-secondary button{min-height:44px;font-size:14px;background:#fff}
+.study-mode-intro{font-size:15px;max-width:900px;line-height:1.65;margin-bottom:18px}
+.main{width:calc(100% - 32px);max-width:1200px;grid-template-columns:220px minmax(0,1fr);gap:20px;align-items:start}
+.controls{min-width:0;box-sizing:border-box;border:1px solid var(--ui-border);border-radius:var(--ui-radius);padding:14px;background:#fff;gap:14px}
+.control-group{display:flex;flex-direction:column;gap:9px;padding-bottom:14px;border-bottom:1px solid var(--ui-border);text-align:left}
+.control-group:last-child{border-bottom:none;padding-bottom:0}
+.control-group h2{margin:0;font-size:16px;line-height:1.4;color:var(--ui-navy)}
+.control-group label{font-weight:700;font-size:14px}
+.control-group button,.control-group select{box-sizing:border-box;min-width:0;width:100%;min-height:44px;padding:9px;border:1px solid #93a9ba;border-radius:7px;background:#fff;color:var(--ui-ink);white-space:normal;cursor:pointer}
+.control-group .control-primary{background:var(--ui-navy);color:#fff;border-color:var(--ui-navy);font-weight:700}
+.control-group .control-muted{background:#f5f7f9}
+.control-group .control-danger{color:#834631;border-color:#d5ac9a}
+.control-group .help-trigger{margin:0}
+.control-group .patch-trigger{margin:0}
+.canvas-learning-area{width:100%;max-width:none;min-width:0}
+.mobile-canvas-explorer{box-sizing:border-box;min-width:0;max-width:100%}
+.mobile-canvas-pan{box-sizing:border-box;max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain}
+.mobile-canvas-pan canvas{display:block;max-width:none}
+canvas{border:1px solid var(--ui-border)}
+.stage-detail-panel{box-sizing:border-box;max-width:100%;width:100%;border:1px solid #9eb9cf;padding:18px;border-radius:var(--ui-radius);font-size:16px}
+.stage-detail-header h3{font-size:19px;color:var(--ui-navy)}
+.stage-detail-accordion,.learning-disclosure,.scenario-evidence-disclosure,.scenario-case-details{border:1px solid var(--ui-border);border-radius:var(--ui-radius)}
+.stage-detail-accordion>summary,.learning-disclosure>summary,.scenario-evidence-disclosure>summary{font-size:15px}
+.stage-detail-accordion-body{font-size:15px;line-height:1.7}
+.stage-learning-hint,.flow-demo-explain,.model-graph-note{font-size:14px;line-height:1.65}
+.flow-demo-controls button{min-height:44px;font-size:15px}
+.physiologyPanel{max-width:1200px;width:calc(100% - 32px);border:1px solid var(--ui-border);border-radius:var(--ui-radius);padding:18px}
+.variableGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.variableBox{box-sizing:border-box;min-width:0;min-height:126px;background:#fff;border:1px solid var(--ui-border);border-radius:8px;padding:13px}
+.variableBox h4{color:var(--ui-navy);font-size:17px}
+.variableValue{font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+.model-graph{min-width:0}
+.model-graph-pan{max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain;padding:4px 2px 8px}
+.model-graph-pan canvas{box-sizing:border-box;width:1000px;height:290px;max-width:none;display:block}
+.model-graph-pan:focus-visible{outline:3px solid var(--ui-focus);outline-offset:2px}
+.scenario-view{max-width:1200px;width:calc(100% - 32px);margin:16px auto 30px;padding:24px;border:1px solid var(--ui-border);border-radius:12px;background:#fff;font-size:16px;line-height:1.7}
+.learning-view > *,#scenarioCaseCatalog,#scenarioSessionContent{max-width:860px;margin-left:auto;margin-right:auto}
+.scenario-view h2{font-size:24px;color:var(--ui-navy-deep)}
+.scenario-view h3{font-size:19px}
+.scenario-view h4{font-size:17px}
+.scenario-view p{line-height:1.7}
+.scenario-tag,.scenario-case-button .scenario-case-meta{font-size:14px}
+.learning-course{background:var(--ui-soft);border:1px solid var(--ui-border);padding:18px;border-radius:var(--ui-radius)}
+.learning-course h3{font-size:19px}
+.learning-course-controls button,.learning-course-buttons button{font-size:15px}
+.learning-course-controls button[aria-pressed=true]{background:var(--ui-navy)}
+.learning-course-status{font-size:15px}
+.learning-pathway{background:#fff;border:1px solid var(--ui-border);padding:13px 17px}
+.learning-pathway p{font-size:14px;line-height:1.65}
+.learning-grid{display:block;max-width:860px;margin:0 auto}
+.learning-block,.learning-next{background:#fff;border:1px solid var(--ui-border);border-radius:var(--ui-radius);padding:20px}
+.learning-block h3{margin-top:0}
+.learning-block label{font-size:15px}
+.learning-block select{font-size:16px;min-height:45px}
+.learning-block>p,.learning-block details>p{font-size:16px}
+.learning-focus-tools{display:flex;gap:9px;flex-wrap:wrap;margin:14px auto;padding:12px;border:1px solid var(--ui-border);border-radius:var(--ui-radius);background:var(--ui-soft)}
+.learning-focus-tools button{flex:1 1 145px;box-sizing:border-box;min-height:44px;width:auto;padding:9px 13px;font-size:15px;border:1px solid #92aec2;border-radius:7px;background:#fff;color:var(--ui-navy);font-weight:700;cursor:pointer}
+.learning-focus-tools button[aria-pressed=true]{background:var(--ui-navy);color:#fff}
+.learning-summary{background:var(--ui-soft);border:1px solid var(--ui-border);padding:18px;border-radius:var(--ui-radius);max-width:860px;margin:0 auto}
+.learning-summary h3{margin-top:0}
+.learning-summary p{font-size:16px}
+.learning-lab-grid{padding:12px;gap:12px}
+.learning-lab-item{border:1px solid var(--ui-border);background:#fff;padding:13px}
+.learning-lab-item p{font-size:15px}
+.learning-source-links{font-size:14px}
+.scenario-options button,.scenario-action-options button{font-size:16px;line-height:1.6;padding:13px 15px;min-height:48px;border-color:#a0b3c2}
+.scenario-feedback,.scenario-action-step,.scenario-action-feedback{border:1px solid var(--ui-border);border-radius:var(--ui-radius);padding:16px}
+.scenario-feedback[data-correct=true],.scenario-feedback[data-correct=false]{border-width:1px;border-left-width:4px}
+.scenario-case-button{border:1px solid #9bafbf;border-radius:var(--ui-radius);padding:19px}
+.scenario-case-button strong{font-size:17px}
+.scenario-case-button .scenario-case-description{font-size:15px}
+.scenario-caution,.scenario-safety-compact,.scenario-feedback-evidence,.scenario-review-note{font-size:14px!important}
+.scenario-current-task{font-size:16px;background:var(--ui-soft)}
+.scenario-learning-progress{font-weight:500;font-size:14px;line-height:1.5;background:transparent;border:0;padding:0;margin:0 0 12px!important;color:var(--ui-muted)}
+.scenario-roadmap li{font-size:14px;min-height:44px;box-sizing:border-box;display:flex;align-items:center;justify-content:center}
+.scenario-answer-card{border:1px solid var(--ui-border);padding:14px}
+.scenario-answer-card h4,.scenario-answer-card h6{font-size:15px!important}
+.scenario-answered-question{font-size:16px}
+.scenario-lab-panel{border:1px solid #98b2c5;background:var(--ui-soft);padding:16px;border-radius:var(--ui-radius)}
+.scenario-lab-item{border:1px solid var(--ui-border);padding:13px}
+.scenario-lab-item strong{font-size:16px}
+.scenario-lab-item span{font-size:15px}
+.scenario-lab-interpretation{padding:12px 14px;border-left:4px solid #a47637;background:#fff;border-radius:5px;font-size:15px}
+.scenario-review-card{border:1px solid var(--ui-border);padding:16px}
+.scenario-review-card[data-correct=false]{border-left:4px solid #a6763d}
+.scenario-review-card[data-correct=true]{border-left:4px solid #348054}
+.scenario-review-card summary{font-size:15px}
+.help-body{font-size:15px}
+.model-note-trigger{font-size:14px}
+@media(max-width:1050px) and (min-width:701px){
+ .main{grid-template-columns:200px minmax(0,1fr)}
+ .variableGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+ .main{width:calc(100% - 16px);max-width:none;display:flex;flex-direction:column;gap:12px}
+ .controls{width:100%;display:flex;flex-direction:column;gap:12px;padding:12px}
+ .control-group{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:8px;padding-bottom:12px}
+ .control-group h2,.control-group label{grid-column:1/-1}
+ .control-group .control-wide,.control-group select{grid-column:1/-1}
+ .control-group button,.control-group select{font-size:15px;min-height:46px}
+ .mobile-stage-grid button{font-size:15px;min-height:49px}
+ .mobile-stage-navigator h3{font-size:18px}
+ .mobile-stage-navigator p{font-size:14px}
+ .stage-detail-panel{padding:15px}
+ .physiologyPanel{width:calc(100% - 16px);padding:14px}
+ .variableGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .scenario-view{width:calc(100% - 16px);margin:10px auto 20px;padding:15px}
+ .scenario-roadmap{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .scenario-roadmap li{font-size:13px}
+ .learning-block{padding:15px}
+ .learning-course{padding:14px}
+ .scenario-actions button{font-size:15px}
+}
+@media(max-width:420px){
+ .variableGrid{grid-template-columns:1fr}
+ .scenario-view{padding:12px}
+ .study-mode-primary button{font-size:15px}
+}
+
 </style>
 
 
@@ -639,7 +769,7 @@ line-height:1.4;
 
 
 
-<h1>RAAS Simulator v5.9</h1>
+<h1>RAAS Simulator v5.9.1</h1>
 
 
 
@@ -672,135 +802,27 @@ RAAS + Drug + Physiological Variables
 
 
 
-<div class="controls">
-
-
-
-<select id="drugSelect">
-
-
-<option value="none">
-약물 없음
-</option>
-
-
-<option value="acei">
-ACE inhibitor
-</option>
-
-
-<option value="aldo">
-Aldosterone antagonist
-</option>
-
-
-<option value="arb">
-ARB
-</option>
-
-
-<option value="beta">
-β blocker
-</option>
-
-
-<option value="loop">
-Loop diuretic
-</option>
-
-
-<option value="thiazide">
-Thiazide diuretic
-</option>
-
-
-</select>
-
-
-
-
-
-
-<button onclick="applyDrug()">
-
-💊 약물 적용
-
-</button>
-
-
-
-
-
-
-<button onclick="previousStep()">
-
-◀ 이전 단계
-
-</button>
-
-
-
-
-
-
-<button onclick="nextStep()">
-
-▶ 다음 단계
-
-</button>
-
-
-
-
-
-
-<button onclick="resetProgress()">
-
-🔄 진행 초기화
-
-</button>
-
-
-
-
-
-
-<button onclick="removeDrug()">
-
-💉 약물 제거
-
-</button>
-
-
-
-
-
-
-<button onclick="resetAll()">
-
-⚠ 전체 초기화
-
-</button>
-
-<button type="button" id="helpOpenButton" class="help-trigger" aria-haspopup="dialog" aria-controls="helpDialog">
-ⓘ 사용법
-</button>
-<button type="button" id="changelogOpenButton" class="help-trigger patch-trigger" aria-haspopup="dialog" aria-controls="changelogDialog" aria-label="패치 내역 열기">
-▤ 패치 내역
-</button>
-
-
-
-
-
-
+<div class="controls" aria-label="시뮬레이터 조작 패널">
+<section class="control-group" aria-label="RAAS 단계 조작">
+<h2>1. RAAS 진행</h2>
+<button class="control-muted" type="button" onclick="previousStep()">◀ 이전 단계</button>
+<button class="control-primary" type="button" onclick="nextStep()">다음 단계 ▶</button>
+</section>
+<section class="control-group" aria-label="약물 적용 및 제거">
+<h2>2. 약물 조작</h2>
+<label for="drugSelect">적용할 약물</label>
+<select id="drugSelect"><option value="none">약물 없음</option><option value="acei">ACE inhibitor</option><option value="aldo">Aldosterone antagonist</option><option value="arb">ARB</option><option value="beta">β blocker</option><option value="loop">Loop diuretic</option><option value="thiazide">Thiazide diuretic</option></select>
+<button class="control-primary" type="button" onclick="applyDrug()">약물 적용</button>
+<button class="control-muted" type="button" onclick="removeDrug()">약물 제거</button>
+</section>
+<section class="control-group" aria-label="초기화 및 도움말">
+<h2>3. 초기화·도움말</h2>
+<button class="control-muted" type="button" onclick="resetProgress()">진행 초기화</button>
+<button class="control-danger" type="button" onclick="resetAll()">전체 초기화</button>
+<button type="button" id="helpOpenButton" class="help-trigger control-wide" aria-haspopup="dialog" aria-controls="helpDialog">ⓘ 사용법</button>
+<button type="button" id="changelogOpenButton" class="help-trigger patch-trigger control-wide" aria-haspopup="dialog" aria-controls="changelogDialog" aria-label="패치 내역 열기">▤ 패치 내역</button>
+</section>
 </div>
-
-
-
-
-
-
 
 <div class="canvas-learning-area">
 <section class="mobile-stage-navigator" aria-label="모바일 RAAS 단계별 탐색"><h3>RAAS 9단계 바로보기</h3><p>카드를 누르면 기전과 간호 설명을 확인합니다. 학습용 조회는 생리 계산과 약물 상태를 바꾸지 않습니다.</p><div class="mobile-stage-grid"><button type="button" data-mobile-stage="0" onclick="openMobileStage(0)" aria-pressed="false">1. 혈압 감소</button><button type="button" data-mobile-stage="1" onclick="openMobileStage(1)" aria-pressed="false">2. Renin</button><button type="button" data-mobile-stage="2" onclick="openMobileStage(2)" aria-pressed="false">3. Angiotensin I</button><button type="button" data-mobile-stage="3" onclick="openMobileStage(3)" aria-pressed="false">4. ACE</button><button type="button" data-mobile-stage="4" onclick="openMobileStage(4)" aria-pressed="false">5. Angiotensin II</button><button type="button" data-mobile-stage="5" onclick="openMobileStage(5)" aria-pressed="false">6. AT1 receptor</button><button type="button" data-mobile-stage="6" onclick="openMobileStage(6)" aria-pressed="false">7. Aldosterone</button><button type="button" data-mobile-stage="7" onclick="openMobileStage(7)" aria-pressed="false">8. Na⁺ / Water</button><button type="button" data-mobile-stage="8" onclick="openMobileStage(8)" aria-pressed="false">9. 혈압 회복</button></div></section>
@@ -986,7 +1008,8 @@ class="variableValue">
       </select>
     </label>
   </div>
-  <canvas id="physiologyGraph" width="1000" height="290" role="img" aria-label="RAAS의 9단계별 가상 생리 변화 비교 그래프입니다."></canvas>
+  <p class="model-graph-note">전체 비교 그래프는 원래 크기로 표시됩니다. 화면이 좁으면 그래프 영역 안을 좌우로 움직여 확인하세요.</p>
+<div class="model-graph-pan" role="region" tabindex="0" aria-label="RAAS 단계별 생리 변화 전체 그래프, 좌우로 스크롤할 수 있습니다"><canvas id="physiologyGraph" width="1000" height="290" role="img" aria-label="RAAS의 9단계별 가상 생리 변화 비교 그래프입니다."></canvas></div>
   <p class="model-graph-note">실제 환자의 혈액검사·약효 시간 경과를 나타내지 않는 가상 단계 비교입니다.</p>
   <p class="model-graph-note">파랑: 약물 없음 · 보라: 적용 약물 · 세로 점선: 최대 진행 단계. <button id="graphPolicyButton" class="model-note-trigger" type="button" aria-haspopup="dialog" aria-controls="modelPolicyDialog">ⓘ 그래프 수치 안내</button></p>
 </section>
@@ -1047,7 +1070,7 @@ class="variableValue">
 </section>
 
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.9 · 임상 적용</span>
+  <span class="scenario-tag">v5.9.1 · 임상 적용</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
     <div class="scenario-instructions"><h3>학습은 이렇게 진행돼요</h3>
