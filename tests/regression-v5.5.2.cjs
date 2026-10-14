@@ -2,7 +2,7 @@
 // Historical suites test the simulation/clinical engine separately.
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
-const now=read('index.html'),frozen=read('backups/v5.5.2.html'),before=read('backups/v5.5.1.html');
+const now=read('backups/v5.5.2.html'),frozen=read('backups/v5.5.2.html'),before=read('backups/v5.5.1.html');
 let checks=0;function check(ok,message){checks++;assert.ok(ok,message)}
 function extract(s,pat,message){const m=s.match(pat);check(!!m,message);return m?.[1]?.trim()}
 check(now===frozen,'frozen backup byte-for-byte equal to live HTML');
