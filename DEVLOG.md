@@ -1643,5 +1643,14 @@ AI는 단순히 요구사항을 코드로 추가하는 것에 그치지 않고 �
 - 수동 QA M01~M16은 미검증이며 추후 `QA_V5.6_BROWSER_CHECKLIST.md`로 기록한다.
 
 ## 다음
-- 모든 자동 테스트 통과 확인 및 GitHub PR/병합 뒤 실제 CI 근거를 보완한다.
+- 자동/브라우저 검증은 아래 실행 결과에서 확인. PR 병합 후 main 원격 상태를 별도로 확인한다.
 - v5.6 모바일 단계 카드 + 전체 Canvas 분리 및 반응형 개발(승인 ROADMAP 참조).
+
+## 자동 검증 확정 기록 — GitHub Actions (2026-10-14)
+
+- **실제 Node.js 22에서 전체 테스트 성공:** 기존 15개 스위트 총 **10,870 검사** + v5.5.2 신규 50 검사 = **16개 스위트·10,920 검사 PASS**. 기존 모의 DOM/Canvas 검사를 실제 Node CLI에서 구동한 것이며 실브라우저 레이아웃 품질 검사는 포함되지 않는다.
+- **실제 Chromium 141 (Playwright 1.56.0 headless) 33 검사 PASS:** 주요/보조 메뉴 구분, 사용법·정책 모달과 키보드 포커스 복귀, Canvas ArrowRight 상세 학습, 3탭 이동·임상 답안 보존·명시적 초기화, 320/390/430px **상단 메뉴** 오버플로 검사. 브라우저 pageerror 없음. 화면 캡처는 Actions artifact에 저장.
+- 최초 Chromium 스모크는 native `dialog.close()`의 비동기 `close` 이벤트 이후 포커스 복귀와 바로 이어진 Canvas focus가 경쟁하는 **테스트 순서 문제**로 실패했다. 이벤트 실제 종료를 확인하고 Canvas에 포커스를 이동하도록 테스트를 보완했으며, **앱 스크립트는 수정하지 않고** 최종 통과했다.
+- 역사적 `tests/regression-v5.5.1.cjs`에서 현재 `index.html`에 남은 과거 버전명을 검증하던 의존은 동결 `backups/v5.5.1.html`로 고정하여 과거 스위트 본래의 버전 검사 의미를 유지했다.
+- **성공한 확인 로그:** https://github.com/pchjesus/raas-simulator/actions/runs/38539808118 (스크린샷 artifact 포함).
+- **수동 미검증:** 실기기(Android/iOS), Safari, 전체 페이지 320px~430px 레이아웃·가로 overflow, 200/400% 확대, 스크린리더. `QA_V5.6_BROWSER_CHECKLIST.md` M01~M16은 자동 검사와 별개로 미검증이다.
