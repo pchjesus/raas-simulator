@@ -5,7 +5,7 @@
 
 <meta charset="UTF-8">
 
-<title>RAAS Simulator v5.6</title>
+<title>RAAS Simulator v5.7</title>
 
 
 <style>
@@ -621,7 +621,7 @@ line-height:1.4;
 
 
 
-<h1>RAAS Simulator v5.6</h1>
+<h1>RAAS Simulator v5.7</h1>
 
 
 
@@ -1026,7 +1026,7 @@ class="variableValue">
 </section>
 
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.6 · 임상 적용</span>
+  <span class="scenario-tag">v5.7 · 임상 적용</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
     <div class="scenario-instructions"><h3>학습은 이렇게 진행돼요</h3>
@@ -4606,9 +4606,51 @@ function renderLearningLibrary(){
     document.getElementById("learningDrugMechanism").textContent=detail.medical;
     document.getElementById("learningDrugNursing").textContent=detail.nursing;
     document.getElementById("learningDrugSources").textContent="학습 근거: "+detail.sourceIds+" · 원문은 설명서 참고문헌을 확인하세요.";
+    renderLearningCourse();
 }
 document.getElementById("learningStageSelect").addEventListener("change",renderLearningLibrary);
 document.getElementById("learningDrugSelect").addEventListener("change",renderLearningLibrary);
+
+// v5.7: read-only five-unit curriculum, isolated from RAAS/clinical states.
+const learningCourseSteps=[
+ ...[0,1].map(value=>({unit:0,type:"stage",value})),
+ ...[2,3,4].map(value=>({unit:1,type:"stage",value})),
+ ...[5,6,7,8].map(value=>({unit:2,type:"stage",value})),
+ ...["acei","arb","aldo","beta","loop","thiazide"].map(value=>({unit:3,type:"drug",value})),
+ {unit:4,type:"summary",value:null}
+];
+const learningUnitTitles=["RAAS 활성 조건","레닌–안지오텐신 전환","수용체·알도스테론·체액/혈압","주요 약물 6종","임상 적용 준비"];
+let learningCourseMode="guided",learningCoursePosition=0;
+function renderLearningCourse(){
+ const guided=learningCourseMode==="guided",step=learningCourseSteps[learningCoursePosition];
+ document.getElementById("learningGuidedButton").setAttribute("aria-pressed",String(guided));
+ document.getElementById("learningFreeButton").setAttribute("aria-pressed",String(!guided));
+ document.getElementById("learningCoursePrev").hidden=!guided;
+ document.getElementById("learningCourseNext").hidden=!guided;
+ document.getElementById("learningCoursePrev").disabled=learningCoursePosition===0;
+ document.getElementById("learningCourseNext").disabled=learningCoursePosition===learningCourseSteps.length-1;
+ const topic=step.type==="stage"?(step.value+1)+". "+stageData[step.value].name:
+  step.type==="drug"?drugData[step.value].name:"주요 기전과 간호 안전을 정리하고 임상 적용으로 이동";
+ document.getElementById("learningCourseStatus").textContent=guided?
+  "단원 "+(step.unit+1)+"/5 · "+learningUnitTitles[step.unit]+" · 학습 "+(learningCoursePosition+1)+"/"+learningCourseSteps.length+"\n이번 항목: "+topic:
+  "자유 탐색 중 · 아래의 단계와 약물을 원하는 순서로 선택하세요. 안내형 진도는 유지됩니다.";
+}
+function goLearningCourse(position){
+ if(position<0||position>=learningCourseSteps.length)return;
+ learningCoursePosition=position;
+ const step=learningCourseSteps[position];
+ if(step.type==="stage")document.getElementById("learningStageSelect").value=String(step.value);
+ if(step.type==="drug")document.getElementById("learningDrugSelect").value=step.value;
+ renderLearningLibrary();
+}
+document.getElementById("learningGuidedButton").addEventListener("click",()=>{
+ learningCourseMode="guided";goLearningCourse(learningCoursePosition);
+});
+document.getElementById("learningFreeButton").addEventListener("click",()=>{
+ learningCourseMode="free";renderLearningCourse();
+});
+document.getElementById("learningCoursePrev").addEventListener("click",()=>goLearningCourse(learningCoursePosition-1));
+document.getElementById("learningCourseNext").addEventListener("click",()=>goLearningCourse(learningCoursePosition+1));
 
 // 초기 실행
 // =============================
