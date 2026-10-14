@@ -7,7 +7,7 @@ let n=0;const errors=[];function ok(v,label){n++;assert.ok(v,label)}
 try{
 const page=await browser.newPage({viewport:{width:1365,height:880}});
 page.on('pageerror',e=>errors.push(e.message));
-await page.goto('file://'+path.resolve(__dirname,'../index.html'));
+await page.goto('file://'+path.resolve(__dirname,'../backups/v5.5.2.html'));
 ok((await page.title()).trim()==='RAAS Simulator v5.5.2','real browser title');
 ok((await page.locator('h1').innerText()).trim()==='RAAS Simulator v5.5.2','visible title');
 ok(await page.locator('.study-mode-primary button').count()===3,'three primary tabs');
