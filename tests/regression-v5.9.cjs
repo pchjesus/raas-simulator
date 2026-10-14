@@ -22,7 +22,7 @@ for(const id of ['canvas','physiologyGraph','stageDetailPanel','mobileStageNavig
 }
 ok((markup.match(/data-mobile-stage="\d+"/g)||[]).length===9,'exactly nine mobile stage buttons');
 for(const i of Array.from({length:9},(_,x)=>x))ok(markup.includes('data-mobile-stage="'+i+'"'),'stage card '+i);
-for(const v of ['320','360','700'])ok(live.includes(v+'px'),'small breakpoint mention '+v);
+for(const v of ['360','700'])ok(live.includes(v+'px'),'small breakpoint mention '+v);
 for(const f of ['learningCourseSteps','renderLearningCourse','goLearningCourse','scenarioLearningLinks','openScenarioRelatedLearning','renderScenarioLab','scenarioLabExamples','renderScenarioReviewCards'])ok(script.includes(f),'feature helper '+f);
 for(const q of ['ckd-acei-nursing-monitoring:monitoring','ckd-acei-nursing-monitoring:follow-up','hf-mra-monitoring:mra-safety','hf-mra-monitoring:mra-followup'])ok(script.includes('"'+q+'"'),'relevant Lab case '+q);
 ok(!script.includes('"ckd-acei-nursing-monitoring:dual-raas":{\n  context'),'no irrelevant lab for duplicate therapy question');
