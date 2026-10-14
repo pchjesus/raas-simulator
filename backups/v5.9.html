@@ -4784,7 +4784,7 @@ if(typeof window!=="undefined"&&typeof window.matchMedia==="function"){
  const mobileQuery=window.matchMedia("(max-width:700px)");
  const mobileCanvas=document.getElementById("mobileCanvasExplorer");
  if(mobileCanvas){mobileCanvas.open=!mobileQuery.matches;
-  if(typeof mobileQuery.addEventListener==="function")mobileQuery.addEventListener("change",event=>{if(!event.matches)mobileCanvas.open=true;});
+  if(typeof mobileQuery.addEventListener==="function")mobileQuery.addEventListener("change",event=>{mobileCanvas.open=!event.matches;});
  }
 }
 </script>
