@@ -1,3 +1,5 @@
+> **향후 UI/UX 설계 기준:** [Educational UI Design Standard v1.0](docs/EDUCATIONAL_UI_DESIGN_STANDARD_v1.0.md)을 참조한다. 기존 v5.9.1 B/P1/T1/K2/G1, Canvas·약물·모델·세션은 유지하며 사용자 중심 진입/가독성 개선 시 적용한다. **문서 기준 등록만 수행했으며 구현 UI 변경이 아니다.**
+
 # RAAS Simulator
 
 RAAS(Renin-Angiotensin-Aldosterone System)를 단계적으로 시각화하고, 약물 개입에 따른 생리적 변화를 학습하기 위한 교육용 웹 시뮬레이터.
