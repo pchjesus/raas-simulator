@@ -4,7 +4,7 @@ Before future development read `docs/AI_ASSISTED_DEVELOPMENT_BPLUS_v1.0.md`. Fav
 
 ## 공통 교육용 UI/UX 설계 지침 (2026-10-15, 앞으로의 설계에 적용)
 
-**앞으로 UI/UX 설계·개선 작업 전 [Educational UI Design Standard v1.0](docs/EDUCATIONAL_UI_DESIGN_STANDARD_v1.0.md)을 읽는다.** Boyacto의 학습 흐름 및 디터 람스/ChatGPT의 절제된 정보 위계를 참조하되, 현재 승인된 v5.9.1 **B/P1/T1/K2/G1**과 기존 Canvas·생리 변수·약물/단계·Lab/임상 상태 보존 계약을 우선한다. 사용자 승인 없이 기존 UI를 전면 재작성하거나 자유 탐색 경로를 제거하지 않는다. 개인 무드보드 활동은 개발 요구사항이 아니다.
+**앞으로 UI/UX 설계·개선 작업 전 [Educational UI Design Standard v1.1](docs/EDUCATIONAL_UI_DESIGN_STANDARD_v1.1.md)을 읽는다.** Boyacto의 학습 흐름 및 디터 람스/ChatGPT의 절제된 정보 위계를 참조하되, 현재 승인된 v5.9.1 **B/P1/T1/K2/G1**과 기존 Canvas·생리 변수·약물/단계·Lab/임상 상태 보존 계약을 우선한다. 사용자 승인 없이 기존 UI를 전면 재작성하거나 자유 탐색 경로를 제거하지 않는다. 개인 무드보드 활동은 개발 요구사항이 아니다.
 
 \# RAAS Simulator - Codex 작업 지침
 
