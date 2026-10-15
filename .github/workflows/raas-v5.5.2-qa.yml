@@ -17,11 +17,22 @@ jobs:
     steps:
       - name: Checkout exact PR commit
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: B+ self-test and change scope
+        id: scope
+        env:
+          CI_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          bash scripts/ci-scope.sh --self-test
+          bash scripts/ci-scope.sh
       - name: Setup Node.js 22
+        if: steps.scope.outputs.tier != 'docs'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Run all historical and current Node regression suites
+        if: steps.scope.outputs.tier != 'docs'
         shell: bash
         run: |
           set -euo pipefail
@@ -31,18 +42,22 @@ jobs:
             echo "::endgroup::"
           done
       - name: Prepare Chromium for actual browser integration test
+        if: steps.scope.outputs.tier != 'docs'
         shell: bash
         run: |
           npm install --no-save --ignore-scripts playwright@1.56.0
           npx playwright install --with-deps chromium
       - name: Run headless Chromium checks
+        if: steps.scope.outputs.tier == 'full'
         run: node tests/browser-v5.5.2.cjs
       - name: Run current v5.9 interactive Chromium checks
+        if: steps.scope.outputs.tier != 'docs'
         run: node tests/browser-v5.9.cjs
       - name: Run current v5.9.1 readability and session Chromium checks
+        if: steps.scope.outputs.tier != 'docs'
         run: node tests/browser-v5.9.1.cjs
       - name: Upload browser screenshots
-        if: always()
+        if: always() && steps.scope.outputs.tier != 'docs'
         uses: actions/upload-artifact@v4
         with:
           name: raas-v5.9.1-browser-screens
