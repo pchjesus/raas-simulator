@@ -1,3 +1,10 @@
+## Documentation policy — Educational UI/UX Design Standard v1.1 (2026-10-15)
+
+- **Scope: documentation only; risk L.** User conditionally requested adoption after compatibility evaluation across Ventilator, RAAS, and Cardiac. [v1.1](docs/EDUCATIONAL_UI_DESIGN_STANDARD_v1.1.md) is the active future-design standard; [v1.0](docs/EDUCATIONAL_UI_DESIGN_STANDARD_v1.0.md) is intact as earlier approved history.
+- Updated AGENTS.md and README.md references. Adds Braun product design examples, MUST/SHOULD/MAY, model-vs-UI state boundaries, WCAG resize/reflow checks, risk-weighted tests, legacy-data checks and honest evidence levels.
+- **Precedence:** RAAS v5.9.1 approved B/P1/T1/K2/G1 design, RAAS Canvas/physiology/drug state, lab/clinical sessions and all original contract terms still govern. No automatic screen, model, state, persistence or deployment changes are approved.
+- **Validation:** inspected original v1.0 and active links against main; Markdown-only file scope checked. Runtime browser/CI, devices, learners and clinical experts: NOT RUN for this policy-only change.
+
 # RAAS Simulator Development Log
 
 이 문서는 RAAS Simulator의 개발 과정과 버전별 변경 사항을 기록한다.
