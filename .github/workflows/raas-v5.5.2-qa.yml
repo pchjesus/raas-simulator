@@ -12,7 +12,8 @@ concurrency:
 
 jobs:
   qa:
-    runs-on: ubuntu-latest
+    # Playwright 1.56 supports Ubuntu 24.04; latest is migrating to Ubuntu 26.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout exact PR commit
@@ -45,8 +46,11 @@ jobs:
         if: steps.scope.outputs.tier != 'docs'
         shell: bash
         run: |
-          npm install --no-save --ignore-scripts playwright@1.56.0
-          npx playwright install --with-deps chromium
+          set -euo pipefail
+          install_log="$(mktemp)"
+          trap 'tail -n 12 "$install_log" | sed "s/^/::error::Browser setup: /"' ERR
+          npm install --no-save --ignore-scripts playwright@1.56.0 2>&1 | tee "$install_log"
+          npx playwright install --with-deps chromium 2>&1 | tee -a "$install_log"
       - name: Run headless Chromium checks
         if: steps.scope.outputs.tier == 'full'
         run: node tests/browser-v5.5.2.cjs

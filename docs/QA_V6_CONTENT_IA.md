@@ -39,3 +39,7 @@ Linux, Node 24.19.0, Playwright 1.56.0, Chromium 141. FAST → FOCUSED → FULL 
 리팩터링: 국소 UI 재배치와 16항목 프롬프트 매핑으로 제한했다. 원본 데이터/엔진/임상 컨트롤러를 재작성하지 않았으며 광범위한 분리는 보류한다. 스킬의 추가 project-health 참조는 제공 경로에서 읽을 수 없어 현재 source/diff/회귀 근거로 판단했다.
 
 사용자 리뷰: 질문과 활동의 적절성, 전체 경로의 선택 공개, 실제 표적/모델 표기의 명확성, 기본 간호 정보와 세부 근거의 균형. 기존 v6 브랜치 대상 PR이며 main 병합·공개는 디자인 검토 후 별도 진행한다.
+
+## GitHub CI 환경 보정
+
+첫 PR 실행(40470729636)은 Node 회귀 통과 후 Chromium 설치 단계에서 실패했다. 상세 로그 다운로드 호스트는 환경에서 Forbidden이지만 check annotation에는 ubuntu-latest의 Ubuntu 26 전환이 표시되었다. 설치된 Playwright 1.56의 hostPlatform/nativeDeps 지원표는 Ubuntu 24.04까지다. 지원 런너 ubuntu-24.04에 고정하고 설치 실패 내용을 annotation에도 남기도록 했다. 원래 실패의 상세 원인은 로그 접근 제한으로 확정하지 않으며 수정 실행 결과를 별도 확인한다.
