@@ -6,6 +6,8 @@
 
 설계: [v6 계약](docs/DESIGN_V6_LEARNING_EXPERIENCE.md) · [Learning Experience Kit](docs/SIMULATOR_LEARNING_EXPERIENCE_KIT_v0.1.md) · [검증 결과](docs/QA_V6_LEARNING_EXPERIENCE.md). 아래 v5.9.1 설명은 기존 기능과 기준선의 기록입니다.
 
+v6 후속 브랜치 `feat/v6-learning-content-ia`는 [16항목 콘텐츠·화면 계약](docs/DESIGN_V6_CONTENT_IA.md)에 따라 핵심 질문/관련 기전/학습 활동/간호/근거의 순서를 적용합니다. 원래 v6 후보 백업은 유지하고 후속 실행물은 `backups/v6.0-content-ia.html`에 보존합니다. 새 검증·스크린샷·변경 파일은 [후속 QA 기록](docs/QA_V6_CONTENT_IA.md)에서 확인할 수 있습니다.
+
 RAAS(Renin-Angiotensin-Aldosterone System)를 단계적으로 시각화하고, 약물 개입에 따른 생리적 변화를 학습하기 위한 교육용 웹 시뮬레이터.
 
 ## 1. 프로젝트 목적

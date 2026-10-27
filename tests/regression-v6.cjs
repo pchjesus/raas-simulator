@@ -12,5 +12,5 @@ for(const [start,end] of [
  ['const scenarioLabExamples=','function resetScenarioActions(){']
 ])ok(segment(html,start,end)===segment(base,start,end),'protected data/engine unchanged '+start);
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);ok(new Set(ids).size===ids.length,'unique static IDs');
-ok(html===read('backups/v6.0-candidate.html'),'candidate backup exact');
+ok(html===read('backups/v6.0-content-ia.html'),'current content IA candidate backup exact');
 console.log('PASS v6 '+count+' real Node syntax, protected data/engine and backup checks');

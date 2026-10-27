@@ -1,7 +1,7 @@
 name: RAAS v5.9.1 readability and historical regression
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/learning-experience-v6]
   push:
     branches: [main]
   workflow_dispatch:
@@ -12,7 +12,8 @@ concurrency:
 
 jobs:
   qa:
-    runs-on: ubuntu-latest
+    # Playwright 1.56 supports Ubuntu 24.04; latest is migrating to Ubuntu 26.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout exact PR commit
@@ -45,8 +46,11 @@ jobs:
         if: steps.scope.outputs.tier != 'docs'
         shell: bash
         run: |
-          npm install --no-save --ignore-scripts playwright@1.56.0
-          npx playwright install --with-deps chromium
+          set -euo pipefail
+          install_log="$(mktemp)"
+          trap 'tail -n 12 "$install_log" | sed "s/^/::error::Browser setup: /"' ERR
+          npm install --no-save --ignore-scripts playwright@1.56.0 2>&1 | tee "$install_log"
+          npx playwright install --with-deps chromium 2>&1 | tee -a "$install_log"
       - name: Run headless Chromium checks
         if: steps.scope.outputs.tier == 'full'
         run: node tests/browser-v5.5.2.cjs
@@ -61,6 +65,7 @@ jobs:
         run: |
           node tests/browser-v6.cjs
           RAAS_TEST_TARGET=index.html node tests/browser-v5.9.cjs
+          node tests/browser-content-ia.cjs
       - name: Upload browser screenshots
         if: always() && steps.scope.outputs.tier != 'docs'
         uses: actions/upload-artifact@v4
@@ -74,4 +79,5 @@ jobs:
             browser-v5.9.1-clinical-readability.png
             browser-v5.9.1-desktop-readability.png
             artifacts/v6/*.png
+            artifacts/content-ia/*.png
           if-no-files-found: ignore
