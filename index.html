@@ -5,7 +5,7 @@
 
 <meta charset="UTF-8">
 
-<title>RAAS Simulator v5.9.1</title>
+<title>RAAS Simulator v6.0 후보</title>
 
 
 <style>
@@ -780,7 +780,7 @@ canvas{border:1px solid var(--ui-border)}
 
 
 
-<h1>RAAS Simulator v5.9.1</h1>
+<h1>RAAS Simulator v6.0 후보</h1>
 
 
 
@@ -796,18 +796,69 @@ RAAS + Drug + Physiological Variables
 
 
 
+<style>
+/* Learning experience v6: content-first surfaces; existing model canvases retained. */
+.lx-surface{box-sizing:border-box;max-width:1200px;margin:24px auto;padding:32px;background:white;border:1px solid var(--ui-border);border-radius:12px;line-height:1.7;text-align:left}
+.lx-surface h2{font-size:clamp(24px,4vw,36px);color:var(--ui-navy-deep);margin:0 0 12px}
+.lx-kicker{font-size:14px;letter-spacing:.06em;color:#41576a;font-weight:700}
+.lx-actions{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}
+.lx-actions button{width:auto;min-width:180px}
+.lx-actions button,.lx-surface button,.lx-tour button{min-height:44px;font-size:16px;padding:10px 16px;border:1px solid #71869a;border-radius:6px;background:white;color:#18324b;cursor:pointer}
+.lx-actions button:first-child{background:var(--ui-navy);color:white}
+.lx-surface button:disabled,.lx-tour button:disabled{opacity:.5;cursor:default}
+.lx-path{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;list-style:none;padding:20px 0;margin:0}
+.lx-path li{border-bottom:2px solid #c2ccd6;padding:12px;font-size:16px}
+.lx-path li[aria-current=step]{border-color:var(--ui-navy);background:#eaf1f8;font-weight:700}
+.lx-path small{display:block;font-size:14px;color:#41576a}
+.lx-learning{padding:20px 0;border-block:1px solid var(--ui-border);margin:20px 0}
+.lx-learning h3{font-size:21px;margin:0}
+.learning-course{max-width:none;background:white;border:0;padding:0}
+.learning-grid{display:block}
+.lx-learning .learning-block,.lx-learning .learning-summary{background:white;border:0;padding:20px 0;margin:0}
+.lx-learning .learning-block h3{font-size:16px;color:#41576a}
+.study-mode-nav>#lxHomeButton{min-height:48px;padding:10px 18px;border:1px solid var(--ui-border);border-radius:8px;background:white;color:var(--ui-navy);font-size:16px;cursor:pointer}
+.study-mode-nav>#lxHomeButton[aria-pressed=true]{background:var(--ui-navy);color:white}
+.lx-learning .lx-path{grid-template-columns:repeat(3,minmax(0,1fr))}
+.lx-practice table{width:100%;border-collapse:collapse;font-size:16px}
+.lx-practice th,.lx-practice td{padding:10px 4px;text-align:left;border-bottom:1px solid var(--ui-border);overflow-wrap:anywhere}
+.lx-practice fieldset{border:0;padding:0;margin:16px 0}
+.lx-practice label{display:block;padding:10px 0}
+.lx-practice input{width:20px;height:20px;vertical-align:middle}
+.lx-tour{position:fixed;inset:0;z-index:9999;pointer-events:auto}
+.lx-tour-ring{position:fixed;border:3px solid #e8b542;border-radius:6px;box-shadow:0 0 0 9999px #102435b8;pointer-events:none;box-sizing:border-box}
+.lx-tour-panel{position:fixed;box-sizing:border-box;width:min(380px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:20px;border-radius:10px;background:white;color:#18324b;box-shadow:0 4px 24px #0005;font-size:16px;line-height:1.6}
+.lx-tour-panel h2{font-size:21px;margin:4px 0}
+.lx-tour-panel .lx-actions{gap:6px;margin:12px 0 0}
+.lx-tour-panel button{font-size:14px;padding:8px}
+.lx-tour-panel .lx-actions button{min-width:0;flex:1 1 100px}
+.lx-tour-panel:before{content:"";position:absolute;top:0;left:24px;width:32px;border-top:4px solid #e8b542}
+[hidden]{display:none!important}
+@media(max-width:700px){.lx-surface{margin:16px 8px;padding:20px}.lx-path{gap:4px}.lx-path li{padding:8px 4px;font-size:14px}.lx-learning .lx-path{grid-template-columns:repeat(3,minmax(0,1fr))}.lx-actions button{flex:1 1 160px}.lx-practice th,.lx-practice td{font-size:14px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
 <nav class="study-mode-nav" aria-label="RAAS 학습 영역 선택과 도움말">
+  <button id="lxHomeButton" type="button" aria-pressed="true" aria-controls="lxHome">학습 홈</button>
   <div class="study-mode-primary" role="group" aria-label="주요 학습 영역">
     <button id="normalModeButton" type="button" aria-pressed="true" aria-controls="normalStudyView">① 시뮬레이터</button>
     <button id="learningModeButton" type="button" aria-pressed="false" aria-controls="learningStudyView">② 학습</button>
     <button id="scenarioModeButton" type="button" aria-pressed="false" aria-controls="scenarioStudyView">③ 임상 적용</button>
   </div>
   <div class="study-mode-secondary" role="group" aria-label="도움말과 모델 안내">
+    <button id="lxTourButton" type="button">화면 둘러보기</button>
     <button id="globalHelpButton" type="button" aria-haspopup="dialog" aria-controls="helpDialog">ⓘ 사용법</button>
     <button id="modelPolicyButton" class="model-policy-trigger" type="button" aria-haspopup="dialog" aria-controls="modelPolicyDialog" aria-label="모델 한계와 임상 안전 주의사항">ⓘ 모델·안전 안내</button>
   </div>
 </nav>
 <p class="study-mode-intro">RAAS 흐름을 관찰하고 → 기전·간호를 학습하고 → 가상 사례에서 판단을 연습하세요.</p>
+<section id="lxHome" class="lx-surface" aria-labelledby="lxHomeTitle">
+ <p class="lx-kicker">LEARN · EXPLORE · CONNECT / v6.0 후보</p>
+ <h2 id="lxHomeTitle" tabindex="-1">혈압이 낮아지면,<br>우리 몸은 어떻게 반응할까요?</h2>
+ <p>RAAS의 흐름을 따라가며 약물의 작용 위치를 찾고, 관찰한 변화를 간호 사정과 연결해 보세요.</p>
+ <ol class="lx-path" aria-label="학습 여정"><li>01 · 기전 이해<small>9단계와 6종 약물</small></li><li>02 · 예상과 관찰<small>ACE 억제제 비교 실습</small></li><li>03 · 임상 연결<small>CKD·HFrEF 가상 사례</small></li></ol>
+ <div class="lx-actions"><button id="lxStart">안내형 학습 시작 →</button><button id="lxExplore">시뮬레이터 바로 이동</button><button id="lxClinical">임상 사례 선택</button></div>
+ <p>처음이라면 5단원·16항목의 안내형 학습부터 시작하세요. 상단에서 원하는 영역으로 바로 이동할 수도 있습니다.</p>
+ <p>이 페이지를 열어 둔 동안 탭 이동은 진행과 답안을 유지합니다. 새로고침하면 기록이 사라집니다. 교육용 모델이며 실제 환자의 반응을 예측하지 않습니다.</p>
+</section>
 <div id="normalStudyView">
 <div class="main">
 
@@ -1046,6 +1097,7 @@ class="variableValue">
 <p>안내형 코스는 학습 순서를 제안하고 자유 탐색은 원하는 단계·약물을 직접 선택합니다. 둘 다 시뮬레이터 진행과 임상 답안에 영향을 주지 않습니다.</p>
 <div class="learning-course-controls" role="group" aria-label="학습 방식"><button id="learningGuidedButton" type="button" aria-pressed="true">안내형 코스</button><button id="learningFreeButton" type="button" aria-pressed="false">자유 탐색</button></div>
 <p id="learningCourseStatus" class="learning-course-status" role="status" aria-live="polite"></p>
+<section class="lx-learning" aria-labelledby="lxObjective"><p class="lx-kicker">이번 학습의 목표</p><h3 id="lxObjective"></h3><ol id="lxLearningPath" class="lx-path" aria-label="현재 학습과 RAAS 작용 위치"></ol><p id="lxLearningAction"></p><div class="lx-actions"><button id="lxOpenPractice" type="button">ACE 억제제 · 예상하고 관찰하기</button></div></section>
 <div class="learning-course-buttons"><button type="button" id="learningCoursePrev">← 이전 학습</button><button type="button" id="learningCourseNext">다음 학습 →</button></div></section>
   <details class="learning-pathway"><summary>RAAS 전체 9단계 흐름 펼쳐보기</summary><p id="learningPathwayOverview"></p></details>
   <nav class="learning-focus-tools" id="learningFocusTools" aria-label="자유 탐색 학습 주제" hidden>
@@ -1092,7 +1144,8 @@ class="variableValue">
 </section>
 
 <section id="scenarioStudyView" class="scenario-view" aria-labelledby="scenarioHeading" hidden>
-  <span class="scenario-tag">v5.9.1 · 임상 적용</span>
+  <p class="lx-kicker">임상 연결 · 사전 브리핑</p><p>환자에게 현재 확인된 정보로 판단하고, 간호 행동을 선택한 뒤 추가 평가 자료를 해석합니다. 마지막에는 선택 이유와 근거를 복습하세요.</p>
+  <span class="scenario-tag">v6.0 후보 · 임상 적용</span>
   <h2 id="scenarioHeading">임상 시나리오 교육</h2>
   <section id="scenarioCaseCatalog" aria-label="임상 사례 선택">
     <div class="scenario-instructions"><h3>학습은 이렇게 진행돼요</h3>
@@ -1397,6 +1450,16 @@ class="variableValue">
     </div>
 </dialog>
 
+<section id="lxPractice" class="lx-surface lx-practice" aria-labelledby="lxPracticeTitle" hidden>
+ <p class="lx-kicker">예상 → 조작 → 관찰 → 해석 / 비채점 활동</p><h2 id="lxPracticeTitle" tabindex="-1">ACE 억제제는 어디에 작용할까요?</h2>
+ <p>같은 RAAS 단계에서 무약물과 ACE 억제제 가정을 비교합니다. 메인 시뮬레이터의 약물·진행은 바뀌지 않습니다.</p>
+ <fieldset id="lxPrediction"><legend>예상: ACE 억제제 가정에서 모델의 혈압 결과는 어떻게 달라질까요?</legend><label><input type="radio" name="lxGuess" value="lower"> 무약물보다 낮을 것 같아요</label><label><input type="radio" name="lxGuess" value="same"> 같을 것 같아요</label><label><input type="radio" name="lxGuess" value="unsure"> 아직 모르겠어요</label></fieldset>
+ <div class="lx-actions"><button id="lxConfirm" disabled>예측 확정</button><button id="lxObserve" disabled>약물 개입 관찰</button><button id="lxPracticeNext" disabled>다음 RAAS 단계 관찰</button></div>
+ <p id="lxPracticeStatus" role="status" aria-live="polite">예상을 선택하세요. 정답 점수는 기록하지 않습니다.</p>
+ <section id="lxResults" hidden><h3 id="lxObservedStage"></h3><ol id="lxPracticePath" class="lx-path" aria-label="실습 관찰 단계"></ol><p>작용 위치: ACE → Angiotensin II 전환. 경로의 완전 중단이나 약효 100%를 의미하지 않습니다.</p><table><caption>동일 단계의 교육용 모델 계산값 · 시간축 아님</caption><thead><tr><th>변수</th><th>무약물</th><th>ACE 억제제 가정</th></tr></thead><tbody id="lxResultRows"></tbody></table><p id="lxInterpretation"></p><h3>간호로 연결하기</h3><p id="lxPracticeNursing"></p><p id="lxPracticeSource"></p><p>Na⁺는 교육용 가상값이며 실제 혈청 농도 예측이 아닙니다. GFR은 이 모델에서 변하지 않습니다. K⁺는 계산하지 않습니다. 임상 Lab은 별도의 정적 가상 사례 자료입니다.</p></section>
+ <div class="lx-actions"><button id="lxPracticeReset">실습만 다시 시작</button><button id="lxPracticeBack">학습으로 돌아가기</button><button id="lxPracticeExplore">자유 시뮬레이터로 이동</button></div>
+</section>
+<div id="lxTour" class="lx-tour" hidden><div id="lxTourRing" class="lx-tour-ring"></div><section id="lxTourPanel" class="lx-tour-panel" role="dialog" aria-modal="true" aria-labelledby="lxTourTitle" aria-describedby="lxTourText" tabindex="-1"><p id="lxTourProgress"></p><h2 id="lxTourTitle"></h2><p id="lxTourText" aria-live="polite"></p><p>읽기 전용 안내입니다. 실제 조작은 실행하지 않습니다.</p><div class="lx-actions"><button id="lxTourPrev">이전</button><button id="lxTourNext">다음</button><button id="lxTourSkip">건너뛰기</button><button id="lxTourClose">닫기</button></div></section></div>
 <script>
 
 
@@ -4663,6 +4726,7 @@ function selectClinicalCase(id){
 // v5.5: navigation changes visible views only. Explicit case actions own session deletion.
 function switchStudyMode(mode){
     if(!studyModeNames.includes(mode))return;
+    if(typeof lxHideExtras==="function")lxHideExtras();
     if(mode!=="normal"&&!normalStudyView.hidden&&flowDemo.timer!==null){
         toggleFlowDemo(); // pause hidden auto-demo; keep its previous position
     }
@@ -4817,6 +4881,7 @@ function renderLearningCourse(){
   "단원 "+(step.unit+1)+"/5 · "+learningUnitTitles[step.unit]+" · 학습 "+(learningCoursePosition+1)+"/"+learningCourseSteps.length+"\n이번 항목: "+topic:
   "자유 탐색 중 · 아래의 단계와 약물을 원하는 순서로 선택하세요. 안내형 진도는 유지됩니다.";
  renderLearningFocus();
+ if(typeof lxRenderLesson==="function")lxRenderLesson();
 }
 function renderLearningFocus(){
  const guided=learningCourseMode==="guided",entry=learningCourseSteps[learningCoursePosition];
@@ -4867,6 +4932,106 @@ if(typeof window!=="undefined"&&typeof window.matchMedia==="function"){
   if(typeof mobileQuery.addEventListener==="function")mobileQuery.addEventListener("change",event=>{mobileCanvas.open=!event.matches;});
  }
 }
+</script>
+<script>
+// Learning shell owns view state only. Domain calculations and clinical gates stay above.
+const lxGet=id=>document.getElementById(id);
+let lxView="home";
+function lxHideExtras(){lxGet("lxHome").hidden=true;lxGet("lxPractice").hidden=true;lxGet("lxHomeButton").setAttribute("aria-pressed","false");lxView="content";}
+function lxShow(view){
+ if(flowDemo.timer!==null)toggleFlowDemo();
+ [normalStudyView,learningStudyView,scenarioStudyView].forEach(el=>el.hidden=true);
+ [normalModeButton,learningModeButton,scenarioModeButton].forEach(el=>el.setAttribute("aria-pressed","false"));
+ lxGet("lxHome").hidden=view!=="home";lxGet("lxPractice").hidden=view!=="practice";
+ lxGet("lxHomeButton").setAttribute("aria-pressed",String(view==="home"));lxView=view;
+ lxGet(view==="home"?"lxHomeTitle":"lxPracticeTitle").focus();
+}
+function lxRenderLesson(){
+ const entry=learningCourseSteps[learningCoursePosition],kind=learningCourseMode==="guided"?entry.type:learningFreeTopic;
+ const stage=Number(lxGet("learningStageSelect").value),drug=lxGet("learningDrugSelect").value;
+ lxGet("lxObjective").textContent=kind==="stage"?stageData[stage].name+"의 역할을 설명해 보세요":
+  kind==="drug"?drugData[drug].name+"의 작용 위치와 간호 확인 사항을 연결해 보세요":"기전과 간호 안전을 연결해 임상 적용을 준비하세요";
+ lxGet("lxLearningPath").replaceChildren(...stageData.map((item,i)=>{
+  const li=document.createElement("li");li.textContent=(i+1)+" · "+item.name;
+  const selected=kind==="stage"?i===stage:kind==="drug"&&drugData[drug].blockStep===i;
+  if(selected){li.setAttribute("aria-current","step");li.append(document.createTextNode(kind==="drug"?" · 약물 작용 위치":" · 현재 학습"));}return li;
+ }));
+ lxGet("lxLearningAction").textContent=kind==="stage"?"할 일: 강조된 단계의 기전을 읽고, 아래 간호 사정과 연결해 설명해 보세요.":kind==="drug"?"할 일: 약물의 작용 위치를 찾고 아래 간호 확인 사항과 연결하세요. ACE 억제제는 예상 실습에서 비교할 수 있습니다.":"할 일: 아래 종합 정리를 읽고 임상 사례에서 판단 이유를 설명해 보세요.";
+}
+const lxPracticeState={guess:null,confirmed:false,observing:false,step:0};
+function lxResetPractice(){Object.assign(lxPracticeState,{guess:null,confirmed:false,observing:false,step:0});document.querySelectorAll('[name="lxGuess"]').forEach(el=>el.checked=false);lxGet("lxPrediction").disabled=false;lxGet("lxConfirm").disabled=true;lxGet("lxObserve").disabled=true;lxGet("lxPracticeNext").disabled=true;lxGet("lxResults").hidden=true;lxGet("lxPracticeStatus").textContent="예상을 선택하세요. 정답 점수는 기록하지 않습니다.";}
+function lxRenderPractice(){
+ const before=calculatePhysiologyAtStep(lxPracticeState.step,"none"),after=calculatePhysiologyAtStep(lxPracticeState.step,"acei");
+ lxGet("lxResults").hidden=false;lxGet("lxObservedStage").textContent=(lxPracticeState.step+1)+"/9 · "+stageData[lxPracticeState.step].name;
+ lxGet("lxPracticePath").replaceChildren(...stageData.map((stage,i)=>{const li=document.createElement("li");li.textContent=(i+1)+" · "+stage.name+(i===3?" · ACEi 작용 위치":"");if(i===lxPracticeState.step){li.setAttribute("aria-current","step");li.append(document.createTextNode(" · 관찰 중"));}return li;}));
+ lxGet("lxResultRows").replaceChildren(...[["bp","혈압","mmHg"],["sodium","Na⁺","mmol/L"],["volume","혈액량","%"],["gfr","GFR","mL/min"]].map(([key,label,unit])=>{
+  const row=document.createElement("tr");[label,before.current[key]+" "+unit,after.current[key]+" "+unit].forEach(text=>{const cell=document.createElement("td");cell.textContent=text;row.append(cell);});return row;
+ }));
+ const guess={lower:"무약물보다 낮을 것",same:"같을 것",unsure:"아직 모르겠음"}[lxPracticeState.guess];
+ lxGet("lxInterpretation").textContent="내 예상: "+guess+". 같은 단계의 두 결과를 비교하세요. 기존 모델은 RAAS 기여와 고정 약물 효과를 더해 계산하며 실제 시간 경과·약동학·환자 반응을 재현하지 않습니다.";
+ lxGet("lxPracticeNursing").textContent=clinicalDrugNotes.acei.nursing;lxGet("lxPracticeSource").textContent="기존 학습 근거: "+clinicalDrugNotes.acei.sourceIds+" · 원문은 사용법 참고문헌에서 확인하세요.";
+ lxGet("lxPracticeNext").disabled=lxPracticeState.step===8;lxGet("lxPracticeStatus").textContent="예상과 관찰을 비교한 뒤 다음 단계를 관찰하세요. 실습 진행은 메인에 반영되지 않습니다.";
+}
+lxGet("lxHomeButton").onclick=()=>lxShow("home");
+lxGet("lxStart").onclick=()=>{switchStudyMode("learning");learningCourseMode="guided";goLearningCourse(learningCoursePosition);};
+lxGet("lxExplore").onclick=()=>switchStudyMode("normal");lxGet("lxClinical").onclick=()=>switchStudyMode("scenario");
+lxGet("lxOpenPractice").onclick=()=>lxShow("practice");
+document.querySelectorAll('[name="lxGuess"]').forEach(el=>el.onchange=()=>{lxPracticeState.guess=el.value;lxGet("lxConfirm").disabled=false;});
+lxGet("lxConfirm").onclick=()=>{if(!lxPracticeState.guess)return;lxPracticeState.confirmed=true;lxGet("lxPrediction").disabled=true;lxGet("lxConfirm").disabled=true;lxGet("lxObserve").disabled=false;lxGet("lxPracticeStatus").textContent="예상을 확정했습니다. 약물 개입 관찰을 눌러 비교하세요.";};
+lxGet("lxObserve").onclick=()=>{if(!lxPracticeState.confirmed)return;lxPracticeState.observing=true;lxGet("lxObserve").disabled=true;lxRenderPractice();};
+lxGet("lxPracticeNext").onclick=()=>{if(lxPracticeState.observing&&lxPracticeState.step<8){lxPracticeState.step++;lxRenderPractice();}};
+lxGet("lxPracticeReset").onclick=lxResetPractice;lxGet("lxPracticeBack").onclick=()=>switchStudyMode("learning");lxGet("lxPracticeExplore").onclick=()=>switchStudyMode("normal");
+const lxTourSteps=[
+ {mode:"home",target:"lxStart",title:"학습 시작",text:"안내형 코스는 5단원·16항목을 안내합니다. 상단 탭으로 바로 이동할 수도 있습니다."},
+ {mode:"normal",target:"mobileCanvasExplorer",title:"RAAS 경로",text:"원본 Canvas와 모바일 단계 카드는 같은 9단계를 설명합니다. 단계 조회는 진행과 별개입니다."},
+ {mode:"normal",target:'.control-group',title:"단계 이동",text:"이전·다음은 탐색 위치를 바꿉니다. 최대 도달 단계와 현재 탐색 단계를 구분하세요."},
+ {mode:"normal",target:"drugSelect",title:"약물 작용 위치",text:"6종 약물의 선택·적용·제거를 비교하세요. 지금 이 안내는 약물을 적용하지 않습니다."},
+ {mode:"normal",target:'.variableGrid',title:"교육용 생리 변수",text:"기본값·RAAS 영향·약물 영향을 구분합니다. Na⁺·GFR의 모델 한계를 함께 확인하세요."},
+ {mode:"normal",target:'.model-graph-pan',title:"단계별 비교 그래프",text:"가로축은 시간 아닌 단계입니다. 원본 크기 그래프를 가로로 탐색하며 두 가정을 비교합니다."},
+ {mode:"learning",target:"learningCourse",title:"학습과 임상 연결",text:"안내형·자유 탐색을 오가고 임상 적용으로 연결하세요. 탭 이동은 기존 풀이를 보존합니다."}
+];
+let lxTourState=null,lxTourFrame=0;
+function lxTourLayout(){
+ if(!lxTourState)return;const step=lxTourSteps[lxTourState.index],target=step.target.startsWith(".")?document.querySelector(step.target):lxGet(step.target);
+ const ring=lxGet("lxTourRing"),panel=lxGet("lxTourPanel"),rect=target?.getBoundingClientRect();
+ const visible=rect&&rect.width&&rect.height&&rect.bottom>0&&rect.top<innerHeight&&!target.closest("[hidden]");
+ ring.style.cssText=visible?`left:${Math.max(0,rect.left-3)}px;top:${Math.max(0,rect.top-3)}px;width:${Math.min(innerWidth,rect.width+6)}px;height:${Math.min(innerHeight,rect.height+6)}px`:"left:0;top:0;width:0;height:0";
+ const width=panel.offsetWidth,height=panel.offsetHeight;
+ const below=visible&&rect.bottom+height+20<innerHeight;
+ panel.style.left=Math.max(12,Math.min(innerWidth-width-12,visible?rect.left:12))+"px";
+ panel.style.top=Math.max(12,Math.min(innerHeight-height-12,below?rect.bottom+12:visible&&rect.top>height+20?rect.top-height-12:12))+"px";
+}
+function lxTourStep(){
+ const step=lxTourSteps[lxTourState.index];if(step.mode==="home")lxShow("home");else switchStudyMode(step.mode);
+ lxGet("lxTourTitle").textContent=step.title;lxGet("lxTourText").textContent=step.text;
+ lxGet("lxTourProgress").textContent=(lxTourState.index+1)+" / "+lxTourSteps.length;
+ lxGet("lxTourPrev").disabled=lxTourState.index===0;lxGet("lxTourNext").textContent=lxTourState.index===lxTourSteps.length-1?"완료":"다음";
+ const target=step.target.startsWith(".")?document.querySelector(step.target):lxGet(step.target);target?.scrollIntoView({block:"center",behavior:"instant"});
+ lxTourLayout();lxGet("lxTourPanel").focus();
+}
+function lxCloseTour(){
+ if(!lxTourState)return;const saved=lxTourState;lxTourState=null;lxGet("lxTour").hidden=true;
+ document.querySelectorAll("body > *").forEach(el=>{if(el.hasAttribute("data-lx-inert")){el.inert=false;el.removeAttribute("data-lx-inert");}});
+ [normalStudyView,learningStudyView,scenarioStudyView,lxGet("lxHome"),lxGet("lxPractice")].forEach((el,i)=>el.hidden=saved.hidden[i]);
+ [normalModeButton,learningModeButton,scenarioModeButton,lxGet("lxHomeButton")].forEach((el,i)=>el.setAttribute("aria-pressed",saved.pressed[i]));lxView=saved.view;
+ window.scrollTo(saved.x,saved.y);saved.focus?.focus({preventScroll:true});
+}
+lxGet("lxTourButton").onclick=()=>{
+ if(lxTourState)return;if(flowDemo.timer!==null){lxGet("lxTourButton").textContent="시연 정지 후 둘러보기";return;}
+ lxTourState={index:0,view:lxView,hidden:[normalStudyView,learningStudyView,scenarioStudyView,lxGet("lxHome"),lxGet("lxPractice")].map(el=>el.hidden),pressed:[normalModeButton,learningModeButton,scenarioModeButton,lxGet("lxHomeButton")].map(el=>el.getAttribute("aria-pressed")),x:scrollX,y:scrollY,focus:document.activeElement};
+ document.querySelectorAll("body > *").forEach(el=>{if(el.id!=="lxTour"&&el.tagName!=="SCRIPT"&&!el.inert){el.inert=true;el.setAttribute("data-lx-inert","");}});
+ lxGet("lxTour").hidden=false;lxTourStep();
+};
+lxGet("lxTourPrev").onclick=()=>{if(lxTourState.index>0){lxTourState.index--;lxTourStep();}};
+lxGet("lxTourNext").onclick=()=>{if(lxTourState.index===lxTourSteps.length-1)lxCloseTour();else{lxTourState.index++;lxTourStep();}};
+lxGet("lxTourSkip").onclick=lxCloseTour;lxGet("lxTourClose").onclick=lxCloseTour;
+lxGet("lxTour").addEventListener("keydown",event=>{if(event.key==="Escape"){event.preventDefault();lxCloseTour();}else if(event.key==="Tab"){const buttons=[...lxGet("lxTourPanel").querySelectorAll("button:not(:disabled)")],i=buttons.indexOf(document.activeElement);event.preventDefault();buttons[(i+(event.shiftKey?-1:1)+buttons.length)%buttons.length].focus();}});
+const lxScheduleLayout=()=>{cancelAnimationFrame(lxTourFrame);lxTourFrame=requestAnimationFrame(lxTourLayout);};
+window.addEventListener("resize",lxScheduleLayout);window.addEventListener("scroll",lxScheduleLayout,true);window.visualViewport?.addEventListener("resize",lxScheduleLayout);
+new MutationObserver(()=>{if(lxTourState)lxScheduleLayout();}).observe(document.body,{childList:true,subtree:true});
+// Keep the existing content nodes and event bindings, adjacent to the new diagram.
+lxGet("lxLearningPath").after(document.querySelector(".learning-grid"),lxGet("learningSummaryPanel"));
+lxRenderLesson();lxShow("home");
 </script>
 
 

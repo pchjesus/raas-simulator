@@ -56,6 +56,11 @@ jobs:
       - name: Run current v5.9.1 readability and session Chromium checks
         if: steps.scope.outputs.tier != 'docs'
         run: node tests/browser-v5.9.1.cjs
+      - name: Run v6 learning experience and live clinical checks
+        if: steps.scope.outputs.tier != 'docs'
+        run: |
+          node tests/browser-v6.cjs
+          RAAS_TEST_TARGET=index.html node tests/browser-v5.9.cjs
       - name: Upload browser screenshots
         if: always() && steps.scope.outputs.tier != 'docs'
         uses: actions/upload-artifact@v4
@@ -68,4 +73,5 @@ jobs:
             browser-v5.9.1-mobile-readability.png
             browser-v5.9.1-clinical-readability.png
             browser-v5.9.1-desktop-readability.png
+            artifacts/v6/*.png
           if-no-files-found: ignore

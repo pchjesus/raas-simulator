@@ -6,8 +6,10 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),path
  try{
   const page=await browser.newPage({viewport:{width:1365,height:880}});
   page.on('pageerror',e=>errors.push(e.stack||e.message));
-  await page.goto('file://'+path.resolve(__dirname,'../backups/v5.9.html'));
-  ok(await page.title()==='RAAS Simulator v5.9','release document title');
+  const target=process.env.RAAS_TEST_TARGET||'backups/v5.9.html';
+  await page.goto('file://'+path.resolve(__dirname,'../'+target));
+  ok(await page.title()===(target==='index.html'?'RAAS Simulator v6.0 후보':'RAAS Simulator v5.9'),'release document title');
+  if(target==='index.html')await page.locator('#normalModeButton').click();
   ok(await page.locator('#canvas').isVisible(),'original Canvas on desktop');
   ok(await page.locator('#mobileStageExplorer').count()===0,'no duplicate Canvas');
   ok(await page.locator('#canvas').count()===1,'single Canvas preserved');
@@ -40,6 +42,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),path
   await page.locator('#learningCourseNext').click();
   ok((await page.locator('#learningCourseStatus').innerText()).includes('2/16'),'guided next advances course');
   await page.locator('#learningFreeButton').click();
+  if(target==='index.html')await page.locator('#learningFreeDrugButton').click();
   await page.locator('#learningDrugSelect').selectOption('aldo');
   ok((await page.locator('#learningDrugTitle').innerText()).includes('Aldosterone'),'free drug explorer');
   await page.locator('#learningGuidedButton').click();
