@@ -1,7 +1,7 @@
 name: RAAS v5.9.1 readability and historical regression
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/learning-experience-v6]
   push:
     branches: [main]
   workflow_dispatch:
@@ -61,6 +61,7 @@ jobs:
         run: |
           node tests/browser-v6.cjs
           RAAS_TEST_TARGET=index.html node tests/browser-v5.9.cjs
+          node tests/browser-content-ia.cjs
       - name: Upload browser screenshots
         if: always() && steps.scope.outputs.tier != 'docs'
         uses: actions/upload-artifact@v4
@@ -74,4 +75,5 @@ jobs:
             browser-v5.9.1-clinical-readability.png
             browser-v5.9.1-desktop-readability.png
             artifacts/v6/*.png
+            artifacts/content-ia/*.png
           if-no-files-found: ignore

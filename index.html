@@ -831,6 +831,22 @@ RAAS + Drug + Physiological Variables
 .lx-tour-panel .lx-actions{gap:6px;margin:12px 0 0}
 .lx-tour-panel button{font-size:14px;padding:8px}
 .lx-tour-panel .lx-actions button{min-width:0;flex:1 1 100px}
+.ia-context{font-size:14px;color:var(--ui-muted);margin:8px 0}
+.ia-mechanism{display:flex;align-items:stretch;gap:8px;list-style:none;padding:14px 0;margin:0;flex-wrap:wrap}
+.ia-mechanism li{flex:1 1 160px;min-width:0;padding:12px;border-bottom:2px solid var(--ui-border);font-size:16px}
+.ia-mechanism li[aria-current=step]{border-color:var(--ui-navy);background:var(--ui-soft);font-weight:700}
+.ia-mechanism li+li:before{content:"→ ";color:var(--ui-muted)}
+.ia-activity{padding:16px 0;border-block:1px solid var(--ui-border);margin:16px 0;text-align:left}
+.ia-activity h4{margin:0 0 6px}.ia-activity p{margin:6px 0}
+#normalStudyView .main{grid-template-columns:minmax(0,1fr)}
+#normalStudyView .controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:16px 0}
+#normalStudyView .control-group{border-bottom:0;padding-bottom:0}
+#iaSimStatus{font-weight:700;text-align:left;padding:12px 0;margin:0;white-space:pre-line}
+#iaSimExplanation{text-align:left;padding:16px 0;border-block:1px solid var(--ui-border)}
+.ia-value{font-weight:700;font-size:20px;color:var(--ui-navy);margin:8px 0}
+.ia-value-details>summary{min-height:44px;cursor:pointer;font-size:14px}
+.ia-caption{font-size:14px;color:var(--ui-muted)}
+@media(max-width:700px){#normalStudyView .controls{grid-template-columns:minmax(0,1fr);gap:14px}.ia-mechanism li{flex-basis:100%;padding:8px}.ia-mechanism li+li:before{content:"↓ "}}
 .lx-tour-panel:before{content:"";position:absolute;top:0;left:24px;width:32px;border-top:4px solid #e8b542}
 [hidden]{display:none!important}
 @media(max-width:700px){.lx-surface{margin:16px 8px;padding:20px}.lx-path{gap:4px}.lx-path li{padding:8px 4px;font-size:14px}.lx-learning .lx-path{grid-template-columns:repeat(3,minmax(0,1fr))}.lx-actions button{flex:1 1 160px}.lx-practice th,.lx-practice td{font-size:14px}}
@@ -1097,7 +1113,7 @@ class="variableValue">
 <p>안내형 코스는 학습 순서를 제안하고 자유 탐색은 원하는 단계·약물을 직접 선택합니다. 둘 다 시뮬레이터 진행과 임상 답안에 영향을 주지 않습니다.</p>
 <div class="learning-course-controls" role="group" aria-label="학습 방식"><button id="learningGuidedButton" type="button" aria-pressed="true">안내형 코스</button><button id="learningFreeButton" type="button" aria-pressed="false">자유 탐색</button></div>
 <p id="learningCourseStatus" class="learning-course-status" role="status" aria-live="polite"></p>
-<section class="lx-learning" aria-labelledby="lxObjective"><p class="lx-kicker">이번 학습의 목표</p><h3 id="lxObjective"></h3><ol id="lxLearningPath" class="lx-path" aria-label="현재 학습과 RAAS 작용 위치"></ol><p id="lxLearningAction"></p><div class="lx-actions"><button id="lxOpenPractice" type="button">ACE 억제제 · 예상하고 관찰하기</button></div></section>
+<section class="lx-learning" aria-labelledby="lxObjective"><p class="lx-kicker">이번 학습의 핵심 질문</p><h3 id="lxObjective"></h3><p id="iaPrerequisite" class="ia-context"></p><ol id="iaMechanism" class="ia-mechanism" aria-label="현재 개념의 관련 기전"></ol><p id="iaMechanismMeaning"></p><ol id="lxLearningPath" class="lx-path" aria-label="전체 RAAS 경로와 연관 위치"></ol><section id="iaActivity" class="ia-activity" aria-labelledby="iaActivityTitle"><h4 id="iaActivityTitle">현재 학습 활동</h4><p id="lxLearningAction"></p><p id="iaEvidence"></p><p id="iaInterpretation"></p><div class="lx-actions"><button id="lxOpenPractice" type="button">ACE 억제제 · 예상하고 관찰하기</button></div></section></section>
 <div class="learning-course-buttons"><button type="button" id="learningCoursePrev">← 이전 학습</button><button type="button" id="learningCourseNext">다음 학습 →</button></div></section>
   <details class="learning-pathway"><summary>RAAS 전체 9단계 흐름 펼쳐보기</summary><p id="learningPathwayOverview"></p></details>
   <nav class="learning-focus-tools" id="learningFocusTools" aria-label="자유 탐색 학습 주제" hidden>
@@ -1255,7 +1271,7 @@ class="variableValue">
 <details class="scenario-evidence-disclosure"><summary>검사 해석 참고 근거 확인</summary><div class="scenario-disclosure-body"><p id="scenarioLabSource" class="scenario-feedback-evidence"></p></div></details></section>
     </section>
   <section id="scenarioResultPanel" tabindex="-1" aria-live="polite" hidden>
-    <h3>학습 완료</h3>
+    <h3>디브리핑 · 판단과 간호 행동 복습</h3>
     <p id="scenarioResultText"></p>
     <h4>문항별 임상 판단 복습</h4>
     <p id="scenarioResultReview" class="scenario-result-review" hidden></p>
@@ -2755,6 +2771,7 @@ function draw(){
     drawStatus();
     drawDrugInfo();
     drawDescription();
+    if(typeof iaRenderSimulator==="function")iaRenderSimulator();
 
 }
 
@@ -4946,17 +4963,49 @@ function lxShow(view){
  lxGet("lxHomeButton").setAttribute("aria-pressed",String(view==="home"));lxView=view;
  lxGet(view==="home"?"lxHomeTitle":"lxPracticeTitle").focus();
 }
+// Prompts own no clinical facts, values or answer keys; source content remains in the original tables.
+const iaLessons=Object.freeze([
+ {question:"어떤 신호가 레닌 분비로 이어질까요?",prerequisite:"신장 관류 · 치밀반점 · 교감신경",action:"관류, NaCl 전달, β1 자극이라는 세 신호를 기존 설명에서 찾아보세요.",evidence:"단계 설명과 신장 관류 관련 간호 사정",reflect:"혈압 한 숫자만으로 RAAS 활성이나 원인을 단정할 수 있을까요?"},
+ {question:"레닌은 무엇을 무엇으로 바꿀까요?",prerequisite:"활성 조건 → 레닌 → Angiotensin I",action:"안지오텐시노겐에서 Ang I이 만들어지는 관계를 말로 따라가 보세요.",evidence:"레닌의 기전 설명과 β1 관련 간호 사정",reflect:"분비 신호와 효소의 작용을 구분해 설명해 보세요."},
+ {question:"전구체와 주된 작용 물질은 어떻게 다를까요?",prerequisite:"Renin → Angiotensin I → ACE",action:"Ang I과 Ang II를 구분하고 다음 전환에 필요한 효소를 찾아보세요.",evidence:"기전·의학적 의미의 전구체 설명",reflect:"현재 단계에 수치 변화가 없어도 기전의 역할을 설명할 수 있나요?"},
+ {question:"ACE는 어느 전환을 매개할까요?",prerequisite:"Angiotensin I → ACE → Angiotensin II",action:"기질·효소·생성물을 짚고 ACE 억제제의 작용 위치를 연결해 보세요.",evidence:"ACE의 기전과 ACEi 관련 간호 사정",reflect:"전환 감소를 모든 Ang II 생성의 완전 소실로 해석해도 될까요?"},
+ {question:"Angiotensin II는 어떻게 여러 반응에 관여할까요?",prerequisite:"ACE · AT1 · 혈관 · 부신 · 신장",action:"혈관수축, 알도스테론, 신세뇨관·갈증 관련 작용을 구분해 보세요.",evidence:"기존 복수 생리 작용 설명과 관류·체액 사정",reflect:"하나의 직렬 화살표만으로 모든 작용을 설명할 수 있을까요?"},
+ {question:"생성 억제와 수용체 차단은 어떻게 다를까요?",prerequisite:"Angiotensin II → AT1 수용체",action:"ACEi와 ARB가 개입하는 서로 다른 위치를 설명해 보세요.",evidence:"AT1 기전·ARB 설명 및 병용 관련 안전 정보",reflect:"수용체 작용 차단과 물질 생성 감소를 구별해 보세요."},
+ {question:"알도스테론 분비와 수용체 작용은 어떻게 연결될까요?",prerequisite:"부신 → 알도스테론 → 원위 네프론의 MR",action:"Na⁺ 재흡수와 K⁺ 배설 관계를 읽고 MRA 표적을 찾아보세요.",evidence:"기존 호르몬 설명과 K⁺·신기능 모니터링",reflect:"호르몬 생성과 수용체 작용은 같은 개념인가요?"},
+ {question:"Na⁺ 재흡수와 혈청 Na⁺ 농도는 같은 의미일까요?",prerequisite:"알도스테론 · 신세뇨관 · 체액",action:"Na⁺·수분 관계를 설명하고 Loop의 NKCC2와 Thiazide의 NCC를 구분하세요.",evidence:"기존 체액 기전과 체중·I/O·전해질 사정",reflect:"모델 Na⁺를 환자의 혈액검사로 읽으면 왜 안 될까요?"},
+ {question:"보상 작용만으로 혈압 정상화를 보장할 수 있을까요?",prerequisite:"혈관저항 · 체액 · 심박출량 · 관류",action:"실제 혈압에 관여하는 복합 요인을 기존 설명에서 찾아보세요.",evidence:"혈압 회복 단계의 임상 의미와 활력징후 추세",reflect:"모델 결과와 환자 반응을 구별해 말해 보세요."},
+ {question:"ACE 억제제 가정에서 같은 단계의 결과는 어떻게 다를까요?",prerequisite:"Ang I → ACE → Ang II",action:"아래 실습에서 예상 → 확정 → 관찰 순으로 비교해 보세요.",evidence:"같은 단계의 무약물/ACEi 모델값과 기존 ACEi 기전",reflect:"고정된 단계별 가정의 차이를 시간 경과나 약효 발현으로 해석하지 마세요."},
+ {question:"ARB는 ACE 억제제와 어디에서 다르게 작용할까요?",prerequisite:"Ang II → AT1 수용체",action:"두 약물의 표적 차이를 설명하고 공통 감시 항목을 읽어보세요.",evidence:"ARB 기전과 K⁺·신기능·혈압 및 병용 안전 정보",reflect:"수용체 차단을 ACE 효소 억제로 설명하고 있지는 않나요?"},
+ {question:"MRA의 표적은 알도스테론 생성일까요, 수용체 작용일까요?",prerequisite:"알도스테론 → 무기질코르티코이드 수용체",action:"수용체 작용과 K⁺·신기능 감시를 연결해 설명해 보세요.",evidence:"기존 MRA 기전과 간호 확인 사항",reflect:"모델의 단계 기여 제외와 실제 수용체 작용을 구분하세요."},
+ {question:"β blocker의 레닌 감소는 어떤 작용과 관련될까요?",prerequisite:"교감신경 β1 → JG 세포 → 레닌",action:"RAAS 관련 작용과 심박수·수축 관련 작용의 설명을 구분하세요.",evidence:"기존 β blocker 기전과 심박수·혈압 사정",reflect:"RAAS 억제 하나로 모든 임상 효과를 설명할 수 있을까요?"},
+ {question:"Loop diuretic의 NKCC2 억제는 어디에서 일어날까요?",prerequisite:"헨레고리 굵은 상행각 · NKCC2",action:"실제 신세뇨관 표적을 찾고 체액·전해질 감시 항목을 읽어보세요.",evidence:"기존 Loop 기전 및 I/O·체중·전해질 확인 사항",reflect:"그림의 Na⁺/Water 연관 위치를 RAAS 직접 차단으로 혼동하지 마세요."},
+ {question:"Thiazide의 NCC 억제는 Loop와 위치가 어떻게 다를까요?",prerequisite:"원위곡세뇨관 · NCC",action:"Loop와 표적 위치를 비교하고 기존 전해질 안전 설명을 읽어보세요.",evidence:"기존 Thiazide 기전과 Na⁺·K⁺·체액 감시 항목",reflect:"신세뇨관 재흡수 억제와 RAAS 경로 차단은 다른 개념입니다."},
+ {question:"배운 기전을 어떤 사정과 보고로 연결할까요?",prerequisite:"9단계 · 6약물 · 검사 의미",action:"아래 핵심 정리를 읽고 CKD 또는 HFrEF 사례에서 판단 이유를 설명해 보세요.",evidence:"기존 종합 정리·검사 참고 자료·임상 사례 문헌",reflect:"모델값, 정적 가상 Lab, 실제 임상 참고 기준을 구별하세요."}
+]);
 function lxRenderLesson(){
  const entry=learningCourseSteps[learningCoursePosition],kind=learningCourseMode==="guided"?entry.type:learningFreeTopic;
  const stage=Number(lxGet("learningStageSelect").value),drug=lxGet("learningDrugSelect").value;
- lxGet("lxObjective").textContent=kind==="stage"?stageData[stage].name+"의 역할을 설명해 보세요":
-  kind==="drug"?drugData[drug].name+"의 작용 위치와 간호 확인 사항을 연결해 보세요":"기전과 간호 안전을 연결해 임상 적용을 준비하세요";
+ const position=kind==="stage"?stage:kind==="drug"?9+["acei","arb","aldo","beta","loop","thiazide"].indexOf(drug):15;
+ const lesson=iaLessons[position];
+ lxGet("lxObjective").textContent=lesson.question;
+ lxGet("iaPrerequisite").textContent="선행·관련 개념: "+lesson.prerequisite;
+ const related=kind==="stage"?[Math.max(0,stage-1),stage,Math.min(8,stage+1)].filter((value,i,all)=>all.indexOf(value)===i):kind==="drug"?({acei:[2,3,4],arb:[4,5],aldo:[6,7],beta:[0,1],loop:[7],thiazide:[7]})[drug]:[1,4,7];
+ lxGet("iaMechanism").replaceChildren(...related.map(index=>{const li=document.createElement("li");const selected=index===(kind==="stage"?stage:drugData[drug]?.blockStep);li.textContent=stageData[index].name+(kind==="drug"&&selected?" · 그림상 연관 위치":"");if(selected)li.setAttribute("aria-current","step");return li;}));
+ lxGet("iaMechanismMeaning").textContent=kind==="drug"?drugData[drug].visualization.mechanism+". "+(drug==="loop"||drug==="thiazide"?"신세뇨관 표적이며 RAAS 경로의 직접 차단을 뜻하지 않습니다.":"실제 약물 작용과 모델의 단계별 수치 기여 제외 규칙은 다릅니다."):
+  kind==="stage"&&stage===4?clinicalStageNotes[4].medical:kind==="summary"?"전체 기전과 약물 감시 항목을 연결하고 기존 임상 사례로 이동합니다.":"주변 단계와의 개념 관계입니다. 시간 순서나 모든 생리 반응을 재현한 도식은 아닙니다.";
  lxGet("lxLearningPath").replaceChildren(...stageData.map((item,i)=>{
   const li=document.createElement("li");li.textContent=(i+1)+" · "+item.name;
   const selected=kind==="stage"?i===stage:kind==="drug"&&drugData[drug].blockStep===i;
-  if(selected){li.setAttribute("aria-current","step");li.append(document.createTextNode(kind==="drug"?" · 약물 작용 위치":" · 현재 학습"));}return li;
+  if(selected){li.setAttribute("aria-current","step");li.append(document.createTextNode(kind==="drug"?" · 그림상 연관 위치":" · 현재 학습"));}return li;
  }));
- lxGet("lxLearningAction").textContent=kind==="stage"?"할 일: 강조된 단계의 기전을 읽고, 아래 간호 사정과 연결해 설명해 보세요.":kind==="drug"?"할 일: 약물의 작용 위치를 찾고 아래 간호 확인 사항과 연결하세요. ACE 억제제는 예상 실습에서 비교할 수 있습니다.":"할 일: 아래 종합 정리를 읽고 임상 사례에서 판단 이유를 설명해 보세요.";
+ lxGet("lxLearningAction").textContent=lesson.action;
+ lxGet("iaEvidence").textContent="확인할 근거: "+lesson.evidence;
+ lxGet("iaInterpretation").textContent="해석해 보기: "+lesson.reflect;
+ lxGet("lxOpenPractice").hidden=position!==9;
+ const panel=kind==="stage"?lxGet("learningStagePanel"):kind==="drug"?lxGet("learningDrugPanel"):lxGet("learningSummaryPanel");
+ const before=kind==="stage"?lxGet("learningStageNursing").closest("details"):kind==="drug"?lxGet("learningDrugNursing").previousElementSibling:null;
+ if(before)before.before(lxGet("iaActivity"));else panel.append(lxGet("iaActivity"));
+ ["Stage","Drug"].forEach(name=>{lxGet("learning"+name+"Select").hidden=learningCourseMode==="guided";document.querySelector('label[for="learning'+name+'Select"]').hidden=learningCourseMode==="guided";lxGet("learning"+name+"Heading").hidden=learningCourseMode==="guided";});
 }
 const lxPracticeState={guess:null,confirmed:false,observing:false,step:0};
 function lxResetPractice(){Object.assign(lxPracticeState,{guess:null,confirmed:false,observing:false,step:0});document.querySelectorAll('[name="lxGuess"]').forEach(el=>el.checked=false);lxGet("lxPrediction").disabled=false;lxGet("lxConfirm").disabled=true;lxGet("lxObserve").disabled=true;lxGet("lxPracticeNext").disabled=true;lxGet("lxResults").hidden=true;lxGet("lxPracticeStatus").textContent="예상을 선택하세요. 정답 점수는 기록하지 않습니다.";}
@@ -4965,10 +5014,11 @@ function lxRenderPractice(){
  lxGet("lxResults").hidden=false;lxGet("lxObservedStage").textContent=(lxPracticeState.step+1)+"/9 · "+stageData[lxPracticeState.step].name;
  lxGet("lxPracticePath").replaceChildren(...stageData.map((stage,i)=>{const li=document.createElement("li");li.textContent=(i+1)+" · "+stage.name+(i===3?" · ACEi 작용 위치":"");if(i===lxPracticeState.step){li.setAttribute("aria-current","step");li.append(document.createTextNode(" · 관찰 중"));}return li;}));
  lxGet("lxResultRows").replaceChildren(...[["bp","혈압","mmHg"],["sodium","Na⁺","mmol/L"],["volume","혈액량","%"],["gfr","GFR","mL/min"]].map(([key,label,unit])=>{
-  const row=document.createElement("tr");[label,before.current[key]+" "+unit,after.current[key]+" "+unit].forEach(text=>{const cell=document.createElement("td");cell.textContent=text;row.append(cell);});return row;
+  const row=document.createElement("tr");row.dataset.variable=key;[label,before.current[key]+" "+unit,after.current[key]+" "+unit,(after.current[key]-before.current[key])+" "+unit].forEach(text=>{const cell=document.createElement("td");cell.textContent=text;row.append(cell);});return row;
  }));
  const guess={lower:"무약물보다 낮을 것",same:"같을 것",unsure:"아직 모르겠음"}[lxPracticeState.guess];
- lxGet("lxInterpretation").textContent="내 예상: "+guess+". 같은 단계의 두 결과를 비교하세요. 기존 모델은 RAAS 기여와 고정 약물 효과를 더해 계산하며 실제 시간 경과·약동학·환자 반응을 재현하지 않습니다.";
+ const difference=after.current.bp-before.current.bp;
+ lxGet("lxInterpretation").textContent="내 예상: "+guess+". 관찰: 같은 단계의 ACEi 가정 혈압은 무약물 대비 "+difference+" mmHg 차이입니다. 예상과 비교해 설명해 보세요. 이는 고정된 모델 가정의 차이이며 시간 경과·약효 발현·환자 반응을 예측하지 않습니다.";
  lxGet("lxPracticeNursing").textContent=clinicalDrugNotes.acei.nursing;lxGet("lxPracticeSource").textContent="기존 학습 근거: "+clinicalDrugNotes.acei.sourceIds+" · 원문은 사용법 참고문헌에서 확인하세요.";
  lxGet("lxPracticeNext").disabled=lxPracticeState.step===8;lxGet("lxPracticeStatus").textContent="예상과 관찰을 비교한 뒤 다음 단계를 관찰하세요. 실습 진행은 메인에 반영되지 않습니다.";
 }
@@ -5029,9 +5079,38 @@ lxGet("lxTour").addEventListener("keydown",event=>{if(event.key==="Escape"){even
 const lxScheduleLayout=()=>{cancelAnimationFrame(lxTourFrame);lxTourFrame=requestAnimationFrame(lxTourLayout);};
 window.addEventListener("resize",lxScheduleLayout);window.addEventListener("scroll",lxScheduleLayout,true);window.visualViewport?.addEventListener("resize",lxScheduleLayout);
 new MutationObserver(()=>{if(lxTourState)lxScheduleLayout();}).observe(document.body,{childList:true,subtree:true});
-// Keep the existing content nodes and event bindings, adjacent to the new diagram.
-lxGet("lxLearningPath").after(document.querySelector(".learning-grid"),lxGet("learningSummaryPanel"));
-lxRenderLesson();lxShow("home");
+function iaRenderSimulator(){
+ if(!lxGet("iaSimStatus"))return;
+ const current=state.progress.currentStep,max=state.progress.maxReachedStep,view=learningFocusIndex>=0?learningFocusIndex:current;
+ const name=i=>i>=0?(i+1)+". "+stageData[i].name:"진행 전";
+ lxGet("iaSimStatus").textContent="현재 조회: "+(view>=0?name(view):"선택 없음")+" · 현재 진행: "+name(current)+"\n최대 도달: "+name(max)+" · 적용 약물: "+drugData[state.drug.appliedDrug].name;
+ const index=view>=0?view:0;
+ lxGet("iaSimMechanism").textContent=stageData[index].name+" — "+stageData[index].description;
+ lxGet("iaSimMeaning").textContent=clinicalStageNotes[index].medical;
+ [["bpInfo","bp","mmHg"],["naInfo","sodium","mmol/L"],["volumeInfo","volume","%"],["gfrInfo","gfr","mL/min"]].forEach(([id,key,unit])=>{
+  const el=lxGet("iaValue-"+id);if(el)el.textContent=physiology.current[key]+" "+unit;
+ });
+}
+function iaMount(){
+ const area=document.querySelector(".canvas-learning-area"),status=document.createElement("p");status.id="iaSimStatus";status.setAttribute("role","status");area.prepend(status);
+ lxGet("mobileCanvasExplorer").after(document.querySelector(".controls"));
+ const explanation=document.createElement("section");explanation.id="iaSimExplanation";explanation.setAttribute("aria-label","현재 조회 기전");
+ const title=document.createElement("h3");title.id="iaSimMechanism";const meaning=document.createElement("p");meaning.id="iaSimMeaning";
+ const note=document.createElement("p");note.className="ia-caption";note.textContent="표시 수치가 그대로인 단계도 기전상 의미가 있습니다. 조회는 진행과 약물·계산을 바꾸지 않습니다. 경로와 그래프의 단계는 시간축이 아닙니다.";
+ explanation.append(title,meaning,note);lxGet("stageDetailPanel").before(explanation);
+ ["bpInfo","naInfo","volumeInfo","gfrInfo"].forEach(id=>{
+  const original=lxGet(id),value=document.createElement("p"),details=document.createElement("details"),summary=document.createElement("summary");value.id="iaValue-"+id;value.className="ia-value";details.className="ia-value-details";summary.textContent="기본값·RAAS·약물 영향 펼치기";original.before(value,details);details.append(summary,original);
+ });
+ const whole=document.querySelector(".learning-pathway");lxGet("learningPathwayOverview").hidden=true;whole.append(lxGet("lxLearningPath"));
+ lxGet("iaMechanismMeaning").after(document.querySelector(".learning-grid"),lxGet("learningSummaryPanel"));
+ document.querySelector(".learning-course-controls").after(lxGet("learningFocusTools"));
+ lxGet("learningCourseHeading").textContent="안내형 학습 · 5단원";
+ const th=document.createElement("th");th.textContent="차이 (ACEi − 무약물)";lxGet("lxResults").querySelector("thead tr").append(th);
+ lxGet("scenarioActionEvidenceDetails").before(document.querySelector(".scenario-action-detail-grid"));
+ const nursing=lxGet("scenarioFeedbackNursing");nursing.closest("details").before(nursing);
+ iaRenderSimulator();
+}
+iaMount();lxRenderLesson();lxShow("home");
 </script>
 
 

@@ -12,6 +12,7 @@ try{
  await page.locator('#lxHomeButton').click();await page.locator('#lxStart').click();
  for(let i=0;i<16;i++){await page.evaluate(i=>goLearningCourse(i),i);ok(await page.locator('#lxObjective').innerText(),'objective '+i);ok(await page.locator('#lxLearningPath li').count()===9,'path '+i);}
  ok(await page.locator('#learningSummaryPanel').isVisible(),'final substantive unit');
+ await page.evaluate(()=>goLearningCourse(9));
  await page.locator('#lxOpenPractice').click();ok(await page.locator('#lxObserve').isDisabled(),'no observation before confirm');
  await page.locator('[name="lxGuess"][value="same"]').check();await page.locator('#lxConfirm').click();await page.locator('#lxObserve').click();
  for(let i=0;i<9;i++){
@@ -43,7 +44,7 @@ try{
   await page.setViewportSize({width,height:1000});
   for(const [name,id] of [['home','lxHomeButton'],['learning','learningModeButton'],['simulation','normalModeButton'],['clinical','scenarioModeButton']]){await page.locator('#'+id).click();if(name==='learning')await page.evaluate(()=>{learningCourseMode='guided';goLearningCourse(9)});await page.screenshot({path:path.resolve(__dirname,'../artifacts/v6/'+name+'-'+width+'.png'),fullPage:true});}
  }
- await page.locator('#learningModeButton').click();await page.locator('#lxOpenPractice').click();
+ await page.locator('#learningModeButton').click();await page.evaluate(()=>{learningCourseMode='guided';goLearningCourse(9)});await page.locator('#lxOpenPractice').click();
  await page.locator('[name="lxGuess"][value="lower"]').check();await page.locator('#lxConfirm').click();await page.locator('#lxObserve').click();await page.screenshot({path:path.resolve(__dirname,'../artifacts/v6/practice-1440.png'),fullPage:true});
  await page.locator('#lxTourButton').click();await page.keyboard.press('Tab');ok((await page.evaluate(()=>document.activeElement.id)).startsWith('lxTour'),'tour keyboard trap');
  await page.locator('#lxTourNext').click();await page.locator('#lxTourPrev').click();ok((await page.locator('#lxTourProgress').innerText()).startsWith('1'),'tour previous');
