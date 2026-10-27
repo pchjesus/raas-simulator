@@ -40,7 +40,9 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),path
   await page.locator('#normalModeButton').click();await page.locator('[onclick="nextStep()"]').click();await page.locator('[onclick="nextStep()"]').click();await page.locator('[onclick="previousStep()"]').click();
   await page.evaluate(()=>showStageLearning(6));
   const status=await page.locator('#iaSimStatus').innerText();ok(status.includes('현재 조회: 7. Aldosterone')&&status.includes('최대 도달: 2. Renin')&&status.includes('현재 진행: 1. 혈압 감소'),'view/current/max distinct');
-  ok(await rectOrder(page,['iaSimStatus','mobileCanvasExplorer','iaSimExplanation']),'simulator structure order');
+  ok(await rectOrder(page,['iaSimStatus','mobileCanvasExplorer','stageDetailPanel']),'simulator structure order');
+  ok(await page.locator('#iaSimExplanation').isHidden(),'avoid duplicate mechanism when detail visible');
+  await page.locator('#stageDetailCloseButton').click();ok(await page.locator('#iaSimExplanation').isVisible(),'progress mechanism remains available after closing detail');
   ok(await page.locator('#iaValue-naInfo').isVisible(),'model current Na visible');ok(await page.locator('#naInfo').isHidden(),'decomposition optional');await page.locator('#naInfo').locator('..').locator('summary').click();ok(await page.locator('#naInfo').isVisible(),'decomposition accessible');
   const prePractice=await snapshot(page);await page.locator('#learningModeButton').click();await page.evaluate(()=>goLearningCourse(9));await page.locator('#lxOpenPractice').click();
   ok(await page.locator('#lxResults').isHidden(),'results hidden before prediction');await page.locator('[value="unsure"][name="lxGuess"]').check();ok(await page.locator('#lxResults').isHidden(),'selection reveals no results');await page.locator('#lxConfirm').click();ok(await page.locator('#lxResults').isHidden(),'confirmation still requires observe');await page.locator('#lxObserve').click();

@@ -5081,6 +5081,7 @@ window.addEventListener("resize",lxScheduleLayout);window.addEventListener("scro
 new MutationObserver(()=>{if(lxTourState)lxScheduleLayout();}).observe(document.body,{childList:true,subtree:true});
 function iaRenderSimulator(){
  if(!lxGet("iaSimStatus"))return;
+ lxGet("iaSimExplanation").hidden=!stageDetailPanel.hidden;
  const current=state.progress.currentStep,max=state.progress.maxReachedStep,view=learningFocusIndex>=0?learningFocusIndex:current;
  const name=i=>i>=0?(i+1)+". "+stageData[i].name:"진행 전";
  lxGet("iaSimStatus").textContent="현재 조회: "+(view>=0?name(view):"선택 없음")+" · 현재 진행: "+name(current)+"\n최대 도달: "+name(max)+" · 적용 약물: "+drugData[state.drug.appliedDrug].name;
