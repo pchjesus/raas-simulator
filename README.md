@@ -2,6 +2,10 @@
 
 # RAAS Simulator
 
+현재 작업 브랜치는 **v6.0 학습 경험 재설계 후보**입니다. 기본 학습 허브, 기존 3영역 직접 이동, 실제 UI 스포트라이트 및 독립 ACEi 예상 실습을 제공합니다. 모델·임상 자료·채점·Lab 공개 계약은 v5.9.1과 같습니다. 디자인 승인 전 main에 병합하지 않습니다.
+
+설계: [v6 계약](docs/DESIGN_V6_LEARNING_EXPERIENCE.md) · [Learning Experience Kit](docs/SIMULATOR_LEARNING_EXPERIENCE_KIT_v0.1.md) · [검증 결과](docs/QA_V6_LEARNING_EXPERIENCE.md). 아래 v5.9.1 설명은 기존 기능과 기준선의 기록입니다.
+
 RAAS(Renin-Angiotensin-Aldosterone System)를 단계적으로 시각화하고, 약물 개입에 따른 생리적 변화를 학습하기 위한 교육용 웹 시뮬레이터.
 
 ## 1. 프로젝트 목적
