@@ -113,7 +113,6 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
       ok((await snap()).current.bp===120,'drug removal restores baseline');
       await page.locator('#v7ProgressNext').click();
       ok((await snap()).currentStep===0,'actual next stage');
-      await page.locator('#v7ResetProgress').evaluate(e=>e.closest('details').open=true);
       await page.locator('#v7ResetProgress').click();
       ok((await snap()).currentStep===-1,'progress reset');
       await nav('cases');
