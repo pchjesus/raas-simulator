@@ -36,7 +36,10 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
       ok(await page.locator('#v7EngineFrame').getAttribute('src')==='backups/v6.0-content-ia.html','Pages-relative model URL');
       ok(await page.locator('#v7LegacyPortal').evaluate(e=>e.closest('main')?.id)==='main','activity in workspace');
       await nav('learn');
-      await page.locator('.v7-lesson-deep-dive summary').click();
+      ok(await page.locator('#lessonMedical').isVisible(),'medical meaning is visible without disclosure');
+      ok(await page.locator('#lessonNursing').isVisible(),'nursing assessment is visible without disclosure');
+      ok(await page.locator('#lessonEvidence').isVisible(),'evidence is visible without disclosure');
+      ok(await page.locator('.v7-lesson-deep-dive summary').count()===0,'core clinical evidence is never hidden in a summary');
       const all=await page.evaluate(()=>document.getElementById('v7EngineFrame').contentWindow.RAASV6.getCurriculum());
       ok(all.length===16,'16 source-backed lessons');
       for(let i=0;i<all.length;i++){
@@ -44,6 +47,9 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
         ok((await page.locator('#lessonQuestion').innerText())===all[i].question,'question '+i);
         ok((await page.locator('#lessonMechanism').textContent())===all[i].mechanism,'mechanism '+i);
         ok((await page.locator('#lessonEvidence').innerText())===all[i].evidence,'evidence '+i);
+        if(all[i].medical)ok((await page.locator('#lessonMedical').innerText())===all[i].medical,'medical source '+i);
+        if(all[i].nursing)ok((await page.locator('#lessonNursing').innerText())===all[i].nursing,'nursing source '+i);
+        ok(await page.locator('#lessonEvidence').isVisible(),'evidence visible for item '+i);
         ok(await page.locator('#v7BridgeHelp').isVisible()===(i===9),'ACEi practice conditional '+i);
       }
       await page.evaluate(()=>selectLesson(9));
