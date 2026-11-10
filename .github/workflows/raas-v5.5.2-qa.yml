@@ -88,6 +88,7 @@ jobs:
           cp /tmp/raas-v7-index.html index.html
           node tests/browser-v7.cjs
           node tests/browser-v7-mobile.cjs
+          node tests/browser-v71-followup.cjs
       - name: Build and test standalone v7.1 review file
         if: steps.scope.outputs.tier != 'docs' && steps.v7_fixture.outputs.enabled == 'true'
         run: |
