@@ -166,6 +166,13 @@
 .v7-lesson-depth-grid p{font-size:15px;line-height:1.65;color:#425169;margin:0;white-space:pre-line}
 #v7EngineFrame{max-width:100%;min-width:0}
 #v7LegacyPortal:focus-within{outline-color:#00b69b}
+
+/* v7 responsive graph: intrinsic 1000px model graph scrolls only inside its own viewport */
+.experiment{min-width:0;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+.experiment>*{min-width:0}
+.v7-graph-frame{min-width:0;max-width:100%}
+@media(max-width:1260px){.experiment{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.experiment{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
