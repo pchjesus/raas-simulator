@@ -321,6 +321,88 @@
  #view-learn .v7-lesson-depth-grid section{padding:14px 15px}
  #view-learn .v7-concept-highlight p{font-size:14px}
 }
+
+/* v7.1 Phase 3: true v7 clinical workspace backed exclusively by v6 judgement/action gates. */
+#v71ClinicalWorkspace[hidden],#caseCards[hidden],#view-cases .phase-preview[hidden],#view-cases .v7-live-trigger[hidden],
+#v71AnswerFeedback[hidden],#v71ClinicalLab[hidden],#v71ClinicalReview[hidden],#v71Submit[hidden],#v71Continue[hidden]{display:none!important}
+.v71-clinical-workspace{display:block;min-width:0;margin-top:17px}
+.v71-clinical-header{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(275px,.9fr);gap:24px;padding:23px 27px;margin-bottom:16px;align-items:center}
+.v71-clinical-header h2{font-size:clamp(23px,2.3vw,31px);letter-spacing:-.04em;margin:8px 0 9px}
+.v71-clinical-header p{font-size:13px;color:var(--ink2);line-height:1.68;margin:0}
+.v71-overview{padding-left:21px;border-left:1px solid var(--rule)}
+.v71-overview>p{font-weight:770;color:#24756b;font-size:12px;margin:8px 0 14px}
+.v71-roadmap{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:0;margin:0}
+.v71-roadmap li{border:1px solid #e0e9eb;background:#f7f9fa;color:#7a8b99;border-radius:9px;padding:9px 5px;text-align:center;font-weight:780;font-size:11px;word-break:keep-all}
+.v71-roadmap li[data-status="current"]{color:#087c71;background:#e3f7f1;border-color:#91dac8}
+.v71-roadmap li[data-status="done"]{color:#2c6671;background:#eef5f6;border-color:#d6e5e9}
+.v71-clinical-body{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(275px,.82fr);gap:16px;align-items:start}
+.v71-clinical-task{padding:25px 27px;min-width:0}
+.v71-task-caption{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.v71-question-progress{font-size:11px;color:#708399;font-weight:750}
+.v71-clinical-task h2{font-size:clamp(21px,2.1vw,28px);line-height:1.38;letter-spacing:-.032em;margin:15px 0 9px;scroll-margin-top:25px}
+#v71TaskPrompt{font-size:15px;color:#3d5165;line-height:1.7;white-space:pre-line;margin:0}
+.v71-answer-options{display:grid;gap:9px;margin:20px 0 0}
+.v71-choice{width:100%;border:1px solid #dbe6ec;background:#fafcfd;color:#294357;border-radius:13px;padding:15px 16px;display:flex;gap:12px;align-items:flex-start;text-align:left;font-size:14px;font-weight:660;line-height:1.5;min-height:54px;transition:border-color .2s,background .2s,box-shadow .2s}
+.v71-choice .v71-number{width:24px;height:24px;flex:none;display:grid;place-items:center;border-radius:8px;background:#e8f0f2;font-size:11px;font-weight:850;color:#507083}
+.v71-choice:hover{border-color:#77c7b9;background:#f3fbf8}
+.v71-choice[aria-pressed="true"]{border-color:#05a990;background:#e5f8f2;box-shadow:inset 0 0 0 1px #05a99033}
+.v71-choice[aria-pressed="true"] .v71-number{background:#0c9f8c;color:white}
+.v71-task-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:19px;flex-wrap:wrap}
+.v71-task-actions .btn{min-width:166px}
+.v71-feedback{margin-top:18px;border-top:1px solid #e0e9ec;padding-top:19px}
+.v71-feedback-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.v71-feedback-compare article{border:1px solid #e1e9ed;background:#f7fafb;border-radius:12px;padding:13px 14px}
+.v71-feedback-compare article:last-child{background:#eaf8f3;border-color:#cbe7dd}
+.v71-feedback-compare h4{font-size:11px;color:#5d7787;margin:0 0 7px}
+.v71-feedback-compare p{font-size:13px;color:#283e4f;line-height:1.63;margin:0;white-space:pre-line}
+.v71-feedback-evidence{margin-top:14px;display:grid;gap:10px}
+.v71-feedback-evidence>section{border-bottom:1px solid #e8eef1;padding:0 1px 11px}
+.v71-feedback-evidence h4{font-size:12px;color:#0c776b;margin:0 0 5px}
+.v71-feedback-evidence p{font-size:13px;line-height:1.65;color:#42566a;white-space:pre-line;margin:0}
+.v71-clinical-support{display:grid;gap:13px;min-width:0}
+.v71-patient-card,.v71-support-card{padding:20px 22px;min-width:0}
+.v71-support-label{font-size:13px;font-weight:840;color:#1b4055;display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.v71-support-label .icon{color:#079a89}
+.v71-patient-card>p{font-size:13px;line-height:1.7;color:#40556b;margin:0}
+.v71-patient-card dl{display:grid;gap:0;margin:14px 0}
+.v71-patient-card dl>div{border-top:1px solid #e6edef;padding:9px 0}
+.v71-patient-card dt{font-size:11px;font-weight:820;color:#0c8075;margin:0 0 3px}
+.v71-patient-card dd{margin:0;font-size:12px;color:#43566b;line-height:1.6;white-space:pre-line}
+.v71-patient-card .v71-safety-note{background:#f0f6f6;border-radius:9px;padding:10px 11px;font-size:11px;color:#5c7280}
+.v71-support-card ul{padding-left:18px;margin:0;display:grid;gap:8px}
+.v71-support-card li{font-size:12px;line-height:1.6;color:#40536a}
+.v71-sources{display:grid;gap:9px}
+.v71-sources p{font-size:11px;line-height:1.55;color:#627789;margin:0;overflow-wrap:anywhere}
+.v71-support-card>.caption{margin:13px 0 0;font-size:10px}
+.v71-clinical-lab{background:#f0f8f7;border:1px solid #b9e1d8;border-radius:14px;padding:18px 19px;margin-top:18px}
+.v71-clinical-lab h3{font-size:17px;margin:7px 0}.v71-clinical-lab h4{font-size:13px;color:#176a65;margin:15px 0 5px}
+.v71-clinical-lab p{font-size:13px;line-height:1.68;color:#355d65;margin:0}
+.v71-lab-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-top:13px}
+.v71-lab-results article{background:#fff;border:1px solid #d1e8e2;border-radius:10px;padding:11px 13px;display:grid;gap:5px}
+.v71-lab-results strong{font-size:12px;color:#174e59}
+.v71-lab-results span{font-size:11px;color:#5b7281}
+.v71-clinical-lab details{margin-top:12px;font-size:11px;color:#4e7181}
+.v71-clinical-lab summary{cursor:pointer;font-weight:750}
+.v71-clinical-lab details p{font-size:11px;margin-top:8px}
+.v71-clinical-review{margin-top:20px}
+.v71-review-summary{font-size:15px;font-weight:740;color:#0b7369;background:#e7f8f2;border-radius:11px;padding:14px 16px}
+.v71-clinical-review h3{font-size:16px;margin:23px 0 10px}
+.v71-review-card{border:1px solid #dce6eb;border-radius:12px;padding:13px 15px;margin-top:9px;background:#fff}
+.v71-review-card[data-correct="false"]{border-left:4px solid #d68c5c}
+.v71-review-card[data-correct="true"]{border-left:4px solid #2cae9a}
+.v71-review-card h4{font-size:13px;margin:0 0 7px}
+.v71-review-card p{font-size:11px;color:#61788a;margin:0}
+.v71-review-card details{margin-top:10px}
+.v71-review-card summary{font-size:12px;cursor:pointer;color:#276b73;font-weight:790}
+.v71-review-card details p{font-size:12px;line-height:1.6;color:#495e70;margin-top:9px;white-space:pre-line}
+.v71-takeaways{margin-top:20px;padding:16px;border-radius:12px;background:#f5f9f8}
+.v71-takeaways h3{margin:0 0 12px}
+.v71-takeaways p{font-size:12px;line-height:1.65;color:#516679}
+.v71-clinical-footer{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px}
+.v71-footer-buttons{display:flex;gap:9px;flex-wrap:wrap}
+.v71-clinical-footer>.caption{max-width:540px;margin:0;font-size:11px}
+@media(max-width:1120px){.v71-clinical-body{grid-template-columns:minmax(0,1fr)}.v71-clinical-support{grid-template-columns:repeat(2,minmax(0,1fr))}.v71-patient-card{grid-row:span 2}}
+@media(max-width:760px){.v71-clinical-header{grid-template-columns:1fr;padding:18px 17px;gap:14px}.v71-overview{border-left:0;border-top:1px solid var(--rule);padding:13px 0 0}.v71-clinical-task{padding:18px 16px}.v71-clinical-support{grid-template-columns:1fr}.v71-patient-card{grid-row:auto}.v71-roadmap li{font-size:10px;padding:8px 3px}.v71-feedback-compare{grid-template-columns:1fr}.v71-choice{padding:13px 12px}.v71-task-actions .btn{width:100%}.v71-clinical-footer{align-items:stretch}.v71-footer-buttons{width:100%}.v71-footer-buttons .btn{flex:1}}
 </style>
 </head>
 <body>
@@ -413,6 +495,42 @@
   <div class="cases-layout" id="caseCards"><button class="card case-card active" data-case="ckd"><span class="case-symbol"><svg class="icon"><use href="#ic-case"/></svg></span><span class="small-caps">CASE 01 · KIDNEY</span><h2>CKD · ACE 억제제</h2><p>신기능·전해질·혈압을 함께 해석하고 약물 안전과 간호 판단을 연결하는 사례.</p><span class="cta">사례 구조 보기 →</span></button><button class="card case-card" data-case="hfref"><span class="case-symbol"><svg class="icon"><use href="#ic-activity"/></svg></span><span class="small-caps">CASE 02 · HEART</span><h2>HFrEF · MRA</h2><p>심박출률 감소 환자의 MRA 사용을 고려하며 혈청 K⁺와 신기능 평가를 연결하는 사례.</p><span class="cta">사례 구조 보기 →</span></button></div>
   <section class="card phase-preview"><div class="card-topline"><h2 class="card-title">사례 학습 순서</h2><span class="status-flag">정답과 Lab은 조건 충족 시 공개</span></div><div class="phase-steps" id="phaseSteps"></div><div class="phase-copy" id="phaseCopy"></div><div class="case-footer"><p class="hint-line">아래에서 사례를 시작하면 기존 검증된 문제·피드백을 사용할 수 있어요. 이 순서 안내는 답안을 바꾸지 않습니다.</p><div style="display:flex;gap:8px"><button class="btn slim" id="prevPhase">이전</button><button class="btn primary slim" id="nextPhase">다음 구조 <svg class="icon"><use href="#ic-arrow"/></svg></button></div></div></section>
   <div class="v7-live-trigger"><button class="btn primary" id="v7StartClinical" type="button">선택한 임상 사례 풀기</button><p class="caption">교육용 가상 사례입니다. 답안과 추가 Lab은 학습 단계에 따라 공개됩니다. 다른 사례로 전환하면 기존 답안이 초기화될 수 있어요.</p></div>
+
+  <section id="v71ClinicalWorkspace" class="v71-clinical-workspace" aria-label="임상 판단 및 간호 행동 학습 워크스페이스" hidden>
+   <header class="card v71-clinical-header">
+    <div class="v71-heading-copy"><span class="small-caps green">PATIENT-BASED LEARNING · V7.1</span><h2 id="v71CaseTitle">환자 사례</h2><p id="v71CaseSummary"></p></div>
+    <div class="v71-overview"><span class="small-caps">LEARNING PROGRESS</span><p id="v71Progress" aria-live="polite"></p><ol id="v71Roadmap" class="v71-roadmap" aria-label="임상 학습 단계"><li>환자 확인</li><li>임상 판단</li><li>간호 행동</li><li>결과 복습</li></ol></div>
+   </header>
+   <div class="v71-clinical-body">
+    <article class="card v71-clinical-task" aria-label="현재 임상 학습 과제">
+     <div class="v71-task-caption"><span class="small-caps green" id="v71CurrentStage">CLINICAL JUDGEMENT</span><span class="v71-question-progress" id="v71QuestionProgress"></span></div>
+     <h2 id="v71TaskHeading" tabindex="-1">임상 판단</h2>
+     <p id="v71TaskPrompt"></p>
+     <div id="v71AnswerOptions" class="v71-answer-options" role="group" aria-label="임상 판단 또는 간호 행동 선택"></div>
+     <section id="v71AnswerFeedback" class="v71-feedback" aria-label="제출한 답과 판단 근거" hidden>
+      <div class="v71-feedback-compare" id="v71FeedbackCompare"></div>
+      <div class="v71-feedback-evidence" id="v71FeedbackEvidence"></div>
+     </section>
+     <section id="v71ClinicalLab" class="v71-clinical-lab" aria-label="추가 평가 시점의 가상 검사 자료" hidden>
+      <span class="small-caps green">FOLLOW-UP LAB · POST-ASSESSMENT</span><h3>추가 평가 시점의 가상 검사 자료</h3>
+      <p id="v71LabContext"></p><div id="v71LabResults" class="v71-lab-results"></div><h4>검사 해석 · 간호 확인</h4><p id="v71LabInterpretation"></p><details><summary>검사 해석 참고 근거</summary><p id="v71LabSource"></p></details>
+     </section>
+     <section id="v71ClinicalReview" class="v71-clinical-review" aria-label="완료된 사례 복습" hidden>
+      <p id="v71ReviewSummary" class="v71-review-summary"></p>
+      <h3>임상 판단 복습</h3><div id="v71ReviewJudgements"></div>
+      <h3>간호 행동 복습</h3><div id="v71ReviewActions"></div>
+      <div id="v71ReviewTakeaways" class="v71-takeaways"></div>
+     </section>
+     <div class="v71-task-actions"><button id="v71Submit" class="btn primary" type="button" disabled>선택한 답안 제출</button><button id="v71Continue" class="btn primary" type="button" hidden>다음 단계</button></div>
+    </article>
+    <aside class="v71-clinical-support" aria-label="환자 정보와 학습 근거">
+     <section class="card v71-patient-card"><div class="v71-support-label"><svg class="icon" aria-hidden="true"><use href="#ic-case"/></svg> 현재 확인된 환자 정보</div><p id="v71PatientContext"></p><dl id="v71PatientObservations"></dl><p class="v71-safety-note">가상 환자 사례 · 실제 처방과 투여 판단은 담당 의료진 및 기관 지침에 따릅니다.</p></section>
+     <section class="card v71-support-card"><div class="v71-support-label"><svg class="icon" aria-hidden="true"><use href="#ic-book"/></svg> 학습 목표</div><ul id="v71Objectives"></ul></section>
+     <section class="card v71-support-card"><div class="v71-support-label"><svg class="icon" aria-hidden="true"><use href="#ic-info"/></svg> 참고 근거</div><div id="v71Sources" class="v71-sources"></div><p class="caption">정답과 후속 Lab은 각 제출 조건을 만족한 뒤에만 공개됩니다.</p></section>
+    </aside>
+   </div>
+   <div class="v71-clinical-footer"><div class="v71-footer-buttons"><button id="v71ReturnCases" class="btn slim">다른 사례 선택</button><button id="v71Restart" class="btn slim">이 사례 다시 풀기</button></div><p class="caption">탭 이동은 풀이를 보존합니다. 다른 사례 선택·다시 풀기는 현재 답안을 초기화합니다.</p></div>
+  </section>
  </section>
 <div id="v7LegacyPortal" hidden aria-label="검증된 기존 학습·임상 기능 통합 화면"><div class="v7-live-top"><h3 id="v7LegacyHeading">학습 활동</h3><button class="btn slim" type="button" id="v7CloseLegacy">활동 닫고 돌아가기</button></div><iframe id="v7EngineFrame" title="RAAS 임상·ACEi 실습 화면" class="engine-offscreen" aria-hidden="true" tabindex="-1" inert src="backups/v6.0-content-ia.html"></iframe></div>
 </main>
