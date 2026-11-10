@@ -656,6 +656,85 @@ setup();
         sources:'기존 5단원 종합 학습·임상 자료'};
     });
   }
+  // v7.1 clinical projection: only data the canonical v6 UI is already allowed to show.
+  // Never send future answers, option feedback or gated Lab data before the original gate opens.
+  const clinicalText = id => getId(id)?.textContent || '';
+  function clinicalView(){
+    const definition=scenarioRuntime.definition, session=scenarioRuntime.session;
+    if(scenarioRuntime.mode!=='scenario'||!definition||!session)return null;
+    const phase=!getId('scenarioResultPanel').hidden?'result':
+      !getId('scenarioActionFeedbackPanel').hidden?'action-feedback':
+      !getId('scenarioActionStep').hidden?'action':
+      !getId('scenarioFeedbackPanel').hidden?'judgement-feedback':'judgement';
+    const latest=scenarioLatestFeedback;
+    const activeIndex=latest?definition.questions.findIndex(q=>q.id===latest.questionId):session.questionIndex;
+    const active=definition.questions[activeIndex]||null;
+    const options=choices=>choices.map(item=>({text:item.text}));
+    const reviewGroup=id=>Array.from(getId(id).querySelectorAll('.scenario-review-card')).map(card=>{
+      const title=card.querySelector('h5')?.textContent||'';
+      const question=definition.questions.find(q=>title.includes(q.prompt)||q.actionExercise&&title.includes(q.actionExercise.prompt));
+      return {title,status:card.querySelector('.scenario-review-status')?.textContent||'',
+        correct:card.dataset.correct==='true',
+        details:Array.from(card.querySelectorAll('details p')).map(p=>p.textContent),
+        related:question?scenarioLearningLinks[definition.id+':'+question.id]||null:null};
+    });
+    return {
+      caseId:definition.id,title:definition.title,context:definition.caseContext,
+      objectives:[...definition.objectives],observations:definition.observations.map(o=>({label:o.label,value:o.value})),
+      references:definition.references.map(r=>r.citation),
+      questionTotal:definition.questions.length,questionIndex:activeIndex,
+      knowledgeDone:Object.keys(session.answers).length,
+      actionDone:Object.keys(scenarioActionAnswers).length,
+      actionTotal:definition.questions.filter(q=>q.actionExercise).length,
+      phase,progress:clinicalText('scenarioLearningProgress'),task:clinicalText('scenarioCurrentTask'),
+      question:phase==='judgement'&&active?{prompt:active.prompt,choices:options(active.choices)}:null,
+      judgementFeedback:phase==='judgement-feedback'?{
+        title:clinicalText('scenarioFeedbackTitle'),prompt:clinicalText('scenarioAnsweredQuestion'),
+        selected:clinicalText('scenarioFeedbackSelected'),expected:clinicalText('scenarioFeedbackCorrectAnswer'),
+        choiceReason:clinicalText('scenarioFeedbackChoiceExplanation'),
+        rationale:clinicalText('scenarioFeedbackText'),nursing:clinicalText('scenarioFeedbackNursing'),
+        evidence:clinicalText('scenarioFeedbackSource'),correct:getId('scenarioFeedbackPanel').dataset.correct==='true'
+      }:null,
+      canBeginAction:!getId('scenarioActionStartButton').hidden,
+      actionQuestion:phase==='action'&&active?.actionExercise?{
+        prompt:active.actionExercise.prompt,choices:options(active.actionExercise.choices)
+      }:null,
+      actionFeedback:phase==='action-feedback'?{
+        title:clinicalText('scenarioActionFeedbackTitle'),prompt:clinicalText('scenarioAnsweredActionPrompt'),
+        selected:clinicalText('scenarioActionFeedbackSelected'),expected:clinicalText('scenarioActionFeedbackCorrect'),
+        reason:clinicalText('scenarioActionFeedbackReason'),rationale:clinicalText('scenarioActionFeedbackRationale'),
+        assessment:clinicalText('scenarioActionAssessment'),escalation:clinicalText('scenarioActionEscalation'),
+        teaching:clinicalText('scenarioActionTeaching'),evidence:clinicalText('scenarioActionEvidence'),
+        correct:getId('scenarioActionFeedbackPanel').dataset.correct==='true'
+      }:null,
+      // Original Lab hidden flag is authoritative; the simulator graph NEVER supplies case Lab.
+      lab:phase==='action-feedback'&&!getId('scenarioLabPanel').hidden?{
+        context:clinicalText('scenarioLabContext'),
+        items:Array.from(getId('scenarioLabItems').children).map(el=>Array.from(el.children).map(c=>c.textContent)),
+        interpretation:clinicalText('scenarioLabInterpretation'),source:clinicalText('scenarioLabSource')
+      }:null,
+      canNext:!getId('scenarioNextButton').hidden,
+      nextLabel:clinicalText('scenarioNextButton'),
+      result:phase==='result'?{
+        summary:clinicalText('scenarioResultText'),
+        judgements:reviewGroup('scenarioKnowledgeDynamicReviews'),
+        actions:reviewGroup('scenarioNursingDynamicReviews'),
+        takeaways:scenarioKeyTakeaways[definition.id]||null
+      }:null
+    };
+  }
+  function clinicalCommand(action,index){
+    if(scenarioRuntime.mode!=='scenario'||!scenarioRuntime.session)return null;
+    const choiceNumber=Number.isInteger(index)&&index>=0&&index<3?index+1:null;
+    const click=id=>{const button=getId(id);if(button&&!button.hidden&&!button.disabled)button.click()};
+    if(action==='judgement'&&choiceNumber&&!getId('scenarioQuestionSection').hidden)click('scenarioChoice'+choiceNumber);
+    else if(action==='action'&&choiceNumber&&!getId('scenarioActionStep').hidden)click('scenarioActionChoice'+choiceNumber);
+    else if(action==='beginAction')click('scenarioActionStartButton');
+    else if(action==='next')click('scenarioNextButton');
+    else if(action==='restart')click('scenarioRestartButton');
+    else if(action==='back')click('scenarioBackToCasesButton');
+    return clinicalView();
+  }
   window.RAASV6={
     snapshot,
     getStages:()=>stageData.map((s,i)=>({title:s.name,summary:s.description,
@@ -665,6 +744,8 @@ setup();
     getDrugs:()=>Object.entries(clinicalDrugNotes).map(([id,note])=>({id,
       medical:note.medical,nursing:note.nursing,sources:note.sourceIds})),
     getCaseIds:()=>({ckd:firstClinicalScenario.id,hf:secondClinicalScenario.id}),
+    clinicalView,
+    clinicalCommand,
     next:()=>{nextStep();return snapshot()},
     prev:()=>{previousStep();return snapshot()},
     resetProgress:()=>{resetProgress();return snapshot()},
