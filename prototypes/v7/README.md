@@ -26,3 +26,8 @@ Local Chromium interaction/reflow smoke suite: 60/60 PASS at 320, 390, 760, 1024
 Still NOT RUN: v6 integration, CI, Safari, real iOS/Android, manual screen reader, actual zoom, clinical educator review, learner study.
 
 See [v7 draft design contract](../../docs/DESIGN_V7_EXPERIENCE_REIMAGINED_DRAFT.md) before integration.
+## Concept 01-B — Compact explorer (2026-11-10)
+
+The Explore toolbar now includes **기본 / 간편**, alongside full path / learning shortcuts. 기본 retains the separate full panels, concept explanation and graph surface; 간편 relocates the **same** drug and output panels into the concept/controls inspector and hides the lower experiment area. The path, stage controls, drug target selection and four output placeholders can be seen together at desktop sizes. Expanded mechanism/nursing detail is available through a disclosure. The mode does not reset stage/drug/lesson/clinical state; returning to 기본 restores the original panels. Native morphing transitions have a CSS/no-motion fallback; interruptions favor the latest choice.
+
+Only the layout and UI-only movement have changed. Prototype output values intentionally remain uncomputed. See [Concept 01-B focused QA](../../docs/QA_V7_CONCEPT_01B.md): 186/186 Chromium assertions at six widths, plus rapid-toggling and keyboard/modal checks; integration, device/Safari, expert and learner validation NOT RUN.
