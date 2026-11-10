@@ -1,0 +1,26 @@
+name: v7 staging source handoff
+on:
+  push:
+    branches:
+      - feat/v7-experience-reimagined
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  archive:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archive reproducible integration source
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-v7-staging-source
+          path: |
+            index.html
+            backups/v6.0-content-ia.html
+            prototypes/v7/concept-01.html
+            tests/
+            scripts/
+            .github/workflows/raas-v5.5.2-qa.yml
+          if-no-files-found: error
+          retention-days: 3
