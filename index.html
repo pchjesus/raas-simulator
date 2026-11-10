@@ -971,14 +971,192 @@ setup();
       if(target)frame.style.height=Math.max(500,Math.ceil(target.getBoundingClientRect().height+48))+'px';
     }catch(e){notify('임상 콘텐츠 높이 계산 실패 · 원본 화면에서 계속 진행할 수 있어요.',true)}
   }
+  // Transient selection is presentation-only. Submission always invokes original v6 handlers.
+  let pendingClinicalChoice=null;
+  const clinicalSetText=(id,value)=>{$(id).textContent=value||''};
+  function clinicalTextNode(tag,value,className){
+    const el=document.createElement(tag);
+    if(className)el.className=className;
+    el.textContent=value||'';
+    return el;
+  }
+  function clinicalLabeled(container,title,text){
+    if(!text)return;
+    const section=document.createElement('section');
+    section.append(clinicalTextNode('h4',title),clinicalTextNode('p',text));
+    container.append(section);
+  }
+  function hideClinicalWorkspace(){
+    $('v71ClinicalWorkspace').hidden=true;
+    $('caseCards').hidden=false;
+    $('view-cases').querySelector('.phase-preview').hidden=false;
+    $('view-cases').querySelector('.v7-live-trigger').hidden=false;
+  }
+  function showClinicalWorkspace(scroll){
+    $('caseCards').hidden=true;
+    $('view-cases').querySelector('.phase-preview').hidden=true;
+    $('view-cases').querySelector('.v7-live-trigger').hidden=true;
+    $('v71ClinicalWorkspace').hidden=false;
+    renderClinicalWorkspace();
+    if(scroll)$('v71ClinicalWorkspace').scrollIntoView({block:'start',behavior:reducedMotion()?'instant':'smooth'});
+  }
+  function renderClinicalWorkspace(){
+    const c=ready&&source.clinicalView();
+    if(!c){hideClinicalWorkspace();return}
+    clinicalSetText('v71CaseTitle',c.title);
+    clinicalSetText('v71CaseSummary',c.context);
+    clinicalSetText('v71Progress',c.progress);
+    const phaseOrder=c.phase==='result'?3:c.phase==='action'||c.phase==='action-feedback'?2:1;
+    $('v71Roadmap').querySelectorAll('li').forEach((item,i)=>{
+      item.dataset.status=i===phaseOrder?'current':i<phaseOrder?'done':'pending';
+      item.setAttribute('aria-current',i===phaseOrder?'step':'false');
+    });
+    clinicalSetText('v71QuestionProgress',c.phase==='result'?'사례 학습 완료':
+      '임상 판단 '+c.knowledgeDone+'/'+c.questionTotal+' · 간호 행동 '+c.actionDone+'/'+c.actionTotal);
+    clinicalSetText('v71PatientContext',c.context);
+    const observations=$('v71PatientObservations');observations.replaceChildren();
+    c.observations.forEach(item=>{
+      const row=document.createElement('div');
+      row.append(clinicalTextNode('dt',item.label),clinicalTextNode('dd',item.value));
+      observations.append(row);
+    });
+    $('v71Objectives').replaceChildren(...c.objectives.map(v=>clinicalTextNode('li',v)));
+    $('v71Sources').replaceChildren(...c.references.map(v=>clinicalTextNode('p',v)));
+    const task=$('v71TaskHeading'),prompt=$('v71TaskPrompt'),options=$('v71AnswerOptions');
+    options.replaceChildren();
+    const submit=$('v71Submit'),next=$('v71Continue');
+    submit.hidden=true;next.hidden=true;
+    $('v71AnswerFeedback').hidden=true;$('v71ClinicalLab').hidden=true;$('v71ClinicalReview').hidden=true;
+    const stage={
+      judgement:'02 / CLINICAL JUDGEMENT',
+      'judgement-feedback':'02 / JUDGEMENT FEEDBACK',
+      action:'03 / NURSING ACTION',
+      'action-feedback':'03 / ACTION FEEDBACK',
+      result:'04 / DEBRIEF & REVIEW'
+    };
+    clinicalSetText('v71CurrentStage',stage[c.phase]);
+    const deciding=c.phase==='judgement'||c.phase==='action';
+    const exercise=c.phase==='judgement'?c.question:c.actionQuestion;
+    if(deciding&&exercise){
+      task.textContent=c.phase==='judgement'?'현재 환자에게 필요한 임상 판단':'다음 간호 행동을 선택해 보세요';
+      prompt.textContent=exercise.prompt;
+      pendingClinicalChoice=null;
+      exercise.choices.forEach((choice,i)=>{
+        const button=document.createElement('button');button.type='button';button.className='v71-choice';
+        button.setAttribute('aria-pressed','false');
+        button.append(clinicalTextNode('span',String(i+1).padStart(2,'0'),'v71-number'),
+          clinicalTextNode('span',choice.text));
+        button.addEventListener('click',()=>{
+          pendingClinicalChoice=i;
+          options.querySelectorAll('button').forEach((el,k)=>el.setAttribute('aria-pressed',String(k===i)));
+          submit.disabled=false;
+        });
+        options.append(button);
+      });
+      submit.hidden=false;submit.disabled=true;
+      submit.textContent=c.phase==='judgement'?'선택한 임상 판단 제출':'선택한 간호 행동 제출';
+    }else if(c.phase==='judgement-feedback'||c.phase==='action-feedback'){
+      const judgement=c.phase==='judgement-feedback',f=judgement?c.judgementFeedback:c.actionFeedback;
+      task.textContent=f.title;prompt.textContent=f.prompt;
+      const compare=$('v71FeedbackCompare');compare.replaceChildren();
+      for(const item of [
+        ['내 선택',f.selected],['권장 답안',f.expected]
+      ]){
+        const article=document.createElement('article');
+        article.append(clinicalTextNode('h4',item[0]),clinicalTextNode('p',item[1]));
+        compare.append(article);
+      }
+      const evidence=$('v71FeedbackEvidence');evidence.replaceChildren();
+      if(judgement){
+        clinicalLabeled(evidence,'선택지별 해설',f.choiceReason);
+        clinicalLabeled(evidence,'판단 근거',f.rationale);
+        clinicalLabeled(evidence,'간호 사정·보고',f.nursing);
+        clinicalLabeled(evidence,'참고 근거',f.evidence);
+      }else{
+        clinicalLabeled(evidence,'선택한 행동의 해설',f.reason);
+        clinicalLabeled(evidence,'행동 판단 근거',f.rationale);
+        clinicalLabeled(evidence,'추가 사정',f.assessment);
+        clinicalLabeled(evidence,'확인·보고',f.escalation);
+        clinicalLabeled(evidence,'환자 교육',f.teaching);
+        clinicalLabeled(evidence,'참고 근거',f.evidence);
+      }
+      $('v71AnswerFeedback').hidden=false;
+      if(c.lab){
+        $('v71ClinicalLab').hidden=false;
+        clinicalSetText('v71LabContext',c.lab.context);
+        clinicalSetText('v71LabInterpretation',c.lab.interpretation);
+        clinicalSetText('v71LabSource',c.lab.source);
+        const lab=$('v71LabResults');lab.replaceChildren();
+        c.lab.items.forEach(item=>{
+          const article=document.createElement('article');
+          item.forEach((value,i)=>article.append(clinicalTextNode(i===0?'strong':'span',value)));
+          lab.append(article);
+        });
+      }
+      if(c.canBeginAction||c.canNext){
+        next.hidden=false;
+        next.textContent=c.canBeginAction?'간호 행동 판단으로':c.nextLabel||'다음 문항';
+        next.dataset.action=c.canBeginAction?'beginAction':'next';
+      }
+    }else if(c.phase==='result'&&c.result){
+      task.textContent='환자 사례 학습 완료';prompt.textContent='임상 판단과 간호 행동을 비교하고, 보완할 판단을 복습해 보세요.';
+      $('v71ClinicalReview').hidden=false;
+      clinicalSetText('v71ReviewSummary',c.result.summary);
+      const renderGroup=(id,rows)=>{
+        const container=$(id);container.replaceChildren();
+        rows.forEach(row=>{
+          const article=document.createElement('article');article.className='v71-review-card';
+          article.dataset.correct=String(row.correct);
+          article.append(clinicalTextNode('h4',row.title),clinicalTextNode('p',row.status));
+          const details=document.createElement('details');details.open=!row.correct;
+          details.append(clinicalTextNode('summary','내 선택 · 권장 답안 · 해설 및 근거'));
+          row.details.forEach(detail=>details.append(clinicalTextNode('p',detail)));
+          article.append(details);
+          if(row.related){
+            const link=document.createElement('button');link.type='button';link.className='btn slim';
+            link.textContent='관련 RAAS 학습으로 이동';
+            link.addEventListener('click',()=>{
+              const curriculum=source.getCurriculum();
+              let index=curriculum.findIndex(l=>l.type==='drug'&&l.drug===row.related.drug);
+              if(index<0)index=curriculum.findIndex(l=>l.type==='stage'&&l.stage===row.related.stage);
+              if(index>=0)state.lesson=index;
+              go('learn');
+            });
+            article.append(link);
+          }
+          container.append(article);
+        });
+      };
+      renderGroup('v71ReviewJudgements',c.result.judgements);
+      renderGroup('v71ReviewActions',c.result.actions);
+      const takeaways=$('v71ReviewTakeaways');takeaways.replaceChildren();
+      if(c.result.takeaways){
+        takeaways.append(clinicalTextNode('h3','핵심 임상 포인트'));
+        for(const [label,key] of [['추가 사정','assessment'],['확인·보고','escalation'],['환자 교육','teaching']])
+          clinicalLabeled(takeaways,label,c.result.takeaways[key]);
+      }
+    }else{
+      task.textContent='원본 임상 상태를 읽을 수 없어요';
+      prompt.textContent='사례의 최신 상태를 다시 확인해 주세요.';
+    }
+  }
+  function clinicalAction(action,index){
+    if(!ready||!source.clinicalView())return;
+    source.clinicalCommand(action,index);
+    pendingClinicalChoice=null;
+    if(action==='back'){caseActive=null;hideClinicalWorkspace();return}
+    renderClinicalWorkspace();
+    $('v71TaskHeading').focus({preventScroll:true});
+  }
   function activateClinical(){
     if(!ready)return;
     const which=state.case==='ckd'?'ckd':'hf';
-    // Switching away from an active case resets existing answers: explicit confirmation only.
-    if(caseActive && caseActive!==which && !confirm('다른 사례를 시작하면 현재 사례 답안이 초기화됩니다. 계속할까요?'))return;
-    const ok=engine().openCase(which);
+    if(caseActive&&caseActive!==which&&!confirm('다른 사례를 시작하면 현재 사례 답안이 초기화됩니다. 계속할까요?'))return;
+    const ok=source.openCase(which);
     if(!ok){notify('기존 임상 사례를 열지 못했어요.',true);return}
-    caseActive=which;showFrame('case');
+    caseActive=which;
+    showClinicalWorkspace(true);
+    $('v71TaskHeading').focus({preventScroll:true});
   }
   function activatePractice(){
     if(!ready)return;
@@ -1006,6 +1184,20 @@ setup();
       if(confirm('진행과 약물 상태를 모두 초기화할까요? 임상 답안과 독립된 초기화입니다.')){source.resetAll();updateMetrics()}});
     $('v7GraphSelect').addEventListener('change',e=>{source.graphVariable(e.target.value);updateMetrics()});
     $('v7StartClinical').addEventListener('click',activateClinical);
+    $('v71Submit').addEventListener('click',()=>{
+      if(pendingClinicalChoice===null)return;
+      const c=source.clinicalView();
+      if(!c)return;
+      if(c.phase==='judgement')clinicalAction('judgement',pendingClinicalChoice);
+      else if(c.phase==='action')clinicalAction('action',pendingClinicalChoice);
+    });
+    $('v71Continue').addEventListener('click',()=>clinicalAction($('v71Continue').dataset.action));
+    $('v71Restart').addEventListener('click',()=>{
+      if(confirm('이 사례의 판단·간호 행동 기록을 초기화하고 다시 풀까요?'))clinicalAction('restart');
+    });
+    $('v71ReturnCases').addEventListener('click',()=>{
+      if(confirm('현재 임상 답안이 초기화됩니다. 사례 목록으로 돌아갈까요?'))clinicalAction('back');
+    });
     $('v7StartPractice').addEventListener('click',activatePractice);
     $('v7CloseLegacy').addEventListener('click',hideFrame);
     // Observe original clinical layout and answer disclosure without modifying gate logic.
@@ -1016,7 +1208,13 @@ setup();
   frame.addEventListener('load',startAdapter,{once:true});
   // Keep hidden engine running for actual model data and preserve its state on tab navigation.
   // A view change hides the hosted clinical/practice surface; it does NOT reset the v6 session.
-  const oldGo=go;go=function(view){hideFrame();return oldGo(view)};
+  const oldGo=go;go=function(view){
+    hideFrame();
+    const result=oldGo(view);
+    if(view==='cases'&&ready&&source.clinicalView()?.caseId)showClinicalWorkspace(false);
+    else hideClinicalWorkspace();
+    return result;
+  };
 })();
 </script>
 </body>
