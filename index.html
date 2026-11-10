@@ -282,6 +282,45 @@
  #view-explore.is-compact .compact-results{display:none}
  #view-explore .explore-left{gap:0}
 }
+
+/* v7.1 Phase 2 — source-backed clinical meaning is primary, never hidden in a disclosure. */
+#view-learn .lesson-columns{grid-template-columns:minmax(0,1.55fr) minmax(230px,.65fr);gap:19px;align-items:start}
+#view-learn .lesson-primary h2{margin:9px 0 10px}
+#view-learn .lesson-primary .prereq{margin-bottom:15px}
+#view-learn .lesson-primary .v7-concept-highlight{min-height:0;padding:18px 21px;background:linear-gradient(130deg,#dff8f1,#edf9f7 76%);border:1px solid #a0ded0;color:#153f43;border-radius:15px}
+#view-learn .v7-concept-highlight .heading{color:#08796f;font-size:12px;font-weight:830}
+#view-learn .v7-concept-highlight p{color:#234b51;font-size:15px;line-height:1.7;font-weight:670;margin-top:9px}
+#view-learn .v7-lesson-deep-dive{background:#fcfdfd;border:1px solid #e0e9ed;border-radius:15px;overflow:hidden;margin:12px 0 8px}
+#view-learn .v7-depth-heading{padding:17px 19px 12px;border-bottom:1px solid #e5edef}
+#view-learn .v7-depth-heading h3{font-size:15px;font-weight:800;letter-spacing:-.018em;margin:5px 0 0;color:#1f4153}
+#view-learn .v7-lesson-depth-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;padding:0}
+#view-learn .v7-lesson-depth-grid section{min-width:0;padding:16px 19px 18px}
+#view-learn .v7-lesson-depth-grid section:first-child{grid-column:1/-1;border-bottom:1px solid #e5edef}
+#view-learn .v7-lesson-depth-grid section:nth-child(2){border-right:1px solid #e5edef}
+#view-learn .v7-lesson-depth-grid h4{color:#116c68;font-size:13px;font-weight:820;margin:0 0 8px}
+#view-learn .v7-lesson-depth-grid p{font-size:14px;line-height:1.72;color:#3e5063;white-space:pre-line;overflow-wrap:anywhere}
+#view-learn .lesson-stage-link{padding-top:13px}
+#view-learn .lesson-secondary{display:flex;flex-direction:column;gap:10px;align-self:start}
+#view-learn .lesson-secondary .lesson-activity,
+#view-learn .lesson-secondary .lesson-reflect{flex:0 0 auto;margin:0;padding:15px 16px;border-radius:12px;background:#f6f8fa;border-color:#e5ebee}
+#view-learn .lesson-secondary .lesson-reflect{background:#f7faf9;border-color:#e4eeeb}
+#view-learn .lesson-secondary h3{font-size:13px;margin:0 0 6px}
+#view-learn .lesson-secondary p{font-size:12px;line-height:1.62}
+#view-learn .lesson-secondary .lesson-step-number{margin-bottom:7px;font-size:10px}
+#view-learn .lesson-secondary p.caption{font-size:10px}
+@media(max-width:1050px){
+ #view-learn .lesson-columns{grid-template-columns:minmax(0,1fr);gap:15px}
+ #view-learn .lesson-secondary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+ #view-learn .v7-lesson-depth-grid{grid-template-columns:minmax(0,1fr)}
+ #view-learn .v7-lesson-depth-grid section:first-child{grid-column:auto}
+ #view-learn .v7-lesson-depth-grid section:nth-child(2){border-right:0;border-bottom:1px solid #e5edef}
+ #view-learn .lesson-secondary{grid-template-columns:minmax(0,1fr)}
+ #view-learn .v7-depth-heading{padding:14px 15px 11px}
+ #view-learn .v7-lesson-depth-grid section{padding:14px 15px}
+ #view-learn .v7-concept-highlight p{font-size:14px}
+}
 </style>
 </head>
 <body>
@@ -362,8 +401,8 @@
   <section class="unit-switcher card" aria-label="단원 선택"><div class="unit-section-heading"><div><span class="small-caps green">YOUR LEARNING ROUTE</span><h2>먼저 탐구할 단원을 선택하세요</h2></div><span class="caption" id="lessonSeen">0 / 16 열람</span></div><div class="unit-tabs" id="lessonUnitTabs" role="group" aria-label="5개 학습 단원"></div></section>
   <section class="questions-section" aria-labelledby="questionsTitle"><div class="questions-bar"><div><span class="small-caps green">CHOOSE A QUESTION</span><h2 id="questionsTitle">이 단원의 질문</h2></div><div class="question-rail-controls"><span class="caption" id="unitQuestionCount"></span><button type="button" class="btn slim" id="lessonRailPrev" aria-label="질문 목록 왼쪽으로 이동"><svg class="icon"><use href="#ic-left"/></svg></button><button type="button" class="btn slim" id="lessonRailNext" aria-label="질문 목록 오른쪽으로 이동"><svg class="icon"><use href="#ic-arrow"/></svg></button></div></div><div class="lesson-outline" id="lessonOutline" aria-label="선택한 단원의 학습 질문"></div></section>
   <section class="card lesson-content lesson-workspace" aria-labelledby="lessonQuestion"><div class="lesson-top"><span class="small-caps green" id="lessonUnit">UNIT 01 / RAAS 활성 조건</span><div class="lesson-counter"><span class="caption" id="lessonPosition">1 / 16</span><span class="progress-track" aria-hidden="true"><span id="lessonProgress" style="width:6.25%"></span></span></div></div>
-    <div class="lesson-columns"><div class="lesson-primary"><span class="small-caps">KEY QUESTION</span><h2 id="lessonQuestion" tabindex="-1">어떤 신호가 레닌 분비로 이어질까?</h2><div class="prereq" id="lessonPrereq">연결 개념</div><div class="concept-card dark"><div class="heading"><svg class="icon"><use href="#ic-path"/></svg> 기전의 핵심</div><p id="lessonMechanism"></p></div>
-    <details class="v7-lesson-deep-dive"><summary>의학적 의미 · 간호 사정 · 확인 근거 펼쳐보기</summary><div class="v7-lesson-depth-grid"><section><h3>의학·생리학 심화</h3><p id="lessonMedical"></p></section><section><h3>간호 사정과 안전</h3><p id="lessonNursing"></p></section><section><h3>관찰·확인 근거</h3><p id="lessonEvidence"></p></section></div></details>
+    <div class="lesson-columns"><div class="lesson-primary"><span class="small-caps">KEY QUESTION</span><h2 id="lessonQuestion" tabindex="-1">어떤 신호가 레닌 분비로 이어질까?</h2><div class="prereq" id="lessonPrereq">연결 개념</div><div class="concept-card v7-concept-highlight"><div class="heading"><svg class="icon"><use href="#ic-path"/></svg> 기전의 핵심</div><p id="lessonMechanism"></p></div>
+    <section class="v7-lesson-deep-dive" aria-label="의학적 의미·간호 사정·확인 근거"><div class="v7-depth-heading"><span class="small-caps green">CLINICAL CONNECTIONS</span><h3>의학적 의미 · 간호 사정 · 확인 근거</h3></div><div class="v7-lesson-depth-grid"><section><h4>의학적 의미</h4><p id="lessonMedical"></p></section><section><h4>간호 사정과 안전</h4><p id="lessonNursing"></p></section><section><h4>관찰·확인 근거</h4><p id="lessonEvidence"></p></section></div></section>
     <div class="lesson-stage-link"><span class="small-caps">CONNECTED PATHWAY</span><p id="lessonStageHint">현재 질문과 연결되는 RAAS 단계를 탐색해 보세요.</p><button class="btn" id="lessonExploreLink"><svg class="icon"><use href="#ic-path"/></svg> 관련 경로에서 확인 <svg class="icon"><use href="#ic-arrow"/></svg></button></div></div>
     <div class="lesson-secondary"><div class="lesson-activity"><div class="lesson-step-number">01 <span>확인하기</span></div><h3>직접 확인할 활동</h3><p id="lessonAction"></p></div><div class="lesson-reflect"><div class="lesson-step-number">02 <span>생각하고 연결하기</span></div><h3>이 질문을 설명할 수 있나요?</h3><p id="lessonReflect"></p><p class="caption">정답이나 숙달을 자동 판정하지 않는 자기 점검 질문입니다.</p></div></div></div>
     <div class="lesson-footer"><p class="caption">현재 번호는 학습 위치를, 열람 수는 열어본 항목을 나타냅니다.</p><div class="small-btns"><button class="btn" id="prevLesson"><svg class="icon"><use href="#ic-left"/></svg> 이전 질문</button><button class="btn primary" id="nextLesson">다음 질문 <svg class="icon"><use href="#ic-arrow"/></svg></button></div></div>
