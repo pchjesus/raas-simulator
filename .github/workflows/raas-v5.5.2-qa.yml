@@ -88,6 +88,12 @@ jobs:
           cp /tmp/raas-v7-index.html index.html
           node tests/browser-v7.cjs
           node tests/browser-v7-mobile.cjs
+          node tests/browser-v71-followup.cjs
+      - name: Build and test standalone v7.1 review file
+        if: steps.scope.outputs.tier != 'docs' && steps.v7_fixture.outputs.enabled == 'true'
+        run: |
+          node scripts/build-v71-offline-preview.cjs
+          node tests/browser-v71-standalone.cjs
       - name: Upload browser screenshots
         if: always() && steps.scope.outputs.tier != 'docs'
         uses: actions/upload-artifact@v4
@@ -102,4 +108,6 @@ jobs:
             browser-v5.9.1-desktop-readability.png
             artifacts/v6/*.png
             artifacts/content-ia/*.png
+            artifacts/v7.1/*.png
+            artifacts/v7.1/raas-v7.1-interactive-preview.html
           if-no-files-found: ignore

@@ -258,6 +258,196 @@
  #view-explore .toolbar-actions>.btn{font-size:11px}
  #view-explore .path-card .status-flag{display:none}
 }
+
+/* v7.1 Phase 1 — content-height panels; compact desktop path + results on left. */
+#view-explore .explore-grid{align-items:start;grid-template-columns:minmax(0,1.55fr) minmax(320px,.95fr)}
+#view-explore .explore-left{display:flex;flex-direction:column;gap:12px;min-width:0;align-self:start}
+#view-explore .path-card{width:100%;min-width:0;align-self:start}
+#view-explore .compact-results{display:none;min-width:0}
+#view-explore .experiment{align-items:start}
+#view-explore:not(.is-compact) .inspector .question,
+#view-explore:not(.is-compact) .inspector .copy{min-height:0}
+#view-explore.is-compact .explore-grid{grid-template-columns:minmax(0,1.42fr) minmax(350px,1fr)}
+#view-explore.is-compact .compact-results{display:block}
+#view-explore.is-compact .compact-results .output-card{padding:15px 17px 13px;border:1px solid #dbe9e7;border-radius:15px;box-shadow:0 7px 25px #17374a0c}
+#view-explore.is-compact .compact-results .card-topline{margin-bottom:8px}
+#view-explore.is-compact .compact-results .card-title{font-size:12px}
+#view-explore.is-compact .compact-results .output-mini{margin-top:9px;gap:7px}
+#view-explore.is-compact .compact-results .metric{padding:8px 9px}
+#view-explore.is-compact .compact-results .metric .v{font-size:17px;margin-top:4px}
+#view-explore.is-compact .compact-results .output-card>.caption{font-size:10px;line-height:1.45;margin-bottom:5px}
+#view-explore.is-compact .compact-results .preview-warning{font-size:10px;margin-top:8px}
+@media(max-width:1160px){
+ #view-explore .explore-grid,#view-explore.is-compact .explore-grid{grid-template-columns:minmax(0,1fr)}
+ #view-explore.is-compact .compact-results{display:none}
+ #view-explore .explore-left{gap:0}
+}
+
+/* v7.1 Phase 2 — source-backed clinical meaning is primary, never hidden in a disclosure. */
+#view-learn .lesson-columns{grid-template-columns:minmax(0,1.55fr) minmax(230px,.65fr);gap:19px;align-items:start}
+#view-learn .lesson-primary h2{margin:9px 0 10px}
+#view-learn .lesson-primary .prereq{margin-bottom:15px}
+#view-learn .lesson-primary .v7-concept-highlight{min-height:0;padding:18px 21px;background:linear-gradient(130deg,#dff8f1,#edf9f7 76%);border:1px solid #a0ded0;color:#153f43;border-radius:15px}
+#view-learn .v7-concept-highlight .heading{color:#08796f;font-size:12px;font-weight:830}
+#view-learn .v7-concept-highlight p{color:#234b51;font-size:15px;line-height:1.7;font-weight:670;margin-top:9px}
+#view-learn .v7-lesson-deep-dive{background:#fcfdfd;border:1px solid #e0e9ed;border-radius:15px;overflow:hidden;margin:12px 0 8px}
+#view-learn .v7-depth-heading{padding:17px 19px 12px;border-bottom:1px solid #e5edef}
+#view-learn .v7-depth-heading h3{font-size:15px;font-weight:800;letter-spacing:-.018em;margin:5px 0 0;color:#1f4153}
+#view-learn .v7-lesson-depth-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;padding:0}
+#view-learn .v7-lesson-depth-grid section{min-width:0;padding:16px 19px 18px}
+#view-learn .v7-lesson-depth-grid section:first-child{grid-column:1/-1;border-bottom:1px solid #e5edef}
+#view-learn .v7-lesson-depth-grid section:nth-child(2){border-right:1px solid #e5edef}
+#view-learn .v7-lesson-depth-grid h4{color:#116c68;font-size:13px;font-weight:820;margin:0 0 8px}
+#view-learn .v7-lesson-depth-grid p{font-size:14px;line-height:1.72;color:#3e5063;white-space:pre-line;overflow-wrap:anywhere}
+#view-learn .lesson-stage-link{padding-top:13px}
+#view-learn .lesson-secondary{display:flex;flex-direction:column;gap:10px;align-self:start}
+#view-learn .lesson-secondary .lesson-activity,
+#view-learn .lesson-secondary .lesson-reflect{flex:0 0 auto;margin:0;padding:15px 16px;border-radius:12px;background:#f6f8fa;border-color:#e5ebee}
+#view-learn .lesson-secondary .lesson-reflect{background:#f7faf9;border-color:#e4eeeb}
+#view-learn .lesson-secondary h3{font-size:13px;margin:0 0 6px}
+#view-learn .lesson-secondary p{font-size:12px;line-height:1.62}
+#view-learn .lesson-secondary .lesson-step-number{margin-bottom:7px;font-size:10px}
+#view-learn .lesson-secondary p.caption{font-size:10px}
+@media(max-width:1050px){
+ #view-learn .lesson-columns{grid-template-columns:minmax(0,1fr);gap:15px}
+ #view-learn .lesson-secondary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+ #view-learn .v7-lesson-depth-grid{grid-template-columns:minmax(0,1fr)}
+ #view-learn .v7-lesson-depth-grid section:first-child{grid-column:auto}
+ #view-learn .v7-lesson-depth-grid section:nth-child(2){border-right:0;border-bottom:1px solid #e5edef}
+ #view-learn .lesson-secondary{grid-template-columns:minmax(0,1fr)}
+ #view-learn .v7-depth-heading{padding:14px 15px 11px}
+ #view-learn .v7-lesson-depth-grid section{padding:14px 15px}
+ #view-learn .v7-concept-highlight p{font-size:14px}
+}
+
+/* v7.1 Phase 3: true v7 clinical workspace backed exclusively by v6 judgement/action gates. */
+#v71ClinicalWorkspace[hidden],#caseCards[hidden],#view-cases .phase-preview[hidden],#view-cases .v7-live-trigger[hidden],
+#v71AnswerFeedback[hidden],#v71ClinicalLab[hidden],#v71ClinicalReview[hidden],#v71Submit[hidden],#v71Continue[hidden]{display:none!important}
+.v71-clinical-workspace{display:block;min-width:0;margin-top:17px}
+.v71-clinical-header{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(275px,.9fr);gap:24px;padding:23px 27px;margin-bottom:16px;align-items:center}
+.v71-clinical-header h2{font-size:clamp(23px,2.3vw,31px);letter-spacing:-.04em;margin:8px 0 9px}
+.v71-clinical-header p{font-size:13px;color:var(--ink2);line-height:1.68;margin:0}
+.v71-overview{padding-left:21px;border-left:1px solid var(--rule)}
+.v71-overview>p{font-weight:770;color:#24756b;font-size:12px;margin:8px 0 14px}
+.v71-roadmap{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:0;margin:0}
+.v71-roadmap li{border:1px solid #e0e9eb;background:#f7f9fa;color:#7a8b99;border-radius:9px;padding:9px 5px;text-align:center;font-weight:780;font-size:11px;word-break:keep-all}
+.v71-roadmap li[data-status="current"]{color:#087c71;background:#e3f7f1;border-color:#91dac8}
+.v71-roadmap li[data-status="done"]{color:#2c6671;background:#eef5f6;border-color:#d6e5e9}
+.v71-clinical-body{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(275px,.82fr);gap:16px;align-items:start}
+.v71-clinical-task{padding:25px 27px;min-width:0}
+.v71-task-caption{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.v71-question-progress{font-size:11px;color:#708399;font-weight:750}
+.v71-clinical-task h2{font-size:clamp(21px,2.1vw,28px);line-height:1.38;letter-spacing:-.032em;margin:15px 0 9px;scroll-margin-top:25px}
+#v71TaskPrompt{font-size:15px;color:#3d5165;line-height:1.7;white-space:pre-line;margin:0}
+.v71-answer-options{display:grid;gap:9px;margin:20px 0 0}
+.v71-choice{width:100%;border:1px solid #dbe6ec;background:#fafcfd;color:#294357;border-radius:13px;padding:15px 16px;display:flex;gap:12px;align-items:flex-start;text-align:left;font-size:14px;font-weight:660;line-height:1.5;min-height:54px;transition:border-color .2s,background .2s,box-shadow .2s}
+.v71-choice .v71-number{width:24px;height:24px;flex:none;display:grid;place-items:center;border-radius:8px;background:#e8f0f2;font-size:11px;font-weight:850;color:#507083}
+.v71-choice:hover{border-color:#77c7b9;background:#f3fbf8}
+.v71-choice[aria-pressed="true"]{border-color:#05a990;background:#e5f8f2;box-shadow:inset 0 0 0 1px #05a99033}
+.v71-choice[aria-pressed="true"] .v71-number{background:#0c9f8c;color:white}
+.v71-task-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:19px;flex-wrap:wrap}
+.v71-task-actions .btn{min-width:166px}
+.v71-feedback{margin-top:18px;border-top:1px solid #e0e9ec;padding-top:19px}
+.v71-feedback-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.v71-feedback-compare article{border:1px solid #e1e9ed;background:#f7fafb;border-radius:12px;padding:13px 14px}
+.v71-feedback-compare article:last-child{background:#eaf8f3;border-color:#cbe7dd}
+.v71-feedback-compare h4{font-size:11px;color:#5d7787;margin:0 0 7px}
+.v71-feedback-compare p{font-size:13px;color:#283e4f;line-height:1.63;margin:0;white-space:pre-line}
+.v71-feedback-evidence{margin-top:14px;display:grid;gap:10px}
+.v71-feedback-evidence>section{border-bottom:1px solid #e8eef1;padding:0 1px 11px}
+.v71-feedback-evidence h4{font-size:12px;color:#0c776b;margin:0 0 5px}
+.v71-feedback-evidence p{font-size:13px;line-height:1.65;color:#42566a;white-space:pre-line;margin:0}
+.v71-clinical-support{display:grid;gap:13px;min-width:0}
+.v71-patient-card,.v71-support-card{padding:20px 22px;min-width:0}
+.v71-support-label{font-size:13px;font-weight:840;color:#1b4055;display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.v71-support-label .icon{color:#079a89}
+.v71-patient-card>p{font-size:13px;line-height:1.7;color:#40556b;margin:0}
+.v71-patient-card dl{display:grid;gap:0;margin:14px 0}
+.v71-patient-card dl>div{border-top:1px solid #e6edef;padding:9px 0}
+.v71-patient-card dt{font-size:11px;font-weight:820;color:#0c8075;margin:0 0 3px}
+.v71-patient-card dd{margin:0;font-size:12px;color:#43566b;line-height:1.6;white-space:pre-line}
+.v71-patient-card .v71-safety-note{background:#f0f6f6;border-radius:9px;padding:10px 11px;font-size:11px;color:#5c7280}
+.v71-support-card ul{padding-left:18px;margin:0;display:grid;gap:8px}
+.v71-support-card li{font-size:12px;line-height:1.6;color:#40536a}
+.v71-sources{display:grid;gap:9px}
+.v71-sources p{font-size:11px;line-height:1.55;color:#627789;margin:0;overflow-wrap:anywhere}
+.v71-support-card>.caption{margin:13px 0 0;font-size:10px}
+.v71-clinical-lab{background:#f0f8f7;border:1px solid #b9e1d8;border-radius:14px;padding:18px 19px;margin-top:18px}
+.v71-clinical-lab h3{font-size:17px;margin:7px 0}.v71-clinical-lab h4{font-size:13px;color:#176a65;margin:15px 0 5px}
+.v71-clinical-lab p{font-size:13px;line-height:1.68;color:#355d65;margin:0}
+.v71-lab-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-top:13px}
+.v71-lab-results article{background:#fff;border:1px solid #d1e8e2;border-radius:10px;padding:11px 13px;display:grid;gap:5px}
+.v71-lab-results strong{font-size:12px;color:#174e59}
+.v71-lab-results span{font-size:11px;color:#5b7281}
+.v71-clinical-lab details{margin-top:12px;font-size:11px;color:#4e7181}
+.v71-clinical-lab summary{cursor:pointer;font-weight:750}
+.v71-clinical-lab details p{font-size:11px;margin-top:8px}
+.v71-clinical-review{margin-top:20px}
+.v71-review-summary{font-size:15px;font-weight:740;color:#0b7369;background:#e7f8f2;border-radius:11px;padding:14px 16px}
+.v71-clinical-review h3{font-size:16px;margin:23px 0 10px}
+.v71-review-card{border:1px solid #dce6eb;border-radius:12px;padding:13px 15px;margin-top:9px;background:#fff}
+.v71-review-card[data-correct="false"]{border-left:4px solid #d68c5c}
+.v71-review-card[data-correct="true"]{border-left:4px solid #2cae9a}
+.v71-review-card h4{font-size:13px;margin:0 0 7px}
+.v71-review-card p{font-size:11px;color:#61788a;margin:0}
+.v71-review-card details{margin-top:10px}
+.v71-review-card summary{font-size:12px;cursor:pointer;color:#276b73;font-weight:790}
+.v71-review-card details p{font-size:12px;line-height:1.6;color:#495e70;margin-top:9px;white-space:pre-line}
+.v71-takeaways{margin-top:20px;padding:16px;border-radius:12px;background:#f5f9f8}
+.v71-takeaways h3{margin:0 0 12px}
+.v71-takeaways p{font-size:12px;line-height:1.65;color:#516679}
+.v71-clinical-footer{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px}
+.v71-footer-buttons{display:flex;gap:9px;flex-wrap:wrap}
+.v71-clinical-footer>.caption{max-width:540px;margin:0;font-size:11px}
+@media(max-width:1120px){.v71-clinical-body{grid-template-columns:minmax(0,1fr)}.v71-clinical-support{grid-template-columns:repeat(2,minmax(0,1fr))}.v71-patient-card{grid-row:span 2}}
+@media(max-width:760px){.v71-clinical-header{grid-template-columns:1fr;padding:18px 17px;gap:14px}.v71-overview{border-left:0;border-top:1px solid var(--rule);padding:13px 0 0}.v71-clinical-task{padding:18px 16px}.v71-clinical-support{grid-template-columns:1fr}.v71-patient-card{grid-row:auto}.v71-roadmap li{font-size:10px;padding:8px 3px}.v71-feedback-compare{grid-template-columns:1fr}.v71-choice{padding:13px 12px}.v71-task-actions .btn{width:100%}.v71-clinical-footer{align-items:stretch}.v71-footer-buttons{width:100%}.v71-footer-buttons .btn{flex:1}}
+
+/* v7.1 follow-up: one reversible tutorial and one coherent exploration reset hub. */
+.v71-control-hub{margin-top:17px;padding:14px 15px;border:1px solid #deeaed;border-radius:13px;background:#f6fafb}
+.v71-control-hub-heading{font-size:13px;font-weight:850;color:#1b4157;margin-bottom:10px}
+.v71-control-actions{display:flex;gap:7px;flex-wrap:wrap}
+.v71-control-actions .btn{min-height:38px;font-size:12px;white-space:nowrap;flex:1 1 auto}
+.v71-control-actions .v71-reset-all{border-color:#dfc9c1;color:#814b3e;background:#fff}
+.v71-control-hub>.caption{margin:11px 0 0;color:#667e8e;font-size:11px;line-height:1.55}
+.v71-feedback-heading{font-size:20px;color:#173b51;letter-spacing:-.025em;margin:0 0 15px}
+.v71-clinical-header p{font-size:15px;line-height:1.75}
+.v71-question-progress{font-size:13px}
+#v71TaskPrompt{font-size:17px;line-height:1.8;color:#31475a}
+.v71-choice{font-size:16px;line-height:1.62;padding:17px 18px}
+.v71-feedback{padding-top:22px}
+.v71-feedback-compare{gap:13px}
+.v71-feedback-compare article{padding:16px 18px}
+.v71-feedback-compare article:last-child{border:2px solid #71cbb4;background:#e7f8f0}
+.v71-feedback-compare h4{font-size:13px;margin-bottom:8px}
+.v71-feedback-compare p{font-size:16px;line-height:1.72;font-weight:600}
+.v71-feedback-compare article:last-child p{font-weight:780;color:#163f3b}
+.v71-feedback-evidence{margin-top:19px;gap:13px}
+.v71-feedback-evidence>section{padding:14px 16px 17px;border:1px solid #e4ecef;border-radius:12px;background:#fff}
+.v71-feedback-evidence h4{font-size:14px;font-weight:850;margin-bottom:9px}
+.v71-feedback-evidence p{font-size:15px;line-height:1.85;color:#344b5f}
+.v71-feedback-evidence>section.v71-evidence-priority{border:1px solid #b9ded4;border-left:5px solid #159f8c;background:#f0faf7;padding:16px 18px}
+.v71-feedback-evidence .v71-evidence-priority h4{font-size:16px;color:#086c61}
+.v71-feedback-evidence .v71-evidence-priority p{font-size:17px;line-height:1.85;color:#1d4146;font-weight:620}
+.v71-support-label{font-size:15px}
+.v71-patient-card>p{font-size:15px;line-height:1.78}
+.v71-patient-card dt{font-size:13px}
+.v71-patient-card dd,.v71-support-card li{font-size:14px;line-height:1.75}
+.v71-sources p{font-size:13px;line-height:1.67}
+.v71-patient-card .v71-safety-note,.v71-support-card>.caption{font-size:12px;line-height:1.6}
+.v71-clinical-lab h3{font-size:20px}.v71-clinical-lab h4{font-size:16px}
+.v71-clinical-lab p{font-size:15px;line-height:1.82}
+.v71-lab-results strong{font-size:14px}.v71-lab-results span{font-size:13px}
+.v71-clinical-lab details,.v71-clinical-lab details p{font-size:13px;line-height:1.7}
+.v71-clinical-review h3{font-size:19px}
+.v71-review-card h4{font-size:16px}
+.v71-review-card p{font-size:13px;line-height:1.7}
+.v71-review-card summary{font-size:14px}
+.v71-review-card details p{font-size:15px;line-height:1.8}
+.v71-takeaways p{font-size:15px;line-height:1.8}
+.v71-clinical-footer>.caption{font-size:12px;line-height:1.6}
+@media(max-width:760px){.v71-feedback-heading{font-size:19px}.v71-control-actions .btn{flex:1 1 calc(50% - 7px)}.v71-feedback-compare article{padding:14px 15px}.v71-feedback-evidence>section{padding:13px 14px}.v71-feedback-evidence .v71-evidence-priority p{font-size:16px}}
 </style>
 </head>
 <body>
@@ -323,14 +513,14 @@
  <section class="view" id="view-explore" aria-labelledby="exploreTitle">
   <div class="section-toolbar"><div class="page-heading"><div class="small-caps green">01 / INTERACTIVE PATHWAY</div><h1 id="exploreTitle">RAAS를 직접 탐구하다</h1><p>경로에서 한 단계를 선택해 기전과 간호 연결을 살펴봐.</p></div><div class="toolbar-actions"><button class="btn slim" id="openPathModal"><svg class="icon"><use href="#ic-path"/></svg> 전체 경로</button><button class="btn slim" data-go="learn"><svg class="icon"><use href="#ic-book"/></svg> 학습으로 연결</button><div class="control-mode" role="group" aria-label="조작 패널 표시 방식"><span class="mode-pill" aria-hidden="true"></span><button type="button" id="modeStandard" aria-pressed="true" aria-label="기본 조작 모드"><svg class="icon" aria-hidden="true"><use href="#ic-panels"/></svg> 기본</button><button type="button" id="modeCompact" aria-pressed="false" aria-label="간편 조작 모드"><svg class="icon" aria-hidden="true"><use href="#ic-focus"/></svg> 간편</button></div></div></div>
   <p id="v7EngineStatus" class="v7-engine-state" role="status" aria-live="polite">검증된 v6 모델 연결 준비 중 · 결과 수치 표시 보류</p>
-  <div class="explore-grid"><div class="card path-card"><div class="card-topline"><div class="card-title">RENIN–ANGIOTENSIN PATHWAY</div><span class="status-flag">현재 개념 탐색</span></div>
+  <div class="explore-grid"><div class="explore-left"><div class="card path-card"><div class="card-topline"><div class="card-title">RENIN–ANGIOTENSIN PATHWAY</div><span class="status-flag">현재 개념 탐색</span></div>
     <div class="path-area" aria-label="RAAS 9단계 경로 탐색"><div class="gridprint"></div><svg class="edges" viewBox="0 0 1000 350" preserveAspectRatio="none" aria-hidden="true"><path d="M125 99 H875 V261 H310"/><path class="current" id="activeEdge" d="M125 99 H125"/></svg><div id="desktopNodes"></div></div>
     <div class="stage-mobile"><p class="caption" style="margin:0">가로로 넘기며 9단계 탐색 · 활성 항목은 상세 설명에 연결돼.</p><div class="stage-track" id="mobileStageTrack" aria-label="모바일 RAAS 단계 탐색"></div></div>
     <div class="path-note"><span class="legend"><span class="mini-legend-dot"></span> 현재 선택된 기전</span><span>연결선은 교육용 순서 표현 · 시간축이 아님</span></div>
-   </div>
-   <aside class="card inspector" aria-labelledby="stageTitle"><div class="inspector-head"><span class="small-caps green">FOCUS / CURRENT CONCEPT</span><span class="stepcounter" id="stageCount">01 / 09</span></div><h2 id="stageTitle">혈압 감소</h2><p class="question" id="stageQuestion"></p><details class="compact-explanation" id="compactExplanation" open><summary>기전·간호 설명 펼쳐보기</summary><div class="exp-body"><div class="focus-tabs" role="group" aria-label="단계별 설명"><button id="focusMech" class="active" aria-pressed="true">기전과 연결</button><button id="focusNurse" aria-pressed="false">간호 관점</button></div><p class="copy" id="stageCopy"></p></div></details><div class="step-controls"><button class="btn slim" id="prevStage"><svg class="icon"><use href="#ic-left"/></svg> 이전 단계</button><button class="btn slim primary" id="nextStage">다음 단계 <svg class="icon"><use href="#ic-arrow"/></svg></button></div><section class="v7-progress-controls" aria-label="실제 RAAS 진행 조작"><div class="v7-section-label">실제 모델 진행 · 조회 단계와 별개</div><p id="v7ProgressState" class="caption">모델 연결 대기</p><div class="v7-progress-buttons"><button type="button" id="v7ProgressPrev" class="btn slim" disabled>실제 진행 이전</button><button type="button" id="v7ProgressNext" class="btn slim primary" disabled>실제 진행 다음</button></div><details><summary>진행·약물 초기화</summary><div class="v7-progress-buttons"><button type="button" id="v7ResetProgress" class="btn slim">진행만 초기화</button><button type="button" id="v7ResetAll" class="btn slim">전체 모델 초기화</button></div></details></section><div class="compact-dock" id="compactDock"></div><p class="compact-footnote">간편 모드는 경로·약물·현재값을 모아 보여줘. 상세 그래프와 모든 설명은 기본 모드에서 볼 수 있어.</p></aside>
+   </div><div class="compact-results" id="compactResults" aria-label="현재 생리 변수"></div></div>
+   <aside class="card inspector" aria-labelledby="stageTitle"><div class="inspector-head"><span class="small-caps green">FOCUS / CURRENT CONCEPT</span><span class="stepcounter" id="stageCount">01 / 09</span></div><h2 id="stageTitle">혈압 감소</h2><p class="question" id="stageQuestion"></p><details class="compact-explanation" id="compactExplanation" open><summary>기전·간호 설명 펼쳐보기</summary><div class="exp-body"><div class="focus-tabs" role="group" aria-label="단계별 설명"><button id="focusMech" class="active" aria-pressed="true">기전과 연결</button><button id="focusNurse" aria-pressed="false">간호 관점</button></div><p class="copy" id="stageCopy"></p></div></details><div class="step-controls"><button class="btn slim" id="prevStage"><svg class="icon"><use href="#ic-left"/></svg> 이전 단계</button><button class="btn slim primary" id="nextStage">다음 단계 <svg class="icon"><use href="#ic-arrow"/></svg></button></div><section class="v7-progress-controls" aria-label="실제 RAAS 진행 조작"><div class="v7-section-label">실제 모델 진행 · 조회 단계와 별개</div><p id="v7ProgressState" class="caption">모델 연결 대기</p><div class="v7-progress-buttons"><button type="button" id="v7ProgressPrev" class="btn slim" disabled>실제 진행 이전</button><button type="button" id="v7ProgressNext" class="btn slim primary" disabled>실제 진행 다음</button></div></section><div class="compact-dock" id="compactDock"></div><p class="compact-footnote">간편 모드에서는 경로 바로 아래에서 모델값을 확인하고, 오른쪽에서 단계와 약물을 조작할 수 있어. 상세 그래프는 기본 모드에서 확인해.</p></aside>
   </div>
-  <div class="experiment" id="experiment"><section class="card drug-card" id="drugCard" style="view-transition-name:raas-drug-panel" aria-labelledby="drugTitle"><div class="card-topline"><h2 class="card-title" id="drugTitle"><svg class="icon"><use href="#ic-flask"/></svg> 약물 작용 위치 탐구</h2><span class="small-caps">6 DRUG CLASSES</span></div><p class="muted" style="font-size:13px">약물을 선택하면 관련 경로와 실제 작용 표적을 확인할 수 있어. <b>선택 자체로 생리 계산은 실행하지 않아.</b></p><div class="drug-buttons" id="drugButtons"></div><div class="target-note" id="targetNote" aria-live="polite"><strong>약물 선택 전</strong>실제 표적과 교육용 경로 표시의 차이를 여기서 확인할 수 있어.</div><div class="v7-drug-action"><span class="caption" id="v7AppliedDrug">현재 적용: 없음</span><div class="v7-progress-buttons"><button id="v7ApplyDrug" class="btn slim primary" type="button" disabled>선택한 약물 적용</button><button id="v7RemoveDrug" class="btn slim" type="button" disabled>약물 제거</button></div></div><p class="experimental-boundary">표적 강조는 읽기 전용 선택 · <strong>약물 적용</strong>을 눌러야 검증된 v6 엔진 상태가 바뀝니다.</p></section>
+  <div class="experiment" id="experiment"><section class="card drug-card" id="drugCard" style="view-transition-name:raas-drug-panel" aria-labelledby="drugTitle"><div class="card-topline"><h2 class="card-title" id="drugTitle"><svg class="icon"><use href="#ic-flask"/></svg> 약물 작용 위치 탐구</h2><span class="small-caps">6 DRUG CLASSES</span></div><p class="muted" style="font-size:13px">약물을 선택하면 관련 경로와 실제 작용 표적을 확인할 수 있어. <b>선택 자체로 생리 계산은 실행하지 않아.</b></p><div class="drug-buttons" id="drugButtons"></div><div class="target-note" id="targetNote" aria-live="polite"><strong>약물 선택 전</strong>실제 표적과 교육용 경로 표시의 차이를 여기서 확인할 수 있어.</div><div class="v7-drug-action"><span class="caption" id="v7AppliedDrug">현재 적용: 없음</span><div class="v7-progress-buttons"><button id="v7ApplyDrug" class="btn slim primary" type="button" disabled>선택한 약물 적용</button></div></div><div class="v71-control-hub" role="group" aria-label="약물 및 탐구 상태 초기화"><div class="v71-control-hub-heading">조작 정리·초기화</div><div class="v71-control-actions"><button id="v7RemoveDrug" type="button" class="btn slim" disabled title="적용한 약물과 주황색 표적 선택을 함께 해제">약물 해제</button><button id="v7ResetProgress" type="button" class="btn slim" title="선택한 약물은 유지하고 실제 진행 기록만 초기화">진행 초기화</button><button id="v7ResetAll" type="button" class="btn slim v71-reset-all" title="모델과 선택 표시를 처음 상태로 복원">탐구 전체 초기화</button></div><p class="caption">약물 해제는 표적 표시까지 제거 · 진행 초기화는 약물 유지 · 전체 초기화는 단계·약물·그래프 복원</p></div><p class="experimental-boundary">표적 강조는 읽기 전용 선택 · <strong>약물 적용</strong>을 눌러야 검증된 v6 엔진 상태가 바뀝니다.</p></section>
    <section class="card output-card" id="outputCard" style="view-transition-name:raas-output-panel" aria-labelledby="outputTitle"><div class="card-topline"><h2 class="card-title" id="outputTitle"><svg class="icon"><use href="#ic-activity"/></svg> 생리 변수 · 현재 모델값</h2><span class="status-flag">모델 불러오는 중</span></div><p class="caption">현재 단계·적용 약물에 따른 교육용 계산값입니다. 실제 환자 측정값이나 임상적 약효를 예측하지 않습니다.</p><div class="output-mini"><div class="metric"><div class="k">혈압</div><div class="v">—</div><div class="tiny">mmHg</div></div><div class="metric"><div class="k">Na⁺</div><div class="v">—</div><div class="tiny">mmol/L</div></div><div class="metric"><div class="k">혈액량</div><div class="v">—</div><div class="tiny">%</div></div><div class="metric"><div class="k">GFR</div><div class="v">—</div><div class="tiny">mL/min</div></div></div><div class="v7-graph-frame"><label for="v7GraphSelect">모델 단계별 비교</label> <select id="v7GraphSelect"><option value="bp">혈압</option><option value="sodium">Na⁺</option><option value="volume">혈액량</option><option value="gfr">GFR</option></select><div class="v7-graph-scroll" tabindex="0" role="region" aria-label="원본 v6 모델 그래프를 원래 해상도로 좌우로 탐색"><img id="v7ActualGraph" width="1000" height="290" alt="v6 모델 연결 뒤 그래프 표시" hidden></div><p class="caption">원본 v6에서 계산·그려진 그래프 · 가로로 탐색 가능 · 가로축은 시간 아닌 단계</p></div><div class="preview-warning">교육용 고정 가정 모델 · 실제 환자 혈압, K⁺, 약효 발현 시간이나 임상 Lab을 예측하지 않습니다.</div></section>
   </div>
  </section>
@@ -338,8 +528,8 @@
   <section class="unit-switcher card" aria-label="단원 선택"><div class="unit-section-heading"><div><span class="small-caps green">YOUR LEARNING ROUTE</span><h2>먼저 탐구할 단원을 선택하세요</h2></div><span class="caption" id="lessonSeen">0 / 16 열람</span></div><div class="unit-tabs" id="lessonUnitTabs" role="group" aria-label="5개 학습 단원"></div></section>
   <section class="questions-section" aria-labelledby="questionsTitle"><div class="questions-bar"><div><span class="small-caps green">CHOOSE A QUESTION</span><h2 id="questionsTitle">이 단원의 질문</h2></div><div class="question-rail-controls"><span class="caption" id="unitQuestionCount"></span><button type="button" class="btn slim" id="lessonRailPrev" aria-label="질문 목록 왼쪽으로 이동"><svg class="icon"><use href="#ic-left"/></svg></button><button type="button" class="btn slim" id="lessonRailNext" aria-label="질문 목록 오른쪽으로 이동"><svg class="icon"><use href="#ic-arrow"/></svg></button></div></div><div class="lesson-outline" id="lessonOutline" aria-label="선택한 단원의 학습 질문"></div></section>
   <section class="card lesson-content lesson-workspace" aria-labelledby="lessonQuestion"><div class="lesson-top"><span class="small-caps green" id="lessonUnit">UNIT 01 / RAAS 활성 조건</span><div class="lesson-counter"><span class="caption" id="lessonPosition">1 / 16</span><span class="progress-track" aria-hidden="true"><span id="lessonProgress" style="width:6.25%"></span></span></div></div>
-    <div class="lesson-columns"><div class="lesson-primary"><span class="small-caps">KEY QUESTION</span><h2 id="lessonQuestion" tabindex="-1">어떤 신호가 레닌 분비로 이어질까?</h2><div class="prereq" id="lessonPrereq">연결 개념</div><div class="concept-card dark"><div class="heading"><svg class="icon"><use href="#ic-path"/></svg> 기전의 핵심</div><p id="lessonMechanism"></p></div>
-    <details class="v7-lesson-deep-dive"><summary>의학적 의미 · 간호 사정 · 확인 근거 펼쳐보기</summary><div class="v7-lesson-depth-grid"><section><h3>의학·생리학 심화</h3><p id="lessonMedical"></p></section><section><h3>간호 사정과 안전</h3><p id="lessonNursing"></p></section><section><h3>관찰·확인 근거</h3><p id="lessonEvidence"></p></section></div></details>
+    <div class="lesson-columns"><div class="lesson-primary"><span class="small-caps">KEY QUESTION</span><h2 id="lessonQuestion" tabindex="-1">어떤 신호가 레닌 분비로 이어질까?</h2><div class="prereq" id="lessonPrereq">연결 개념</div><div class="concept-card v7-concept-highlight"><div class="heading"><svg class="icon"><use href="#ic-path"/></svg> 기전의 핵심</div><p id="lessonMechanism"></p></div>
+    <section class="v7-lesson-deep-dive" aria-label="의학적 의미·간호 사정·확인 근거"><div class="v7-depth-heading"><span class="small-caps green">CLINICAL CONNECTIONS</span><h3>의학적 의미 · 간호 사정 · 확인 근거</h3></div><div class="v7-lesson-depth-grid"><section><h4>의학적 의미</h4><p id="lessonMedical"></p></section><section><h4>간호 사정과 안전</h4><p id="lessonNursing"></p></section><section><h4>관찰·확인 근거</h4><p id="lessonEvidence"></p></section></div></section>
     <div class="lesson-stage-link"><span class="small-caps">CONNECTED PATHWAY</span><p id="lessonStageHint">현재 질문과 연결되는 RAAS 단계를 탐색해 보세요.</p><button class="btn" id="lessonExploreLink"><svg class="icon"><use href="#ic-path"/></svg> 관련 경로에서 확인 <svg class="icon"><use href="#ic-arrow"/></svg></button></div></div>
     <div class="lesson-secondary"><div class="lesson-activity"><div class="lesson-step-number">01 <span>확인하기</span></div><h3>직접 확인할 활동</h3><p id="lessonAction"></p></div><div class="lesson-reflect"><div class="lesson-step-number">02 <span>생각하고 연결하기</span></div><h3>이 질문을 설명할 수 있나요?</h3><p id="lessonReflect"></p><p class="caption">정답이나 숙달을 자동 판정하지 않는 자기 점검 질문입니다.</p></div></div></div>
     <div class="lesson-footer"><p class="caption">현재 번호는 학습 위치를, 열람 수는 열어본 항목을 나타냅니다.</p><div class="small-btns"><button class="btn" id="prevLesson"><svg class="icon"><use href="#ic-left"/></svg> 이전 질문</button><button class="btn primary" id="nextLesson">다음 질문 <svg class="icon"><use href="#ic-arrow"/></svg></button></div></div>
@@ -350,6 +540,43 @@
   <div class="cases-layout" id="caseCards"><button class="card case-card active" data-case="ckd"><span class="case-symbol"><svg class="icon"><use href="#ic-case"/></svg></span><span class="small-caps">CASE 01 · KIDNEY</span><h2>CKD · ACE 억제제</h2><p>신기능·전해질·혈압을 함께 해석하고 약물 안전과 간호 판단을 연결하는 사례.</p><span class="cta">사례 구조 보기 →</span></button><button class="card case-card" data-case="hfref"><span class="case-symbol"><svg class="icon"><use href="#ic-activity"/></svg></span><span class="small-caps">CASE 02 · HEART</span><h2>HFrEF · MRA</h2><p>심박출률 감소 환자의 MRA 사용을 고려하며 혈청 K⁺와 신기능 평가를 연결하는 사례.</p><span class="cta">사례 구조 보기 →</span></button></div>
   <section class="card phase-preview"><div class="card-topline"><h2 class="card-title">사례 학습 순서</h2><span class="status-flag">정답과 Lab은 조건 충족 시 공개</span></div><div class="phase-steps" id="phaseSteps"></div><div class="phase-copy" id="phaseCopy"></div><div class="case-footer"><p class="hint-line">아래에서 사례를 시작하면 기존 검증된 문제·피드백을 사용할 수 있어요. 이 순서 안내는 답안을 바꾸지 않습니다.</p><div style="display:flex;gap:8px"><button class="btn slim" id="prevPhase">이전</button><button class="btn primary slim" id="nextPhase">다음 구조 <svg class="icon"><use href="#ic-arrow"/></svg></button></div></div></section>
   <div class="v7-live-trigger"><button class="btn primary" id="v7StartClinical" type="button">선택한 임상 사례 풀기</button><p class="caption">교육용 가상 사례입니다. 답안과 추가 Lab은 학습 단계에 따라 공개됩니다. 다른 사례로 전환하면 기존 답안이 초기화될 수 있어요.</p></div>
+
+  <section id="v71ClinicalWorkspace" class="v71-clinical-workspace" aria-label="임상 판단 및 간호 행동 학습 워크스페이스" hidden>
+   <header class="card v71-clinical-header">
+    <div class="v71-heading-copy"><span class="small-caps green">PATIENT-BASED LEARNING · V7.1</span><h2 id="v71CaseTitle">환자 사례</h2><p id="v71CaseSummary"></p></div>
+    <div class="v71-overview"><span class="small-caps">LEARNING PROGRESS</span><p id="v71Progress" aria-live="polite"></p><ol id="v71Roadmap" class="v71-roadmap" aria-label="임상 학습 단계"><li>환자 확인</li><li>임상 판단</li><li>간호 행동</li><li>결과 복습</li></ol></div>
+   </header>
+   <div class="v71-clinical-body">
+    <article class="card v71-clinical-task" aria-label="현재 임상 학습 과제">
+     <div class="v71-task-caption"><span class="small-caps green" id="v71CurrentStage">CLINICAL JUDGEMENT</span><span class="v71-question-progress" id="v71QuestionProgress"></span></div>
+     <h2 id="v71TaskHeading" tabindex="-1">임상 판단</h2>
+     <p id="v71TaskPrompt"></p>
+     <div id="v71AnswerOptions" class="v71-answer-options" role="group" aria-label="임상 판단 또는 간호 행동 선택"></div>
+     <section id="v71AnswerFeedback" class="v71-feedback" aria-label="제출한 답과 판단 근거" hidden>
+      <h3 class="v71-feedback-heading">판단 결과와 근거 해설</h3>
+      <div class="v71-feedback-compare" id="v71FeedbackCompare"></div>
+      <div class="v71-feedback-evidence" id="v71FeedbackEvidence"></div>
+     </section>
+     <section id="v71ClinicalLab" class="v71-clinical-lab" aria-label="추가 평가 시점의 가상 검사 자료" hidden>
+      <span class="small-caps green">FOLLOW-UP LAB · POST-ASSESSMENT</span><h3>추가 평가 시점의 가상 검사 자료</h3>
+      <p id="v71LabContext"></p><div id="v71LabResults" class="v71-lab-results"></div><h4>검사 해석 · 간호 확인</h4><p id="v71LabInterpretation"></p><details><summary>검사 해석 참고 근거</summary><p id="v71LabSource"></p></details>
+     </section>
+     <section id="v71ClinicalReview" class="v71-clinical-review" aria-label="완료된 사례 복습" hidden>
+      <p id="v71ReviewSummary" class="v71-review-summary"></p>
+      <h3>임상 판단 복습</h3><div id="v71ReviewJudgements"></div>
+      <h3>간호 행동 복습</h3><div id="v71ReviewActions"></div>
+      <div id="v71ReviewTakeaways" class="v71-takeaways"></div>
+     </section>
+     <div class="v71-task-actions"><button id="v71Submit" class="btn primary" type="button" disabled>선택한 답안 제출</button><button id="v71Continue" class="btn primary" type="button" hidden>다음 단계</button></div>
+    </article>
+    <aside class="v71-clinical-support" aria-label="환자 정보와 학습 근거">
+     <section class="card v71-patient-card"><div class="v71-support-label"><svg class="icon" aria-hidden="true"><use href="#ic-case"/></svg> 현재 확인된 환자 정보</div><p id="v71PatientContext"></p><dl id="v71PatientObservations"></dl><p class="v71-safety-note">가상 환자 사례 · 실제 처방과 투여 판단은 담당 의료진 및 기관 지침에 따릅니다.</p></section>
+     <section class="card v71-support-card"><div class="v71-support-label"><svg class="icon" aria-hidden="true"><use href="#ic-book"/></svg> 학습 목표</div><ul id="v71Objectives"></ul></section>
+     <section class="card v71-support-card"><div class="v71-support-label"><svg class="icon" aria-hidden="true"><use href="#ic-info"/></svg> 참고 근거</div><div id="v71Sources" class="v71-sources"></div><p class="caption">정답과 후속 Lab은 각 제출 조건을 만족한 뒤에만 공개됩니다.</p></section>
+    </aside>
+   </div>
+   <div class="v71-clinical-footer"><div class="v71-footer-buttons"><button id="v71ReturnCases" class="btn slim">다른 사례 선택</button><button id="v71Restart" class="btn slim">이 사례 다시 풀기</button></div><p class="caption">탭 이동은 풀이를 보존합니다. 다른 사례 선택·다시 풀기는 현재 답안을 초기화합니다.</p></div>
+  </section>
  </section>
 <div id="v7LegacyPortal" hidden aria-label="검증된 기존 학습·임상 기능 통합 화면"><div class="v7-live-top"><h3 id="v7LegacyHeading">학습 활동</h3><button class="btn slim" type="button" id="v7CloseLegacy">활동 닫고 돌아가기</button></div><iframe id="v7EngineFrame" title="RAAS 임상·ACEi 실습 화면" class="engine-offscreen" aria-hidden="true" tabindex="-1" inert src="backups/v6.0-content-ia.html"></iframe></div>
 </main>
@@ -357,7 +584,7 @@
 <nav class="mobile-nav" aria-label="모바일 주 탐색" id="mobileNav"><button data-nav="home" class="active"><svg class="icon"><use href="#ic-home"/></svg>시작</button><button data-nav="explore"><svg class="icon"><use href="#ic-path"/></svg>탐구</button><button data-nav="learn"><svg class="icon"><use href="#ic-book"/></svg>학습</button><button data-nav="cases"><svg class="icon"><use href="#ic-case"/></svg>임상</button></nav>
 <div class="toast" role="status" aria-live="polite" id="toast"></div>
 <dialog class="help-dialog" id="helpDialog" aria-labelledby="helpTitle"><div class="help-header"><span class="small-caps green">HOW TO USE · RAAS LAB</span><button class="btn slim" type="button" id="closeHelp" aria-label="사용 안내 닫기">닫기 ✕</button></div><h2 id="helpTitle">RAAS를 시작하는 두 가지 방법</h2><p class="help-intro">바로 탐구하거나, 화면을 따라 누르며 조작을 익혀보세요. 모든 사용 안내는 언제든 다시 열 수 있습니다.</p><div class="help-steps"><div><span class="help-step-icon"><svg class="icon"><use href="#ic-path"/></svg></span><strong>01 · 단계 탐색</strong><p>9단계에서 노드를 눌러 기전과 간호 연결을 확인하세요.</p></div><div><span class="help-step-icon"><svg class="icon"><use href="#ic-flask"/></svg></span><strong>02 · 약물 표적</strong><p>약물 6종의 작용 위치를 선택하고, 실제 표적과 도식 표현을 구별하세요.</p></div><div><span class="help-step-icon"><svg class="icon"><use href="#ic-activity"/></svg></span><strong>03 · 결과 읽기</strong><p>혈압·Na⁺·혈액량·GFR의 모델 계산값을 보고 약물 적용 전후를 비교하세요.</p></div><div><span class="help-step-icon"><svg class="icon"><use href="#ic-book"/></svg></span><strong>04 · 학습과 임상</strong><p>질문별 기전을 배우고 CKD·HFrEF 가상 사례로 연결하세요.</p></div></div><div class="help-limits"><svg class="icon"><use href="#ic-info"/></svg><span>표적 선택만으로는 계산이 바뀌지 않습니다. 별도의 '선택한 약물 적용'을 눌러야 모델에 반영됩니다. 임상 정답과 Lab은 해당 학습 단계의 공개 조건을 따릅니다.</span></div><div class="help-actions"><button class="btn primary" type="button" id="startWalkthrough"><svg class="icon"><use href="#ic-play"/></svg> 따라하며 익히기</button><button class="btn" type="button" id="helpGoExplore">설명 없이 바로 탐구</button></div></dialog>
-<aside class="coach" id="walkthrough" role="region" aria-label="따라하기 사용 안내" hidden><div class="coach-top"><span class="small-caps green">INTERACTIVE WALKTHROUGH</span><button class="coach-close" id="closeWalkthrough" type="button" aria-label="따라하기 닫기">✕</button></div><div class="coach-meter"><span id="walkthroughCount">1 / 5</span><div class="coach-meter-track"><span id="walkthroughBar"></span></div></div><h3 id="walkthroughTitle">단계를 선택해보세요</h3><p id="walkthroughCopy"></p><div class="coach-actions"><button type="button" class="btn slim" id="walkthroughBack">이전</button><button type="button" class="btn slim" id="walkthroughSkip">종료</button><button type="button" class="btn primary slim" id="walkthroughNext">다음 <svg class="icon"><use href="#ic-arrow"/></svg></button></div><p class="coach-hint">안내는 UI 조작만 도와요. 실제 생리 계산과 임상 답안은 변경하지 않습니다.</p></aside>
+<aside class="coach" id="walkthrough" role="region" aria-label="따라하기 사용 안내" hidden><div class="coach-top"><span class="small-caps green">INTERACTIVE WALKTHROUGH</span><button class="coach-close" id="closeWalkthrough" type="button" aria-label="따라하기 닫기">✕</button></div><div class="coach-meter"><span id="walkthroughCount">1 / 5</span><div class="coach-meter-track"><span id="walkthroughBar"></span></div></div><h3 id="walkthroughTitle">단계를 선택해보세요</h3><p id="walkthroughCopy"></p><div class="coach-actions"><button type="button" class="btn slim" id="walkthroughBack">이전</button><button type="button" class="btn slim" id="walkthroughSkip">종료</button><button type="button" class="btn primary slim" id="walkthroughNext">다음 <svg class="icon"><use href="#ic-arrow"/></svg></button></div><p class="coach-hint">안내 중에는 실제 모델 조작이 잠기며, 종료 시 안내에서 선택한 단계·약물·화면 구성이 복원됩니다.</p></aside>
 <div class="modal-overlay" id="pathModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="pathModalTitle"><button class="btn slim modal-close" id="closePathModal">닫기 ✕</button><div class="small-caps green">COMPLETE PATH</div><h2 id="pathModalTitle">RAAS 전체 9단계</h2><p>RAAS 9단계 중 원하는 지점을 선택하세요. 경로를 조회해도 실제 시뮬레이션 진행은 변경되지 않습니다.</p><div class="all-stages" id="allStageButtons"></div><p class="caption" style="margin-top:18px">각 노드는 학습을 위한 개념적 위치이며 실제 생리 변화가 일어나는 시간 순서를 뜻하지 않습니다.</p></div></div>
 <script>
 'use strict';
@@ -413,18 +640,25 @@ const nodeEls=document.querySelectorAll('[data-stage]');nodeEls.forEach(el=>{con
 const reducedMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 function smallFeedback(el){if(reducedMotion()||!el||!el.animate)return;for(const animation of el.getAnimations())animation.cancel();el.animate([{opacity:.68,transform:'translateY(5px)'},{opacity:1,transform:'translateY(0)'}],{duration:240,easing:'cubic-bezier(.2,.8,.2,1)'})}
 let activeModeTransition=null;
+// Move the original live DOM nodes; their event bindings and model results never duplicate.
+function syncExplorePanelPlacement(){
+ if(state.exploreMode==='compact'){
+  $('compactDock').append($('drugCard'));
+  if(innerWidth>1160)$('compactResults').append($('outputCard'));
+  else $('compactDock').append($('outputCard')); // retain existing narrow/mobile ordering
+ }else $('experiment').append($('drugCard'),$('outputCard'));
+}
 function setExploreMode(mode){
  if(!['standard','compact'].includes(mode)||mode===state.exploreMode)return;
  const compact=mode==='compact';
- // Register the latest user intent immediately; an older pending transition cannot override it.
+ // Register the latest intent first: an interrupted morph cannot restore stale layout.
  state.exploreMode=mode;
  $('modeStandard').setAttribute('aria-pressed',String(!compact));
  $('modeCompact').setAttribute('aria-pressed',String(compact));
  const update=()=>{
   if(state.exploreMode!==mode)return;
   $('view-explore').classList.toggle('is-compact',compact);
-  const dock=compact?$('compactDock'):$('experiment');
-  dock.append($('drugCard'),$('outputCard'));
+  syncExplorePanelPlacement();
   $('compactExplanation').open=!compact;
  };
  if(activeModeTransition){
@@ -437,8 +671,18 @@ function setExploreMode(mode){
   transition.finished.catch(()=>{}).finally(()=>{if(activeModeTransition===transition)activeModeTransition=null});
  }else{update()}
 }
+// Re-dock on breakpoint crossing without altering mode, session, or model state.
+let exploreWideViewport=innerWidth>1160;
+window.addEventListener('resize',()=>{
+ const wide=innerWidth>1160;
+ if(wide===exploreWideViewport)return;
+ exploreWideViewport=wide;
+ if(state.exploreMode!=='compact')return;
+ if(activeModeTransition){activeModeTransition.skipTransition();activeModeTransition=null}
+ syncExplorePanelPlacement();
+});
 function selectStage(idx){if(idx<0||idx>=STAGES.length)return;state.stage=idx;renderStage();smallFeedback($('stageTitle'));smallFeedback($('stageQuestion'));tourCheck('stage',idx)}
-function renderDrug(){const drug=DRUGS.find(d=>d.id===state.drug),all=$('drugButtons');all.innerHTML=DRUGS.filter(d=>d.id!=='none').map(d=>`<button data-drug="${d.id}" class="${state.drug===d.id?'active':''}" aria-pressed="${state.drug===d.id}">${d.label}</button>`).join('')+`<button data-drug="none" class="${state.drug==='none'?'active':''}" aria-pressed="${state.drug==='none'}">선택 해제</button>`;$('targetNote').innerHTML=`<strong>${drug.target?'실제 작용 표적 · '+drug.target:'약물 선택 전'}</strong>${drug.text}`;all.querySelectorAll('button').forEach(el=>el.onclick=()=>{state.drug=el.dataset.drug;renderDrug();renderStage();smallFeedback($('targetNote'));tourCheck('drug',state.drug);toast(state.drug==='none'?'약물 선택 표시를 해제했어.':'약물 표적만 강조했어. 실제 적용은 별도 버튼으로 진행해.')})}
+function renderDrug(){const drug=DRUGS.find(d=>d.id===state.drug),all=$('drugButtons');all.innerHTML=DRUGS.filter(d=>d.id!=='none').map(d=>`<button data-drug="${d.id}" class="${state.drug===d.id?'active':''}" aria-pressed="${state.drug===d.id}" title="이미 선택한 약물을 다시 누르면 표적 표시 해제">${d.label}</button>`).join('');$('targetNote').innerHTML=`<strong>${drug.target?'실제 작용 표적 · '+drug.target:'약물 선택 전'}</strong>${drug.text}`;all.querySelectorAll('button').forEach(el=>el.onclick=()=>{state.drug=state.drug===el.dataset.drug?'none':el.dataset.drug;renderDrug();renderStage();smallFeedback($('targetNote'));tourCheck('drug',state.drug);toast(state.drug==='none'?'표적 선택 표시를 해제했어. 적용 약물은 유지돼.':'표적만 강조했어. 실제 계산에는 적용 버튼이 필요해.')})}
 function buildStages(){const positions=[[4,15],[23,15],[42,15],[61,15],[80,15],[80,64],[61,64],[42,64],[23,64]];$('desktopNodes').innerHTML=STAGES.map((s,i)=>`<button class="path-node" data-stage="${i}" style="left:${positions[i][0]}%;top:${positions[i][1]}%" aria-pressed="false"><span class="numb">STEP ${String(i+1).padStart(2,'0')}</span><span class="nodename">${s.title}</span></button>`).join('');$('mobileStageTrack').innerHTML=STAGES.map((s,i)=>`<button data-stage="${i}" aria-pressed="false"><span class="snum">${String(i+1).padStart(2,'0')} / 09</span><span class="stitle">${s.title}</span></button>`).join('');$('allStageButtons').innerHTML=STAGES.map((s,i)=>`<button data-stage="${i}" aria-pressed="false">${String(i+1).padStart(2,'0')} · ${s.title}</button>`).join('');document.querySelectorAll('[data-stage]').forEach(el=>el.addEventListener('click',()=>{selectStage(Number(el.dataset.stage));if($('pathModal').classList.contains('open'))closePathModal();}));renderStage()}
 function updateViewed(){const text=state.seen.size+' / 16';$('lessonSeen').textContent=text+' 열람';$('sidebarProgress').textContent='열어본 항목 '+text;$('sidebarProgressBar').style.width=(state.seen.size/16*100)+'%'}
 function lessonIndicesForUnit(unit){return LESSONS.map((lesson,i)=>({lesson,i})).filter(({lesson})=>lesson.u===unit).map(({i})=>i)}
@@ -496,7 +740,7 @@ const tourSteps=[
  {title:'간편 조작 모드로 바꿔보세요',copy:'간편 버튼을 눌러 경로·약물·결과 패널을 한 화면에서 살펴보세요. 선택 상태는 유지됩니다.',action:'compact',value:'compact',target:()=> '#modeCompact'},
  {title:'관련 학습으로 이어가세요',copy:'상단의 학습으로 연결을 누르면 5단원·16개 질문을 탐색할 수 있어요. 이 화면 이동은 임상 답안과 현재 생리 계산을 바꾸지 않습니다.',action:'view',value:'learn',target:()=> '#view-explore [data-go="learn"]'}
 ];
-let tourIndex=-1,tourHighlighted=null,tourAutoAdvance=null;
+let tourIndex=-1,tourHighlighted=null,tourAutoAdvance=null,tourReturnState=null;
 function clearTourHighlight(){if(tourHighlighted){tourHighlighted.classList.remove('tour-target');tourHighlighted=null}}
 function tourPaint(){
  if(tourIndex<0)return;
@@ -513,8 +757,29 @@ function tourPaint(){
   const rect=target.getBoundingClientRect();if(rect.top<76||rect.bottom>innerHeight-30){target.scrollIntoView({block:'center',inline:'nearest',behavior:reducedMotion()?'instant':'smooth'})}
  });
 }
-function closeTour(){tourIndex=-1;clearTourHighlight();$('walkthrough').hidden=true;}
-function openTour(){if($('helpDialog').open)$('helpDialog').close();closeTour();tourIndex=0;go('explore');tourPaint();}
+function closeTour(){
+ if(tourIndex<0)return;
+ tourIndex=-1;clearTourHighlight();$('walkthrough').hidden=true;
+ document.documentElement.dataset.tourActive='false';
+ document.dispatchEvent(new Event('raas:tour-end'));
+ const previous=tourReturnState;tourReturnState=null;
+ if(previous){
+  state.stage=previous.stage;state.drug=previous.drug;state.focus=previous.focus;
+  state.lesson=previous.lesson;state.seen=new Set(previous.seen);state.lastUnitLesson={...previous.lastUnitLesson};
+  setExploreMode(previous.exploreMode);
+  renderDrug();renderStage();
+  go('explore');updateViewed();
+ }
+}
+function openTour(){
+ if($('helpDialog').open)$('helpDialog').close();
+ if(tourIndex>=0)closeTour();
+ tourReturnState={stage:state.stage,drug:state.drug,focus:state.focus,lesson:state.lesson,
+   seen:[...state.seen],lastUnitLesson:{...state.lastUnitLesson},exploreMode:state.exploreMode};
+ tourIndex=0;document.documentElement.dataset.tourActive='true';
+ document.dispatchEvent(new Event('raas:tour-start'));
+ go('explore');tourPaint();
+}
 function tourNext(){if(tourIndex<0)return;if(tourIndex===tourSteps.length-1){closeTour();return}tourIndex++;tourPaint()}
 function tourCheck(action,value){if(tourIndex<0)return;const step=tourSteps[tourIndex];if(step.action!==action||step.value!==value)return;tourNext()}
 function openHelp(){if(tourIndex>=0)closeTour();if(!$('helpDialog').open)$('helpDialog').showModal()}
@@ -576,6 +841,85 @@ setup();
         sources:'기존 5단원 종합 학습·임상 자료'};
     });
   }
+  // v7.1 clinical projection: only data the canonical v6 UI is already allowed to show.
+  // Never send future answers, option feedback or gated Lab data before the original gate opens.
+  const clinicalText = id => getId(id)?.textContent || '';
+  function clinicalView(){
+    const definition=scenarioRuntime.definition, session=scenarioRuntime.session;
+    if(scenarioRuntime.mode!=='scenario'||!definition||!session)return null;
+    const phase=!getId('scenarioResultPanel').hidden?'result':
+      !getId('scenarioActionFeedbackPanel').hidden?'action-feedback':
+      !getId('scenarioActionStep').hidden?'action':
+      !getId('scenarioFeedbackPanel').hidden?'judgement-feedback':'judgement';
+    const latest=scenarioLatestFeedback;
+    const activeIndex=latest?definition.questions.findIndex(q=>q.id===latest.questionId):session.questionIndex;
+    const active=definition.questions[activeIndex]||null;
+    const options=choices=>choices.map(item=>({text:item.text}));
+    const reviewGroup=id=>Array.from(getId(id).querySelectorAll('.scenario-review-card')).map(card=>{
+      const title=card.querySelector('h5')?.textContent||'';
+      const question=definition.questions.find(q=>title.includes(q.prompt)||q.actionExercise&&title.includes(q.actionExercise.prompt));
+      return {title,status:card.querySelector('.scenario-review-status')?.textContent||'',
+        correct:card.dataset.correct==='true',
+        details:Array.from(card.querySelectorAll('details p')).map(p=>p.textContent),
+        related:question?scenarioLearningLinks[definition.id+':'+question.id]||null:null};
+    });
+    return {
+      caseId:definition.id,title:definition.title,context:definition.caseContext,
+      objectives:[...definition.objectives],observations:definition.observations.map(o=>({label:o.label,value:o.value})),
+      references:definition.references.map(r=>r.citation),
+      questionTotal:definition.questions.length,questionIndex:activeIndex,
+      knowledgeDone:Object.keys(session.answers).length,
+      actionDone:Object.keys(scenarioActionAnswers).length,
+      actionTotal:definition.questions.filter(q=>q.actionExercise).length,
+      phase,progress:clinicalText('scenarioLearningProgress'),task:clinicalText('scenarioCurrentTask'),
+      question:phase==='judgement'&&active?{prompt:active.prompt,choices:options(active.choices)}:null,
+      judgementFeedback:phase==='judgement-feedback'?{
+        title:clinicalText('scenarioFeedbackTitle'),prompt:clinicalText('scenarioAnsweredQuestion'),
+        selected:clinicalText('scenarioFeedbackSelected'),expected:clinicalText('scenarioFeedbackCorrectAnswer'),
+        choiceReason:clinicalText('scenarioFeedbackChoiceExplanation'),
+        rationale:clinicalText('scenarioFeedbackText'),nursing:clinicalText('scenarioFeedbackNursing'),
+        evidence:clinicalText('scenarioFeedbackSource'),correct:getId('scenarioFeedbackPanel').dataset.correct==='true'
+      }:null,
+      canBeginAction:!getId('scenarioActionStartButton').hidden,
+      actionQuestion:phase==='action'&&active?.actionExercise?{
+        prompt:active.actionExercise.prompt,choices:options(active.actionExercise.choices)
+      }:null,
+      actionFeedback:phase==='action-feedback'?{
+        title:clinicalText('scenarioActionFeedbackTitle'),prompt:clinicalText('scenarioAnsweredActionPrompt'),
+        selected:clinicalText('scenarioActionFeedbackSelected'),expected:clinicalText('scenarioActionFeedbackCorrect'),
+        reason:clinicalText('scenarioActionFeedbackReason'),rationale:clinicalText('scenarioActionFeedbackRationale'),
+        assessment:clinicalText('scenarioActionAssessment'),escalation:clinicalText('scenarioActionEscalation'),
+        teaching:clinicalText('scenarioActionTeaching'),evidence:clinicalText('scenarioActionEvidence'),
+        correct:getId('scenarioActionFeedbackPanel').dataset.correct==='true'
+      }:null,
+      // Original Lab hidden flag is authoritative; the simulator graph NEVER supplies case Lab.
+      lab:phase==='action-feedback'&&!getId('scenarioLabPanel').hidden?{
+        context:clinicalText('scenarioLabContext'),
+        items:Array.from(getId('scenarioLabItems').children).map(el=>Array.from(el.children).map(c=>c.textContent)),
+        interpretation:clinicalText('scenarioLabInterpretation'),source:clinicalText('scenarioLabSource')
+      }:null,
+      canNext:!getId('scenarioNextButton').hidden,
+      nextLabel:clinicalText('scenarioNextButton'),
+      result:phase==='result'?{
+        summary:clinicalText('scenarioResultText'),
+        judgements:reviewGroup('scenarioKnowledgeDynamicReviews'),
+        actions:reviewGroup('scenarioNursingDynamicReviews'),
+        takeaways:scenarioKeyTakeaways[definition.id]||null
+      }:null
+    };
+  }
+  function clinicalCommand(action,index){
+    if(scenarioRuntime.mode!=='scenario'||!scenarioRuntime.session)return null;
+    const choiceNumber=Number.isInteger(index)&&index>=0&&index<3?index+1:null;
+    const click=id=>{const button=getId(id);if(button&&!button.hidden&&!button.disabled)button.click()};
+    if(action==='judgement'&&choiceNumber&&!getId('scenarioQuestionSection').hidden)click('scenarioChoice'+choiceNumber);
+    else if(action==='action'&&choiceNumber&&!getId('scenarioActionStep').hidden)click('scenarioActionChoice'+choiceNumber);
+    else if(action==='beginAction')click('scenarioActionStartButton');
+    else if(action==='next')click('scenarioNextButton');
+    else if(action==='restart')click('scenarioRestartButton');
+    else if(action==='back')click('scenarioBackToCasesButton');
+    return clinicalView();
+  }
   window.RAASV6={
     snapshot,
     getStages:()=>stageData.map((s,i)=>({title:s.name,summary:s.description,
@@ -585,6 +929,8 @@ setup();
     getDrugs:()=>Object.entries(clinicalDrugNotes).map(([id,note])=>({id,
       medical:note.medical,nursing:note.nursing,sources:note.sourceIds})),
     getCaseIds:()=>({ckd:firstClinicalScenario.id,hf:secondClinicalScenario.id}),
+    clinicalView,
+    clinicalCommand,
     next:()=>{nextStep();return snapshot()},
     prev:()=>{previousStep();return snapshot()},
     resetProgress:()=>{resetProgress();return snapshot()},
@@ -639,8 +985,14 @@ setup();
     $('v7ProgressState').textContent=`현재 진행: ${snap.currentStep<0?'진행 전':snap.currentStep+1+'/9'} · 최대 도달: ${snap.maxReachedStep<0?'진행 전':snap.maxReachedStep+1+'/9'} · 적용 약물: ${snap.appliedDrug==='none'?'없음':snap.appliedDrug==='aldo'?'MRA':snap.appliedDrug}`;
     $('v7ProgressPrev').disabled=snap.currentStep<0;
     $('v7ProgressNext').disabled=snap.currentStep>=8;
-    $('v7ApplyDrug').disabled=state.drug==='none';
-    $('v7RemoveDrug').disabled=snap.appliedDrug==='none';
+    const guided=document.documentElement.dataset.tourActive==='true';
+    $('v7ApplyDrug').disabled=guided||state.drug==='none';
+    $('v7RemoveDrug').disabled=guided||(snap.appliedDrug==='none'&&state.drug==='none');
+    $('v7ProgressPrev').disabled=guided||snap.currentStep<0;
+    $('v7ProgressNext').disabled=guided||snap.currentStep>=8;
+    $('v7ResetProgress').disabled=guided;
+    $('v7ResetAll').disabled=guided;
+    $('v7GraphSelect').disabled=guided;
     $('v7AppliedDrug').textContent=`현재 적용: ${snap.appliedDrug==='none'?'없음':snap.appliedDrug==='aldo'?'MRA':snap.appliedDrug}`;
     $('v7GraphSelect').value=snap.graphVariable;
   }
@@ -692,14 +1044,193 @@ setup();
       if(target)frame.style.height=Math.max(500,Math.ceil(target.getBoundingClientRect().height+48))+'px';
     }catch(e){notify('임상 콘텐츠 높이 계산 실패 · 원본 화면에서 계속 진행할 수 있어요.',true)}
   }
+  // Transient selection is presentation-only. Submission always invokes original v6 handlers.
+  let pendingClinicalChoice=null;
+  const clinicalSetText=(id,value)=>{$(id).textContent=value||''};
+  function clinicalTextNode(tag,value,className){
+    const el=document.createElement(tag);
+    if(className)el.className=className;
+    el.textContent=value||'';
+    return el;
+  }
+  function clinicalLabeled(container,title,text){
+    if(!text)return;
+    const section=document.createElement('section');
+    if(['판단 근거','행동 판단 근거','간호 사정·보고'].includes(title))section.classList.add('v71-evidence-priority');
+    section.append(clinicalTextNode('h4',title),clinicalTextNode('p',text));
+    container.append(section);
+  }
+  function hideClinicalWorkspace(){
+    $('v71ClinicalWorkspace').hidden=true;
+    $('caseCards').hidden=false;
+    $('view-cases').querySelector('.phase-preview').hidden=false;
+    $('view-cases').querySelector('.v7-live-trigger').hidden=false;
+  }
+  function showClinicalWorkspace(scroll){
+    $('caseCards').hidden=true;
+    $('view-cases').querySelector('.phase-preview').hidden=true;
+    $('view-cases').querySelector('.v7-live-trigger').hidden=true;
+    $('v71ClinicalWorkspace').hidden=false;
+    renderClinicalWorkspace();
+    if(scroll)$('v71ClinicalWorkspace').scrollIntoView({block:'start',behavior:reducedMotion()?'instant':'smooth'});
+  }
+  function renderClinicalWorkspace(){
+    const c=ready&&source.clinicalView();
+    if(!c){hideClinicalWorkspace();return}
+    clinicalSetText('v71CaseTitle',c.title);
+    clinicalSetText('v71CaseSummary',c.context);
+    clinicalSetText('v71Progress',c.progress);
+    const phaseOrder=c.phase==='result'?3:c.phase==='action'||c.phase==='action-feedback'?2:1;
+    $('v71Roadmap').querySelectorAll('li').forEach((item,i)=>{
+      item.dataset.status=i===phaseOrder?'current':i<phaseOrder?'done':'pending';
+      item.setAttribute('aria-current',i===phaseOrder?'step':'false');
+    });
+    clinicalSetText('v71QuestionProgress',c.phase==='result'?'사례 학습 완료':
+      '임상 판단 '+c.knowledgeDone+'/'+c.questionTotal+' · 간호 행동 '+c.actionDone+'/'+c.actionTotal);
+    clinicalSetText('v71PatientContext',c.context);
+    const observations=$('v71PatientObservations');observations.replaceChildren();
+    c.observations.forEach(item=>{
+      const row=document.createElement('div');
+      row.append(clinicalTextNode('dt',item.label),clinicalTextNode('dd',item.value));
+      observations.append(row);
+    });
+    $('v71Objectives').replaceChildren(...c.objectives.map(v=>clinicalTextNode('li',v)));
+    $('v71Sources').replaceChildren(...c.references.map(v=>clinicalTextNode('p',v)));
+    const task=$('v71TaskHeading'),prompt=$('v71TaskPrompt'),options=$('v71AnswerOptions');
+    options.replaceChildren();
+    const submit=$('v71Submit'),next=$('v71Continue');
+    submit.hidden=true;next.hidden=true;
+    $('v71AnswerFeedback').hidden=true;$('v71ClinicalLab').hidden=true;$('v71ClinicalReview').hidden=true;
+    const stage={
+      judgement:'02 / CLINICAL JUDGEMENT',
+      'judgement-feedback':'02 / JUDGEMENT FEEDBACK',
+      action:'03 / NURSING ACTION',
+      'action-feedback':'03 / ACTION FEEDBACK',
+      result:'04 / DEBRIEF & REVIEW'
+    };
+    clinicalSetText('v71CurrentStage',stage[c.phase]);
+    const deciding=c.phase==='judgement'||c.phase==='action';
+    const exercise=c.phase==='judgement'?c.question:c.actionQuestion;
+    if(deciding&&exercise){
+      task.textContent=c.phase==='judgement'?'현재 환자에게 필요한 임상 판단':'다음 간호 행동을 선택해 보세요';
+      prompt.textContent=exercise.prompt;
+      pendingClinicalChoice=null;
+      exercise.choices.forEach((choice,i)=>{
+        const button=document.createElement('button');button.type='button';button.className='v71-choice';
+        button.setAttribute('aria-pressed','false');
+        button.append(clinicalTextNode('span',String(i+1).padStart(2,'0'),'v71-number'),
+          clinicalTextNode('span',choice.text));
+        button.addEventListener('click',()=>{
+          pendingClinicalChoice=i;
+          options.querySelectorAll('button').forEach((el,k)=>el.setAttribute('aria-pressed',String(k===i)));
+          submit.disabled=false;
+        });
+        options.append(button);
+      });
+      submit.hidden=false;submit.disabled=true;
+      submit.textContent=c.phase==='judgement'?'선택한 임상 판단 제출':'선택한 간호 행동 제출';
+    }else if(c.phase==='judgement-feedback'||c.phase==='action-feedback'){
+      const judgement=c.phase==='judgement-feedback',f=judgement?c.judgementFeedback:c.actionFeedback;
+      task.textContent=f.title;prompt.textContent=f.prompt;
+      const compare=$('v71FeedbackCompare');compare.replaceChildren();
+      for(const item of [
+        ['내 선택',f.selected],['권장 답안',f.expected]
+      ]){
+        const article=document.createElement('article');
+        article.append(clinicalTextNode('h4',item[0]),clinicalTextNode('p',item[1]));
+        compare.append(article);
+      }
+      const evidence=$('v71FeedbackEvidence');evidence.replaceChildren();
+      if(judgement){
+        clinicalLabeled(evidence,'선택지별 해설',f.choiceReason);
+        clinicalLabeled(evidence,'판단 근거',f.rationale);
+        clinicalLabeled(evidence,'간호 사정·보고',f.nursing);
+        clinicalLabeled(evidence,'참고 근거',f.evidence);
+      }else{
+        clinicalLabeled(evidence,'선택한 행동의 해설',f.reason);
+        clinicalLabeled(evidence,'행동 판단 근거',f.rationale);
+        clinicalLabeled(evidence,'추가 사정',f.assessment);
+        clinicalLabeled(evidence,'확인·보고',f.escalation);
+        clinicalLabeled(evidence,'환자 교육',f.teaching);
+        clinicalLabeled(evidence,'참고 근거',f.evidence);
+      }
+      $('v71AnswerFeedback').hidden=false;
+      if(c.lab){
+        $('v71ClinicalLab').hidden=false;
+        clinicalSetText('v71LabContext',c.lab.context);
+        clinicalSetText('v71LabInterpretation',c.lab.interpretation);
+        clinicalSetText('v71LabSource',c.lab.source);
+        const lab=$('v71LabResults');lab.replaceChildren();
+        c.lab.items.forEach(item=>{
+          const article=document.createElement('article');
+          item.forEach((value,i)=>article.append(clinicalTextNode(i===0?'strong':'span',value)));
+          lab.append(article);
+        });
+      }
+      if(c.canBeginAction||c.canNext){
+        next.hidden=false;
+        next.textContent=c.canBeginAction?'간호 행동 판단으로':c.nextLabel||'다음 문항';
+        next.dataset.action=c.canBeginAction?'beginAction':'next';
+      }
+    }else if(c.phase==='result'&&c.result){
+      task.textContent='환자 사례 학습 완료';prompt.textContent='임상 판단과 간호 행동을 비교하고, 보완할 판단을 복습해 보세요.';
+      $('v71ClinicalReview').hidden=false;
+      clinicalSetText('v71ReviewSummary',c.result.summary);
+      const renderGroup=(id,rows)=>{
+        const container=$(id);container.replaceChildren();
+        rows.forEach(row=>{
+          const article=document.createElement('article');article.className='v71-review-card';
+          article.dataset.correct=String(row.correct);
+          article.append(clinicalTextNode('h4',row.title),clinicalTextNode('p',row.status));
+          const details=document.createElement('details');details.open=!row.correct;
+          details.append(clinicalTextNode('summary','내 선택 · 권장 답안 · 해설 및 근거'));
+          row.details.forEach(detail=>details.append(clinicalTextNode('p',detail)));
+          article.append(details);
+          if(row.related){
+            const link=document.createElement('button');link.type='button';link.className='btn slim';
+            link.textContent='관련 RAAS 학습으로 이동';
+            link.addEventListener('click',()=>{
+              const curriculum=source.getCurriculum();
+              let index=curriculum.findIndex(l=>l.type==='drug'&&l.drug===row.related.drug);
+              if(index<0)index=curriculum.findIndex(l=>l.type==='stage'&&l.stage===row.related.stage);
+              if(index>=0)state.lesson=index;
+              go('learn');
+            });
+            article.append(link);
+          }
+          container.append(article);
+        });
+      };
+      renderGroup('v71ReviewJudgements',c.result.judgements);
+      renderGroup('v71ReviewActions',c.result.actions);
+      const takeaways=$('v71ReviewTakeaways');takeaways.replaceChildren();
+      if(c.result.takeaways){
+        takeaways.append(clinicalTextNode('h3','핵심 임상 포인트'));
+        for(const [label,key] of [['추가 사정','assessment'],['확인·보고','escalation'],['환자 교육','teaching']])
+          clinicalLabeled(takeaways,label,c.result.takeaways[key]);
+      }
+    }else{
+      task.textContent='원본 임상 상태를 읽을 수 없어요';
+      prompt.textContent='사례의 최신 상태를 다시 확인해 주세요.';
+    }
+  }
+  function clinicalAction(action,index){
+    if(!ready||!source.clinicalView())return;
+    source.clinicalCommand(action,index);
+    pendingClinicalChoice=null;
+    if(action==='back'){caseActive=null;hideClinicalWorkspace();$('v7StartClinical').focus({preventScroll:true});return}
+    renderClinicalWorkspace();
+    $('v71TaskHeading').focus({preventScroll:true});
+  }
   function activateClinical(){
     if(!ready)return;
     const which=state.case==='ckd'?'ckd':'hf';
-    // Switching away from an active case resets existing answers: explicit confirmation only.
-    if(caseActive && caseActive!==which && !confirm('다른 사례를 시작하면 현재 사례 답안이 초기화됩니다. 계속할까요?'))return;
-    const ok=engine().openCase(which);
+    if(caseActive&&caseActive!==which&&!confirm('다른 사례를 시작하면 현재 사례 답안이 초기화됩니다. 계속할까요?'))return;
+    const ok=source.openCase(which);
     if(!ok){notify('기존 임상 사례를 열지 못했어요.',true);return}
-    caseActive=which;showFrame('case');
+    caseActive=which;
+    showClinicalWorkspace(true);
+    $('v71TaskHeading').focus({preventScroll:true});
   }
   function activatePractice(){
     if(!ready)return;
@@ -719,14 +1250,35 @@ setup();
     // Drug target selection is UI-only; only the separate Apply action changes the model.
     $('drugButtons').addEventListener('click',()=>updateMetrics());
     $('v7ApplyDrug').addEventListener('click',()=>{const v=humanDrug(state.drug);if(v!=='none'){source.apply(v);updateMetrics()}});
-    $('v7RemoveDrug').addEventListener('click',()=>{source.remove();updateMetrics()});
+    $('v7RemoveDrug').addEventListener('click',()=>{source.remove();state.drug='none';renderDrug();renderStage();updateMetrics();toast('적용 약물과 주황색 표적 선택을 함께 해제했어.')});
     $('v7ProgressPrev').addEventListener('click',()=>{source.prev();updateMetrics()});
     $('v7ProgressNext').addEventListener('click',()=>{source.next();updateMetrics()});
-    $('v7ResetProgress').addEventListener('click',()=>{source.resetProgress();updateMetrics()});
+    $('v7ResetProgress').addEventListener('click',()=>{source.resetProgress();updateMetrics();toast('실제 진행만 초기화했어. 약물은 유지돼.')});
     $('v7ResetAll').addEventListener('click',()=>{
-      if(confirm('진행과 약물 상태를 모두 초기화할까요? 임상 답안과 독립된 초기화입니다.')){source.resetAll();updateMetrics()}});
+      if(!confirm('탐구 상태를 모두 초기화할까요? 진행·약물·주황색 표적·조회 단계·그래프가 처음 상태로 돌아갑니다. 임상 답안은 유지돼요.'))return;
+      source.resetAll();source.graphVariable('bp');
+      state.stage=0;state.focus='mech';state.drug='none';
+      renderDrug();renderStage();updateMetrics();
+      toast('탐구 화면과 모델이 처음 상태로 초기화됐어.');
+    });
+    document.addEventListener('raas:tour-start',updateMetrics);
+    document.addEventListener('raas:tour-end',updateMetrics);
     $('v7GraphSelect').addEventListener('change',e=>{source.graphVariable(e.target.value);updateMetrics()});
     $('v7StartClinical').addEventListener('click',activateClinical);
+    $('v71Submit').addEventListener('click',()=>{
+      if(pendingClinicalChoice===null)return;
+      const c=source.clinicalView();
+      if(!c)return;
+      if(c.phase==='judgement')clinicalAction('judgement',pendingClinicalChoice);
+      else if(c.phase==='action')clinicalAction('action',pendingClinicalChoice);
+    });
+    $('v71Continue').addEventListener('click',()=>clinicalAction($('v71Continue').dataset.action));
+    $('v71Restart').addEventListener('click',()=>{
+      if(confirm('이 사례의 판단·간호 행동 기록을 초기화하고 다시 풀까요?'))clinicalAction('restart');
+    });
+    $('v71ReturnCases').addEventListener('click',()=>{
+      if(confirm('현재 임상 답안이 초기화됩니다. 사례 목록으로 돌아갈까요?'))clinicalAction('back');
+    });
     $('v7StartPractice').addEventListener('click',activatePractice);
     $('v7CloseLegacy').addEventListener('click',hideFrame);
     // Observe original clinical layout and answer disclosure without modifying gate logic.
@@ -737,7 +1289,13 @@ setup();
   frame.addEventListener('load',startAdapter,{once:true});
   // Keep hidden engine running for actual model data and preserve its state on tab navigation.
   // A view change hides the hosted clinical/practice surface; it does NOT reset the v6 session.
-  const oldGo=go;go=function(view){hideFrame();return oldGo(view)};
+  const oldGo=go;go=function(view){
+    hideFrame();
+    const result=oldGo(view);
+    if(view==='cases'&&ready&&source.clinicalView()?.caseId)showClinicalWorkspace(false);
+    else hideClinicalWorkspace();
+    return result;
+  };
 })();
 </script>
 </body>
