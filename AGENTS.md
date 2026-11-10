@@ -1048,3 +1048,8 @@ RAAS Simulator 개발에서 가장 중요한 원칙은 다음과 같다.
 - 의학적으로 중요한 간호 확인과 가상 Lab 해석을 접힌 심화 영역으로 숨기지 않는다. 문헌만 선택적으로 펼치게 한다.
 - 모바일 그래프는 1000×290 Canvas를 축소하지 않는 G1 가로 탐색을 기본으로 한다. 320/360/390/430px 및 확대/키보드/실기기 테스트를 구분하고 미검증 항목을 PASS로 오기재하지 않는다.
 - v5.9 역사적 테스트는 `backups/v5.9.html`, v5.9.1 현행 검사는 `index.html`+동결 백업을 사용한다.
+
+
+### RAAS v7 design authorization (2026-11-10)
+
+The user expressly approved a full **UI/UX redesign** while preserving the tested physiology, medications, learning sources, clinical answers/Lab release gates, and state contracts. The prior v5.9.1 B/P1/T1/K2/G1 visual layout is a historical baseline, not a ban on this approved v7 design. Never duplicate or rewrite the original engine/clinical rule logic just to restyle the interface. The v7 root entry loads the unchanged same-origin engine at `backups/v6.0-content-ia.html`. Run historical regression suites using that frozen v6 source, and run v7 integration browser tests on the root `index.html`. This app is for education, not patient-specific treatment prediction. Approval does not authorize future unreviewed model, gate, clinical, or major UX changes.
