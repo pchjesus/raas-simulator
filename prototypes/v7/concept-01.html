@@ -93,6 +93,27 @@
 @media(max-width:760px){.sidebar-help{display:none}.top-help{font-size:11px;padding:7px 10px}.topbar .tagline{max-width:180px}.hero{grid-template-columns:1fr;padding:28px 22px 25px;gap:6px}.hero h1{font-size:clamp(29px,6vw,39px);margin:14px 0 16px}.hero-art{height:238px;width:min(100%,370px);margin:auto;transform:none}.hero-actions .btn{flex:1 1 145px}.hero-subnote{font-size:10px!important}.unit-tabs{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 9px;scrollbar-width:thin}.unit-tab{flex:0 0 154px;min-height:74px;scroll-snap-align:start}.questions-bar{align-items:center}.question-rail-controls .caption{display:none}.lesson-outline{grid-auto-columns:minmax(235px,80%)}.lesson-workspace{padding:20px}.lesson-secondary{grid-template-columns:1fr}.lesson-counter .progress-track{width:70px}.help-dialog{padding:22px 18px}.help-steps{grid-template-columns:1fr}.coach{right:12px;bottom:90px;width:min(370px,calc(100vw - 24px))}.tour-target{outline-offset:2px}}
 @media(max-width:410px){.top-help{font-size:0;gap:0;min-width:36px;padding:8px}.top-help .icon{width:18px;height:18px}.unit-section-heading h2{font-size:16px}.unit-switcher{padding:16px}.lesson-workspace{padding:17px}.lesson-primary h2{font-size:23px}.hero-art{height:212px}.hero h1{font-size:30px}.help-actions .btn{flex:1 1 100%}}
 @media(prefers-reduced-motion:reduce){.coach,.tour-target,.hero-nodes{animation:none!important}}
+
+/* Concept 01-D — sidebar icon-only collapsed state and compact question rail.
+   Keep UI state, source copy and responsive mobile layout unchanged. */
+@media (min-width:761px) and (max-width:1080px){
+ .sidebar-help.btn{width:48px;min-width:48px;max-width:48px;height:48px;min-height:48px;margin:0;padding:0;display:grid;place-items:center;gap:0}
+ .sidebar-help .name{display:none}
+ .sidebar-help svg.icon{width:19px;height:19px}
+}
+@media (min-width:761px){
+ .question-tile{min-height:76px;padding:10px 15px;gap:4px}
+ .question-tile .question-label{font-size:15px;line-height:1.35;white-space:nowrap;word-break:normal}
+ .lesson-outline{grid-auto-columns:max-content}
+ .lesson-outline[data-count="1"]{grid-template-columns:minmax(0,1fr);grid-auto-flow:row}
+ .lesson-outline[data-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-flow:row}
+ .lesson-outline:not([data-count="1"]):not([data-count="2"]) .question-tile{min-width:235px}
+}
+/* Shorter desktop widths let intrinsic text width guide horizontal browsing. */
+@media (min-width:761px) and (max-width:900px){
+ .lesson-outline[data-count="2"]{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:max-content}
+ .lesson-outline[data-count="2"] .question-tile{min-width:260px}
+}
 </style>
 </head>
 <body>
@@ -128,7 +149,7 @@
   <button data-nav="cases"><svg class="icon"><use href="#ic-case"/></svg><span class="name">임상 적용</span><span class="tag">2</span></button>
  </nav></div>
  <div class="sidebar-note"><strong>학습 탐색 기록</strong><span id="sidebarProgress">열어본 항목 0 / 16</span><div class="microbar"><b id="sidebarProgressBar"></b></div><span style="font-size:11px">열람 기록일 뿐 이해도·숙달 판정은 아니야.</span></div>
- <button class="btn slim sidebar-help" type="button" data-help-open><svg class="icon"><use href="#ic-help"/></svg><span class="name">사용 안내</span></button><div class="sidebar-foot">DESIGN CONCEPT 01 · ENGINE SAFE</div>
+ <button class="btn slim sidebar-help" type="button" aria-label="사용 안내 열기" title="사용 안내" data-help-open><svg class="icon"><use href="#ic-help"/></svg><span class="name">사용 안내</span></button><div class="sidebar-foot">DESIGN CONCEPT 01 · ENGINE SAFE</div>
 </aside>
 <main class="workspace" id="main">
  <header class="topbar"><div class="tagline"><span class="pulse-dot"></span><span>몸의 항상성을 따라가는 인터랙티브 학습실</span></div><div class="topbar-right"><button class="btn slim top-help" type="button" data-help-open><svg class="icon"><use href="#ic-help"/></svg> 사용 안내</button><span class="pill">버전 <strong>v7 concept</strong></span><span class="pill">상태 <strong>디자인 시제품</strong></span></div></header>
@@ -289,6 +310,7 @@ function renderQuestionRail(){
   rail.querySelectorAll('button').forEach(button=>button.onclick=()=>selectLesson(Number(button.dataset.lesson),{focus:false}));
   rail.scrollLeft=0;shownQuestionUnit=unit;
  }
+ rail.dataset.count=String(items.length);
  $('unitQuestionCount').textContent=items.length+'개 질문';
  rail.querySelectorAll('button').forEach(button=>{const i=Number(button.dataset.lesson),current=i===state.lesson;button.classList.toggle('active',current);button.setAttribute('aria-current',current?'step':'false');button.querySelector('.viewed').textContent=state.seen.has(i)?'열람':''});
  const selected=rail.querySelector(`[data-lesson="${state.lesson}"]`);
