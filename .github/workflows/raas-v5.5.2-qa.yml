@@ -102,4 +102,5 @@ jobs:
             browser-v5.9.1-desktop-readability.png
             artifacts/v6/*.png
             artifacts/content-ia/*.png
+            artifacts/v7.1/*.png
           if-no-files-found: ignore
