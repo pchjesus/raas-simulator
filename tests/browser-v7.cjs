@@ -68,9 +68,14 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
       ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'default explorer has no page-wide overflow '+width);
       const modeSnapshot=await snap();
       const folder=path.join(root,'artifacts','v7.1');
+      const capture=async(file)=>{
+        // Full-page screenshots start at the origin, not at a focus-induced scroll offset.
+        await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+        await page.screenshot({path:path.join(folder,file),fullPage:true,animations:'disabled'});
+      };
       if(width===1440){
         fs.mkdirSync(folder,{recursive:true});
-        await page.screenshot({path:path.join(folder,'desktop-standard-1440x900.png'),fullPage:true,animations:'disabled'});
+        await capture('desktop-standard-1440x900.png');
       }
       await page.locator('#modeCompact').click();
       ok(await page.locator('#v7ApplyDrug').isVisible(),'compact keeps drug application');
@@ -89,7 +94,7 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
       ok(position.singleResults&&position.overflow,'one output panel and no horizontal overflow '+width);
       ok((await snap()).current.bp===modeSnapshot.current.bp,'mode change keeps original physiology '+width);
       if(width===1440){
-        await page.screenshot({path:path.join(folder,'desktop-compact-1440x900.png'),fullPage:true,animations:'disabled'});
+        await capture('desktop-compact-1440x900.png');
         await page.setViewportSize({width:1024,height:900});
         ok(await page.locator('#outputCard').evaluate(el=>el.parentElement.id)==='compactDock','resize to narrow re-docks live results');
         await page.setViewportSize({width:1440,height:900});
@@ -115,7 +120,7 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
       if(width===1440){
         await nav('learn');
         await page.evaluate(()=>selectLesson(9));
-        await page.screenshot({path:path.join(folder,'learning-acei-1440x900.png'),fullPage:true,animations:'disabled'});
+        await capture('learning-acei-1440x900.png');
         await nav('cases');
       }
       const clinical=()=>page.evaluate(()=>document.querySelector('#v7EngineFrame').contentWindow.RAASV6.clinicalView());
@@ -123,7 +128,8 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
         const answer=page.locator('#v71AnswerOptions .v71-choice').first();
         ok(await answer.isVisible(),'visible v7 answer option at '+width);
         ok(await page.locator('#v71Submit').isDisabled(),'cannot submit without selection at '+width);
-        await answer.click();
+        if(width===1440){await answer.focus();await page.keyboard.press('Enter')}
+        else await answer.click();
         ok(await page.locator('#v71Submit').isEnabled(),'option selection enables explicit submission at '+width);
         await page.locator('#v71Submit').click();
         ok(await page.locator('#v71AnswerFeedback').isVisible(),'v7 source-backed feedback after submission at '+width);
@@ -164,7 +170,7 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
           if(qi===0){
             ok(originalLabVisible,'first question explicitly permits post-action Lab '+codeName);
             if(width===1440){
-              await page.screenshot({path:path.join(folder,'clinical-'+codeName+'-feedback-1440x900.png'),fullPage:true,animations:'disabled'});
+              await capture('clinical-'+codeName+'-feedback-1440x900.png');
             }
             await nav('learn');
             ok(await page.locator('#v71ClinicalWorkspace').isHidden(),'clinical workspace hides when studying '+codeName);
@@ -181,7 +187,7 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
         ok(await page.locator('#v71ReviewJudgements .v71-review-card').count()===questions,'complete judgment reviews '+codeName);
         ok(await page.locator('#v71ReviewActions .v71-review-card').count()===actions,'complete nursing reviews '+codeName);
         if(width===1440){
-          await page.screenshot({path:path.join(folder,'clinical-'+codeName+'-review-1440x900.png'),fullPage:true,animations:'disabled'});
+          await capture('clinical-'+codeName+'-review-1440x900.png');
         }
         await page.locator('#v71Restart').click();
         c=await clinical();
