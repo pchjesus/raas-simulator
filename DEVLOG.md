@@ -1,3 +1,14 @@
+
+## 2026-11-10 — v7 Experience Reimagined (main 배포 후보)
+
+- 기존 v6 UI를 다시 그린 RAAS.LAB 홈·탐구·학습·임상 탐색을 신규 설계하고, 별도 브랜치에서 검증한 뒤 루트 `index.html`에 배치.
+- 원본 생리 계산·약물 적용/제거·9단계·그래프·16항목 교육 내용·ACEi 실습·CKD/HFrEF 정답/간호 행동/Lab 공개 조건은 수정하지 않음. 검증된 백업 `backups/v6.0-content-ia.html`을 동일 출처의 모델·임상 실행 컨텍스트로 로드.
+- 학습 심화 원문(의학적 의미·간호 사정·근거)을 별도 접기 영역으로 보존. 간편/기본 조작, 사용 안내와 따라하기, 새 레이아웃의 접근성과 중복 표시 보완.
+- 기존 Node 19개 역사적 회귀 PASS, v7 통합 Chromium 로컬 183개 PASS (390/1024/1440 CSS px). GitHub CI 결과는 관련 PR에서 별도 확인. 모바일 실기기/Safari/스크린리더/의학 전문가 검증은 미실시.
+- 기존 history·백업 보존. 테스트는 기존 v6 백업 복사본과 신규 v7 통합 E2E를 분리하여 수행한다.
+
+---
+
 ## Documentation policy — Educational UI/UX Design Standard v1.1 (2026-10-15)
 
 - **Scope: documentation only; risk L.** User conditionally requested adoption after compatibility evaluation across Ventilator, RAAS, and Cardiac. [v1.1](docs/EDUCATIONAL_UI_DESIGN_STANDARD_v1.1.md) is the active future-design standard; [v1.0](docs/EDUCATIONAL_UI_DESIGN_STANDARD_v1.0.md) is intact as earlier approved history.
@@ -1694,3 +1705,19 @@ AI는 단순히 요구사항을 코드로 추가하는 것에 그치지 않고 �
 학습은 5단원 guided 코스 현재 주제 1개와 2종 자유 탐색 전환으로 정돈하고, 마지막 5단원에 임상 적용 전 확인 사항을 제공한다. 임상은 환자 핵심 정보를 상시 표시하고 상세 조건은 접을 수 있게 하며, 기존에 숨겨진 가상 Lab의 안전 해석을 기본 공개한다. 출처·기존 정답·임상 세션·Lab 데이터 불변을 QA 게이트로 확인한다.
 
 작업 브랜치 CI: 18개 Node 스위트/11,097 검사, 기존+신규 Chromium 192 검사 PASS. 브랜치 PR #8, 상세 기록은 `DESIGN_V5.9.1_READABILITY.md` 및 `V5.9.1_QA_REPORT.md`. 실기기·스크린리더·가상 Lab 전문가 감수는 별도 미검증이며 v6.0 조건에 자동 포함되지 않는다.
+# 2026-10-27 — v6.0 학습 경험 후보
+
+- 사용자 승인된 허브+3영역 직접 이동을 구현. 16항목의 목표/작용 위치/기존 콘텐츠를 인접 배치.
+- 7단계 실제 DOM 스포트라이트, 종료/건너뛰기/Escape/초점·표시영역 복귀 및 대상 부재 대응.
+- ACEi 비채점 예상→확정→9단계 관찰→간호 연결. 기존 순수 계산 함수 재사용, 메인/임상 상태 격리.
+- 기존 임상 사전 브리핑을 명확히 하고 판단/행동/조건부 Lab/복습 게이트를 보존.
+- 공통 키트 계약·후보 백업·브라우저/정적 무결성 검사·CI 통합. 상세 증거는 docs/QA_V6_LEARNING_EXPERIENCE.md.
+- main 병합/공개 없음. 사용자 디자인 검토 및 GitHub API 접근 복구 후 PR 생성이 남음.
+
+## 2026-10-27 — v6 후속 교육 콘텐츠·정보 위계
+
+- `f4bbd9f`에서 `feat/v6-learning-content-ia`를 분기. 16항목별 질문·선행 개념·활동·확인 근거·해석을 연결했다. 실제 약물 표적/모델상 연관 위치를 구분하고 기존 자료를 읽는다.
+- 현재 조회/진행/최대 도달을 분리 표시하고 Canvas→조작→기전→현재값→그래프로 재배치. 전체 경로·계산 분해는 펼치기로 유지한다.
+- ACEi 비교표에 동일 단계 출력의 차이를 표시하고 임상 간호 사정/보고/교육을 기존 답변 게이트 안에서 기본 공개했다.
+- 로컬 FULL: Node 19스위트 11,107 checks 및 Chromium 658 checks PASS. 상세 명령/범위/미검증은 `docs/QA_V6_CONTENT_IA.md`. 기존 후보 백업/스크린샷 보존, 새 백업 `backups/v6.0-content-ia.html`.
+- GitHub API 접근이 복구되어 기존 v6 브랜치 대상 후속 PR을 생성한다. 사용자 디자인 확인 전 main 병합·공개 없음.

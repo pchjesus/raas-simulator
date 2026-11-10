@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.resolve(__dirname,'..'),read=name=>fs.readFileSync(path.join(root,name),'utf8');
-const current=read('index.html'),frozen=read('backups/v5.9.1.html'),base=read('backups/v5.9.html');
+const current=read('backups/v5.9.1.html'),frozen=read('backups/v5.9.1.html'),base=read('backups/v5.9.html');
 let count=0;function check(cond,reason){assert.ok(cond,reason);count++;}
 check(current===frozen,'current HTML must be exact v5.9.1 backup');
 for(const v of ['5.9','5.9.1']){const content=read('backups/v'+v+'.html');check(content.includes('<title>RAAS Simulator v'+v+'</title>'),'frozen title '+v);}

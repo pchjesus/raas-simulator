@@ -1,7 +1,7 @@
-name: RAAS v5.9.1 readability and historical regression
+name: RAAS historical and v7 integration regression
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/learning-experience-v6]
   push:
     branches: [main]
   workflow_dispatch:
@@ -12,7 +12,8 @@ concurrency:
 
 jobs:
   qa:
-    runs-on: ubuntu-latest
+    # Playwright 1.56 supports Ubuntu 24.04; latest is migrating to Ubuntu 26.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout exact PR commit
@@ -26,6 +27,20 @@ jobs:
         run: |
           bash scripts/ci-scope.sh --self-test
           bash scripts/ci-scope.sh
+      - name: Preserve v7 entry; test original v6 from canonical backup
+        if: steps.scope.outputs.tier != 'docs'
+        id: v7_fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -q 'RAAS Simulator v7' index.html; then
+            cp index.html /tmp/raas-v7-index.html
+            cp backups/v6.0-content-ia.html index.html
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+            echo 'Historical tests use the frozen, byte-identical v6 source.'
+          else
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+          fi
       - name: Setup Node.js 22
         if: steps.scope.outputs.tier != 'docs'
         uses: actions/setup-node@v4
@@ -45,8 +60,11 @@ jobs:
         if: steps.scope.outputs.tier != 'docs'
         shell: bash
         run: |
-          npm install --no-save --ignore-scripts playwright@1.56.0
-          npx playwright install --with-deps chromium
+          set -euo pipefail
+          install_log="$(mktemp)"
+          trap 'tail -n 12 "$install_log" | sed "s/^/::error::Browser setup: /"' ERR
+          npm install --no-save --ignore-scripts playwright@1.56.0 2>&1 | tee "$install_log"
+          npx playwright install --with-deps chromium 2>&1 | tee -a "$install_log"
       - name: Run headless Chromium checks
         if: steps.scope.outputs.tier == 'full'
         run: node tests/browser-v5.5.2.cjs
@@ -56,6 +74,19 @@ jobs:
       - name: Run current v5.9.1 readability and session Chromium checks
         if: steps.scope.outputs.tier != 'docs'
         run: node tests/browser-v5.9.1.cjs
+      - name: Run v6 learning experience and live clinical checks
+        if: steps.scope.outputs.tier != 'docs'
+        run: |
+          node tests/browser-v6.cjs
+          RAAS_TEST_TARGET=index.html node tests/browser-v5.9.cjs
+          node tests/browser-content-ia.cjs
+      - name: Restore v7 and test real same-origin engine integration
+        if: steps.scope.outputs.tier != 'docs' && steps.v7_fixture.outputs.enabled == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/raas-v7-index.html index.html
+          node tests/browser-v7.cjs
       - name: Upload browser screenshots
         if: always() && steps.scope.outputs.tier != 'docs'
         uses: actions/upload-artifact@v4
@@ -68,4 +99,6 @@ jobs:
             browser-v5.9.1-mobile-readability.png
             browser-v5.9.1-clinical-readability.png
             browser-v5.9.1-desktop-readability.png
+            artifacts/v6/*.png
+            artifacts/content-ia/*.png
           if-no-files-found: ignore

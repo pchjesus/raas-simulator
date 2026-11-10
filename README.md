@@ -2,6 +2,12 @@
 
 # RAAS Simulator
 
+현재 작업 브랜치는 **v6.0 학습 경험 재설계 후보**입니다. 기본 학습 허브, 기존 3영역 직접 이동, 실제 UI 스포트라이트 및 독립 ACEi 예상 실습을 제공합니다. 모델·임상 자료·채점·Lab 공개 계약은 v5.9.1과 같습니다. 디자인 승인 전 main에 병합하지 않습니다.
+
+설계: [v6 계약](docs/DESIGN_V6_LEARNING_EXPERIENCE.md) · [Learning Experience Kit](docs/SIMULATOR_LEARNING_EXPERIENCE_KIT_v0.1.md) · [검증 결과](docs/QA_V6_LEARNING_EXPERIENCE.md). 아래 v5.9.1 설명은 기존 기능과 기준선의 기록입니다.
+
+v6 후속 브랜치 `feat/v6-learning-content-ia`는 [16항목 콘텐츠·화면 계약](docs/DESIGN_V6_CONTENT_IA.md)에 따라 핵심 질문/관련 기전/학습 활동/간호/근거의 순서를 적용합니다. 원래 v6 후보 백업은 유지하고 후속 실행물은 `backups/v6.0-content-ia.html`에 보존합니다. 새 검증·스크린샷·변경 파일은 [후속 QA 기록](docs/QA_V6_CONTENT_IA.md)에서 확인할 수 있습니다.
+
 RAAS(Renin-Angiotensin-Aldosterone System)를 단계적으로 시각화하고, 약물 개입에 따른 생리적 변화를 학습하기 위한 교육용 웹 시뮬레이터.
 
 ## 1. 프로젝트 목적
@@ -26,7 +32,12 @@ RAAS의 기본적인 생리적 흐름을 시각적으로 이해하고, 주요 �
 
 ## 2. 현재 버전
 
-**v5.9.1 (가독성 개선 · 자동 QA PASS · 실기기 수동 QA 미검증)**
+**v7.0 — RAAS.LAB 사용자 경험 전면 개편 (생리학 엔진·임상 게이트 v6 원본 유지)**
+
+> v7의 메인 진입점은 `index.html`이며, 같은 출처의 `backups/v6.0-content-ia.html`을 검증된 원본 엔진·임상 기능으로 불러온다. 따라서 **전체 저장소를 정적 호스팅**해야 하며 `index.html` 파일 하나만 단독 복사해서는 동작하지 않는다. 홈·RAAS 탐구·5단원 16문항·ACEi 실습·CKD/HFrEF 사례를 제공한다. 교육용 단순화 모델로 실제 환자를 예측하지 않는다. 모바일 실기기·Safari·수동 스크린리더·의학 전문가는 별도로 검증해야 한다.
+
+### 기록 보존: 아래 설명은 v5.9.1~v6 이전 UI의 개발 이력이다.
+
 
 현재 단계:
 
@@ -36,7 +47,7 @@ RAAS의 기본적인 생리적 흐름을 시각적으로 이해하고, 주요 �
 
 ## 3. 실행 방법
 
-현재 프로젝트는 별도의 빌드 시스템이나 외부 라이브러리를 사용하지 않는 단일 HTML 기반 웹 애플리케이션이다.
+현재 프로젝트는 빌드 시스템이나 외부 JavaScript 패키지 없이 동작하는 정적 HTML 기반 교육용 웹앱이다. v7 `index.html`은 단일 출처의 검증된 v6 백업 화면을 브라우저 프레임으로 불러와 원본 계산·임상 상태를 유지한다.
 
 `index.html`을 웹 브라우저에서 실행하면 사용할 수 있다.
 

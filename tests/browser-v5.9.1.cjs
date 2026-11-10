@@ -5,7 +5,8 @@ function ok(value,reason){checks++;assert.ok(value,reason)}
 try{
  const page=await browser.newPage({viewport:{width:1365,height:900}});page.on('pageerror',err=>errors.push(err.stack||err.message));
  await page.goto('file://'+path.resolve(__dirname,'../index.html'));
- ok(await page.title()==='RAAS Simulator v5.9.1','correct version');
+ ok(await page.title()==='RAAS Simulator v6.0 후보','correct version');
+ await page.locator('#normalModeButton').click();
  ok(await page.locator('#canvas').isVisible(),'desktop original Canvas');
  ok(await page.locator('.control-group').count()===3,'three functional control groups');
  ok(await page.locator('#physiologyGraph').evaluate(e=>e.width===1000&&e.height===290),'graph bitmap unchanged');
