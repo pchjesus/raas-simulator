@@ -45,7 +45,8 @@ const close=()=>new Promise(resolve=>server.close(resolve));
    await nav('learn');x=await layout();
    ok(x.overflow<=1,'learning no global overflow '+width);
    ok(x.unit.height<=205,'unit switcher density '+width+' ('+x.unit.height+'px)');
-   ok(x.unitButton.height>=60&&x.unitButton.height<=75,'unit card compact but legible '+width);
+   ok(x.unitButton.height>=60&&x.unitButton.height<=95,'unit card compact but legible '+width+' ('+x.unitButton.height+'px)');
+   ok(await page.locator('.unit-tab').first().evaluate(el=>el.scrollHeight<=el.clientHeight+1),'unit card content not clipped '+width);
    ok(x.question.height>=72&&x.question.height<=100,'question tile compact and wraps as needed '+width);
    ok(await page.locator('#lessonUnitTabs .unit-tab').count()===5,'all 5 units present '+width);
    for(let i=0;i<5;i++){
