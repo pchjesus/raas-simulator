@@ -60,9 +60,38 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
       await page.locator('#v7CloseLegacy').click();
       await nav('explore');
       ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'default explorer has no page-wide overflow '+width);
+      const modeSnapshot=await snap();
+      const folder=path.join(root,'artifacts','v7.1');
+      if(width===1440){
+        fs.mkdirSync(folder,{recursive:true});
+        await page.screenshot({path:path.join(folder,'desktop-standard-1440x900.png'),fullPage:true,animations:'disabled'});
+      }
       await page.locator('#modeCompact').click();
       ok(await page.locator('#v7ApplyDrug').isVisible(),'compact keeps drug application');
+      const position=await page.evaluate(()=>{
+        const p=document.querySelector('.path-card').getBoundingClientRect();
+        const m=document.querySelector('#outputCard').getBoundingClientRect();
+        return {outputParent:document.querySelector('#outputCard').parentElement.id,
+          drugParent:document.querySelector('#drugCard').parentElement.id,
+          sameLeft:Math.abs(p.left-m.left)<3,belowPath:m.top>=p.bottom-1,
+          singleResults:document.querySelectorAll('#outputCard').length===1,
+          overflow:document.documentElement.scrollWidth<=innerWidth+1};
+      });
+      ok(position.drugParent==='compactDock','compact drug controls remain on right '+width);
+      ok(position.outputParent===(width>1160?'compactResults':'compactDock'),'compact results responsive parent '+width);
+      if(width>1160)ok(position.sameLeft&&position.belowPath,'compact metrics sit under pathway '+width);
+      ok(position.singleResults&&position.overflow,'one output panel and no horizontal overflow '+width);
+      ok((await snap()).current.bp===modeSnapshot.current.bp,'mode change keeps original physiology '+width);
+      if(width===1440){
+        await page.screenshot({path:path.join(folder,'desktop-compact-1440x900.png'),fullPage:true,animations:'disabled'});
+        await page.setViewportSize({width:1024,height:900});
+        ok(await page.locator('#outputCard').evaluate(el=>el.parentElement.id)==='compactDock','resize to narrow re-docks live results');
+        await page.setViewportSize({width:1440,height:900});
+        ok(await page.locator('#outputCard').evaluate(el=>el.parentElement.id)==='compactResults','resize wide restores left result lane');
+      }
       await page.locator('#modeStandard').click();
+      ok(await page.locator('#outputCard').evaluate(el=>el.parentElement.id)==='experiment','standard restores original graph panel');
+      ok(await page.locator('#drugCard').evaluate(el=>el.parentElement.id)==='experiment','standard restores drug panel');
       await page.locator('[data-drug="acei"]').first().click();
       ok((await snap()).current.bp===120,'select target is read only');
       await page.locator('#v7ApplyDrug').click();
