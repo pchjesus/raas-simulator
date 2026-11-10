@@ -1,7 +1,7 @@
 # RAAS Simulator v7 — Experience Reimagined / Design Contract DRAFT
 
 > Status: **DESIGN DRAFT; user visual approval pending**. Created 2026-11-10.
-> Design branch: \`feat/v7-experience-reimagined\`; baseline: \`feat/v6-learning-content-ia\` @ \`972b525fc16e80a7ab0fdbea752ace00226d072b\`.
+> Design branch: `feat/v7-experience-reimagined`; baseline: `feat/v6-learning-content-ia` @ `972b525fc16e80a7ab0fdbea752ace00226d072b`.
 > **No main merge, no public deployment, no existing engine/UI overwrite.** This is an explicitly authorized UX/UI full-reimagination initiative, not authorization to change existing scientific/clinical data or release gates.
 
 ## 1. Product goal
@@ -33,7 +33,7 @@ The new diagram represents simplified conceptual adjacency, not physiological ti
 ## 3. Non-regression contract (mandatory)
 
 - Keep all 9 original stages; 6 drugs + no-drug state; current step / max reached / selected-view distinction and original apply/remove/reset semantics.
-- Preserve single authoritative \`stageData\`, \`drugData\`, \`clinicalStageNotes\`, \`clinicalDrugNotes\`, \`calculatePhysiologyAtStep\`, BP / Na⁺ / volume / GFR and source-backed educational notes.
+- Preserve single authoritative `stageData`, `drugData`, `clinicalStageNotes`, `clinicalDrugNotes`, `calculatePhysiologyAtStep`, BP / Na⁺ / volume / GFR and source-backed educational notes.
 - Preserve current engine outputs, graph series / conditions / units, original Canvas as a **fallback/verification baseline**, stage access via keyboard/touch, original-size graph exploration on mobile.
 - Keep v6 five units / sixteen items, free exploration, read-only tutorial, ACEi **predict → confirm → observe** gate, model-vs-clinical safety notes, session navigation/return/reset.
 - Keep both CKD and HFrEF cases, all current questions, answer explanations, nursing actions, gated Lab data and release conditions, and state ownership boundaries.
@@ -67,18 +67,18 @@ Suggested implementation stages after visual direction approval:
 
 - **Prototype only**: local Chromium interaction/reflow checks performed at 320/390/760/1024/1440 CSS pixels: 60/60 scenario assertions PASS after fixing a test-only uppercase-expectation mismatch. This is NOT an app integration or release certification.
 - **NOT RUN**: integration with original v6 engine and clinical answers; CI on this branch; actual iOS/Android devices; Safari; manual assistive technology/zoom testing; educator review; learner comprehension/effectiveness studies.
-- No existing functional code, baseline \`main\`, historical tests, candidate backups or published Pages changed by creating this design document.
+- No existing functional code, baseline `main`, historical tests, candidate backups or published Pages changed by creating this design document.
 
 ## 7. References
 
-Project sources: \`docs/DESIGN_V6_CONTENT_IA.md\`, \`docs/QA_V6_CONTENT_IA.md\`, \`docs/EDUCATIONAL_UI_DESIGN_STANDARD_v1.1.md\`, \`docs/AI_ASSISTED_DEVELOPMENT_BPLUS_v1.0.md\`, \`AGENTS.md\`.
+Project sources: `docs/DESIGN_V6_CONTENT_IA.md`, `docs/QA_V6_CONTENT_IA.md`, `docs/EDUCATIONAL_UI_DESIGN_STANDARD_v1.1.md`, `docs/AI_ASSISTED_DEVELOPMENT_BPLUS_v1.0.md`, `AGENTS.md`.
 
 Design-kkakgi (approved guidelines v1.3; supporting *reference research, not automatic style approval*):
-- \`references/UI_PATTERN_FIELD_ATLAS_v0.1_20261105.md\`
-- \`references/MOTION_INDICATOR_ATLAS_v0.1_20261105.md\`
-- \`references/UI_MOTION_BEHAVIOR_ADDENDUM_v0.1_20261108.md\`
-- \`references/TEXT_MOTION_LAB_NOTE_01_20261108.md\`
-- \`references/COLOR_BALANCE_CONTRAST_NOTE_v0.1_20261110.md\`
-- \`references/ORIGIN_REFERENCE_CARDIAC_SIMULATOR_v0.1_20261022.md\`
+- `references/UI_PATTERN_FIELD_ATLAS_v0.1_20261105.md`
+- `references/MOTION_INDICATOR_ATLAS_v0.1_20261105.md`
+- `references/UI_MOTION_BEHAVIOR_ADDENDUM_v0.1_20261108.md`
+- `references/TEXT_MOTION_LAB_NOTE_01_20261108.md`
+- `references/COLOR_BALANCE_CONTRAST_NOTE_v0.1_20261110.md`
+- `references/ORIGIN_REFERENCE_CARDIAC_SIMULATOR_v0.1_20261022.md`
 
 **Next decision**: review the interactive prototype's visual identity, desktop/mobile organization, pathway navigation, and animation strength. Once approved, proceed to integration via separate, reviewable commits.
