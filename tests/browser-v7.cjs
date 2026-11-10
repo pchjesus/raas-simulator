@@ -158,7 +158,7 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
           c=await clinical();
           ok(c.phase==='action-feedback','original action feedback '+codeName+' Q'+qi);
           ok(c.actionFeedback?.assessment?.length>0,'original nursing assessment available '+codeName+' Q'+qi);
-          const originalLabVisible=await frame.locator('#scenarioLabPanel').isVisible();
+          const originalLabVisible=await frame.locator('#scenarioLabPanel').evaluate(el=>!el.hidden);
           ok(await page.locator('#v71ClinicalLab').isVisible()===originalLabVisible,'Lab UI follows original gate '+codeName+' Q'+qi);
           ok((c.lab!==null)===originalLabVisible,'Lab projection follows original release '+codeName+' Q'+qi);
           if(qi===0){
