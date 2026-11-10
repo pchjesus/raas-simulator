@@ -59,6 +59,7 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
       ok((await snap()).current.bp===120,'practice main model isolation');
       await page.locator('#v7CloseLegacy').click();
       await nav('explore');
+      ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'default explorer has no page-wide overflow '+width);
       await page.locator('#modeCompact').click();
       ok(await page.locator('#v7ApplyDrug').isVisible(),'compact keeps drug application');
       await page.locator('#modeStandard').click();
