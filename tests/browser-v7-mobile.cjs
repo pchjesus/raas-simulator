@@ -24,7 +24,7 @@ const close=()=>new Promise(resolve=>server.close(resolve));
    await page.waitForFunction(()=>document.getElementById('v7EngineStatus')?.textContent.includes('연결됨'));
    const nav=async(v)=>page.locator('button[data-nav="'+v+'"]:visible').first().click();
    const layout=async()=>page.evaluate(()=>{
-    const q=s=>document.querySelector(s),rect=s=>{const r=q(s).getBoundingClientRect();return {height:r.height,width:r.width,left:r.left,right:r.right}};
+    const q=s=>document.querySelector(s),rect=s=>{const el=q(s);if(!el)return null;const r=el.getBoundingClientRect();return {height:r.height,width:r.width,left:r.left,right:r.right}};
     return {overflow:document.documentElement.scrollWidth-innerWidth,help:rect('.top-help'),tagline:rect('.topbar .tagline'),
     unit:rect('.unit-switcher'),unitButton:rect('.unit-tab'),question:rect('.question-tile'),stage:rect('.stage-track button'),path:rect('.path-card'),
     toolbar:Array.from(document.querySelectorAll('#view-explore .toolbar-actions>.btn')).map(e=>({height:e.getBoundingClientRect().height,scroll:e.scrollWidth,client:e.clientWidth}))}
