@@ -112,28 +112,89 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
       await page.locator('#v7ResetProgress').click();
       ok((await snap()).currentStep===-1,'progress reset');
       await nav('cases');
-      await page.locator('#v7StartClinical').click();
-      ok(await page.locator('#v7LegacyPortal').isVisible(),'real CKD case');
-      ok(await page.locator('.phase-preview').isHidden(),'duplicate static case guide hidden');
-      ok(await frame.locator('#scenarioLabPanel').isHidden(),'CKD Lab initially gated');
-      await frame.locator('#scenarioChoice1').click();
-      ok(await frame.locator('#scenarioFeedbackNursing').isVisible(),'original nursing feedback');
-      await frame.locator('#scenarioActionStartButton').click();
-      await frame.locator('#scenarioActionChoice1').click();
-      ok(await frame.locator('#scenarioLabPanel').isVisible(),'CKD Lab after action');
-      await page.locator('#v7CloseLegacy').click();
-      ok(await page.locator('.phase-preview').isVisible(),'case selection returns');
-      await page.locator('[data-case="hfref"]').click();
-      await page.locator('#v7StartClinical').click();
-      ok(await frame.locator('#scenarioLabPanel').isHidden(),'HFrEF Lab initially gated');
-      await frame.locator('#scenarioChoice1').click();
-      await frame.locator('#scenarioActionStartButton').click();
-      await frame.locator('#scenarioActionChoice1').click();
-      ok(await frame.locator('#scenarioLabPanel').isVisible(),'HFrEF Lab after action');
+      if(width===1440){
+        await nav('learn');
+        await page.evaluate(()=>selectLesson(9));
+        await page.screenshot({path:path.join(folder,'learning-acei-1440x900.png'),fullPage:true,animations:'disabled'});
+        await nav('cases');
+      }
+      const clinical=()=>page.evaluate(()=>document.querySelector('#v7EngineFrame').contentWindow.RAASV6.clinicalView());
+      const selectAndSubmit=async()=>{
+        const answer=page.locator('#v71AnswerOptions .v71-choice').first();
+        ok(await answer.isVisible(),'visible v7 answer option at '+width);
+        ok(await page.locator('#v71Submit').isDisabled(),'cannot submit without selection at '+width);
+        await answer.click();
+        ok(await page.locator('#v71Submit').isEnabled(),'option selection enables explicit submission at '+width);
+        await page.locator('#v71Submit').click();
+        ok(await page.locator('#v71AnswerFeedback').isVisible(),'v7 source-backed feedback after submission at '+width);
+      };
+      for(const [codeName,questions,actions] of [['ckd',3,3],['hfref',2,2]]){
+        if(codeName==='hfref')await page.locator('[data-case="hfref"]').click();
+        await page.locator('#v7StartClinical').click();
+        ok(await page.locator('#v71ClinicalWorkspace').isVisible(),'v7 clinical workspace visible '+codeName+' '+width);
+        ok(await page.locator('#v7LegacyPortal').isHidden(),'original v6 interface is not user-facing during clinical mode '+codeName);
+        ok(await page.locator('.phase-preview').isHidden(),'static v7 clinical guide hidden while solving '+codeName);
+        let c=await clinical();
+        ok(c.phase==='judgement'&&c.knowledgeDone===0&&c.actionDone===0,'fresh original v6 case state '+codeName);
+        ok(c.question?.choices?.length===3,'three original choices in first question '+codeName);
+        ok(c.judgementFeedback===null&&c.actionFeedback===null&&c.lab===null,'projection does not leak answer or Lab before submission '+codeName);
+        ok(await page.locator('#v71AnswerFeedback').isHidden(),'v7 feedback gated before selection '+codeName);
+        ok(await page.locator('#v71ClinicalLab').isHidden(),'v7 Lab gated before selection '+codeName);
+        for(let qi=0;qi<questions;qi++){
+          c=await clinical();
+          ok(c.phase==='judgement','judgement prompt phase '+codeName+' Q'+qi);
+          ok((await page.locator('#v71TaskPrompt').innerText())===c.question.prompt,'question text matches authoritative original '+codeName+' Q'+qi);
+          await selectAndSubmit();
+          c=await clinical();
+          ok(c.phase==='judgement-feedback'&&!!c.judgementFeedback,'original judgement gate opened '+codeName+' Q'+qi);
+          ok(c.lab===null,'no Lab released after judgement only '+codeName+' Q'+qi);
+          ok(await page.locator('#v71ClinicalLab').isHidden(),'no visible early Lab '+codeName+' Q'+qi);
+          ok((await page.locator('#v71FeedbackCompare').innerText()).includes(c.judgementFeedback.selected),'selected choice feedback is source-backed '+codeName+' Q'+qi);
+          ok(await page.locator('#v71Continue').isVisible(),'action transition offered after feedback '+codeName+' Q'+qi);
+          await page.locator('#v71Continue').click();
+          c=await clinical();
+          ok(c.phase==='action'&&!!c.actionQuestion,'original action stage '+codeName+' Q'+qi);
+          await selectAndSubmit();
+          c=await clinical();
+          ok(c.phase==='action-feedback','original action feedback '+codeName+' Q'+qi);
+          ok(c.actionFeedback?.assessment?.length>0,'original nursing assessment available '+codeName+' Q'+qi);
+          const originalLabVisible=await frame.locator('#scenarioLabPanel').isVisible();
+          ok(await page.locator('#v71ClinicalLab').isVisible()===originalLabVisible,'Lab UI follows original gate '+codeName+' Q'+qi);
+          ok((c.lab!==null)===originalLabVisible,'Lab projection follows original release '+codeName+' Q'+qi);
+          if(qi===0){
+            ok(originalLabVisible,'first question explicitly permits post-action Lab '+codeName);
+            if(width===1440){
+              await page.screenshot({path:path.join(folder,'clinical-'+codeName+'-feedback-1440x900.png'),fullPage:true,animations:'disabled'});
+            }
+            await nav('learn');
+            ok(await page.locator('#v71ClinicalWorkspace').isHidden(),'clinical workspace hides when studying '+codeName);
+            await nav('cases');
+            ok((await clinical()).phase==='action-feedback','clinical feedback persists after navigation '+codeName);
+            ok(await page.locator('#v71ClinicalWorkspace').isVisible(),'v7 clinical workspace resumes '+codeName);
+          }
+          await page.locator('#v71Continue').click();
+        }
+        c=await clinical();
+        ok(c.phase==='result'&&c.result!==null,'original complete result released '+codeName);
+        ok(c.knowledgeDone===questions&&c.actionDone===actions,'all judgment and action responses retained '+codeName);
+        ok(await page.locator('#v71ClinicalReview').isVisible(),'v7 result review shown '+codeName);
+        ok(await page.locator('#v71ReviewJudgements .v71-review-card').count()===questions,'complete judgment reviews '+codeName);
+        ok(await page.locator('#v71ReviewActions .v71-review-card').count()===actions,'complete nursing reviews '+codeName);
+        if(width===1440){
+          await page.screenshot({path:path.join(folder,'clinical-'+codeName+'-review-1440x900.png'),fullPage:true,animations:'disabled'});
+        }
+        await page.locator('#v71Restart').click();
+        c=await clinical();
+        ok(c.phase==='judgement'&&c.knowledgeDone===0&&c.actionDone===0,'explicit restart resets original answers '+codeName);
+        ok(c.lab===null&&c.judgementFeedback===null,'restart re-locks feedback and Lab '+codeName);
+        await page.locator('#v71ReturnCases').click();
+        ok(await page.locator('#v71ClinicalWorkspace').isHidden(),'return to case catalog '+codeName);
+        ok(await page.locator('#v7StartClinical').isVisible(),'case chooser controls restored '+codeName);
+      }
       const current=(await snap()).current.bp;
       await nav('learn');
-      ok(await page.locator('#v7LegacyPortal').isHidden(),'tab hides case without reset');
-      ok((await snap()).current.bp===current,'tab preserves model state');
+      ok(await page.locator('#v7LegacyPortal').isHidden(),'tab hides legacy activity without reset');
+      ok((await snap()).current.bp===current,'study navigation preserves physiology after case flows');
       ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no page-wide overflow '+width);
       ok(errors.length===0,'no JS errors '+width+': '+errors.join('; '));
       await page.close();
