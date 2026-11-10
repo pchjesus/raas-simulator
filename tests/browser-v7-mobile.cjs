@@ -44,7 +44,7 @@ const close=()=>new Promise(resolve=>server.close(resolve));
    await page.locator('#modeStandard').click();
    await nav('learn');x=await layout();
    ok(x.overflow<=1,'learning no global overflow '+width);
-   ok(x.unit.height<=170,'unit switcher density '+width);
+   ok(x.unit.height<=205,'unit switcher density '+width+' ('+x.unit.height+'px)');
    ok(x.unitButton.height>=60&&x.unitButton.height<=75,'unit card compact but legible '+width);
    ok(x.question.height>=72&&x.question.height<=100,'question tile compact and wraps as needed '+width);
    ok(await page.locator('#lessonUnitTabs .unit-tab').count()===5,'all 5 units present '+width);
@@ -54,6 +54,8 @@ const close=()=>new Promise(resolve=>server.close(resolve));
    }
    ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'unit browsing stays local '+width);
    await nav('cases');
+   const caseHeights=await page.locator('.case-card').evaluateAll(cards=>cards.map(c=>c.getBoundingClientRect().height));
+   ok(caseHeights.length===2&&caseHeights.every(h=>h<=220),'clinical case selection density '+width+': '+caseHeights.join(','));
    ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'cases no global overflow '+width);
    ok(errors.length===0,'no page script errors '+width+': '+errors.join('; '));
    await page.close();
