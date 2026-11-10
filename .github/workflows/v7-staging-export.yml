@@ -17,7 +17,7 @@ jobs:
           name: raas-v7-staging-source
           path: |
             index.html
-            backups/v6.0-content-ia.html
+            backups/
             prototypes/v7/concept-01.html
             tests/
             scripts/
