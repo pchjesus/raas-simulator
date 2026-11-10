@@ -42,7 +42,7 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
       for(let i=0;i<all.length;i++){
         await page.evaluate(i=>selectLesson(i),i);
         ok((await page.locator('#lessonQuestion').innerText())===all[i].question,'question '+i);
-        ok((await page.locator('#lessonMechanism').innerText())===all[i].mechanism,'mechanism '+i);
+        ok((await page.locator('#lessonMechanism').textContent())===all[i].mechanism,'mechanism '+i);
         ok((await page.locator('#lessonEvidence').innerText())===all[i].evidence,'evidence '+i);
         ok(await page.locator('#v7BridgeHelp').isVisible()===(i===9),'ACEi practice conditional '+i);
       }
