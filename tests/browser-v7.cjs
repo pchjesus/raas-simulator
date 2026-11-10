@@ -205,6 +205,22 @@ const stop=()=>new Promise(resolve=>server.close(resolve));
       ok(errors.length===0,'no JS errors '+width+': '+errors.join('; '));
       await page.close();
     }
+    // Explicitly exercise non-reduced motion and interrupted view transitions.
+    const animated=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
+    await animated.goto('http://127.0.0.1:'+port+'/',{waitUntil:'domcontentloaded'});
+    await animated.waitForFunction(()=>document.getElementById('v7EngineStatus')?.textContent.includes('연결됨'));
+    await animated.locator('button[data-nav="explore"]:visible').first().click();
+    await animated.evaluate(()=>{
+      for(const id of ['modeCompact','modeStandard','modeCompact'])document.getElementById(id).click();
+    });
+    await animated.waitForFunction(()=>document.getElementById('outputCard').parentElement.id==='compactResults');
+    ok(await animated.locator('#view-explore').evaluate(el=>el.classList.contains('is-compact')),'rapid morph ends in latest compact intent');
+    ok(await animated.locator('#outputCard').evaluate(el=>el.parentElement.id)==='compactResults','rapid morph preserves live results placement');
+    ok(await animated.evaluate(()=>document.getElementById('v7EngineFrame').contentWindow.RAASV6.snapshot().current.bp)===120,'rapid morph leaves physiology unchanged');
+    await animated.locator('#modeStandard').click();
+    await animated.waitForFunction(()=>document.getElementById('outputCard').parentElement.id==='experiment');
+    ok(await animated.locator('#view-explore').evaluate(el=>!el.classList.contains('is-compact')),'animated return restores standard layout');
+    await animated.close();
     console.log('PASS v7 integrated '+checks+' Chromium checks (390/1024/1440); backed by original v6 engine.');
   }finally{await browser.close();await stop()}
 })().catch(e=>{console.error(e);process.exitCode=1});
