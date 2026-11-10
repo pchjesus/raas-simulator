@@ -31,3 +31,11 @@ See [v7 draft design contract](../../docs/DESIGN_V7_EXPERIENCE_REIMAGINED_DRAFT.
 The Explore toolbar now includes **기본 / 간편**, alongside full path / learning shortcuts. 기본 retains the separate full panels, concept explanation and graph surface; 간편 relocates the **same** drug and output panels into the concept/controls inspector and hides the lower experiment area. The path, stage controls, drug target selection and four output placeholders can be seen together at desktop sizes. Expanded mechanism/nursing detail is available through a disclosure. The mode does not reset stage/drug/lesson/clinical state; returning to 기본 restores the original panels. Native morphing transitions have a CSS/no-motion fallback; interruptions favor the latest choice.
 
 Only the layout and UI-only movement have changed. Prototype output values intentionally remain uncomputed. See [Concept 01-B focused QA](../../docs/QA_V7_CONCEPT_01B.md): 186/186 Chromium assertions at six widths, plus rapid-toggling and keyboard/modal checks; integration, device/Safari, expert and learner validation NOT RUN.
+
+## Concept 01-C — Home, quick guide and question-first learning
+
+- Home now offers **바로 탐구 시작**, **5단원 학습 시작**, and **사용 안내**; existing direct sidebar/bottom-nav paths remain available.
+- The decorative six-node diagram was rebalanced and all node labels aligned. It is a simplified relationship motif, not the original nine-step biological model or a time-series visualization.
+- **사용 안내** is a four-step reading guide. **따라하며 익히기** is a five-step optional walkthrough on real prototype controls: Ang II → ACEi target → blank result area → compact controls → learning navigation. Dismiss, Escape and manual step navigation are available. All changes are UI-only.
+- Learning now has five horizontal unit selectors, a contained question rail and a contextual lesson workspace. All 16 design questions remain reachable (2/2/5/6/1) with per-unit last-visited positions. Viewed is neither completion nor assessed mastery.
+- Focused browser results and remaining exclusions are in [Concept 01-C QA](../../docs/QA_V7_CONCEPT_01C.md): 90/90 Chromium checks across 320–1440 px, tour at 1440/390 px, rapid mode-toggle regression PASS. **No v6 engine or clinical gate integration has been claimed.**
