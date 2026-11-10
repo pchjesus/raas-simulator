@@ -1144,7 +1144,7 @@ setup();
     if(!ready||!source.clinicalView())return;
     source.clinicalCommand(action,index);
     pendingClinicalChoice=null;
-    if(action==='back'){caseActive=null;hideClinicalWorkspace();return}
+    if(action==='back'){caseActive=null;hideClinicalWorkspace();$('v7StartClinical').focus({preventScroll:true});return}
     renderClinicalWorkspace();
     $('v71TaskHeading').focus({preventScroll:true});
   }
