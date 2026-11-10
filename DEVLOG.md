@@ -1,3 +1,14 @@
+
+## 2026-11-10 — v7 Experience Reimagined (main 배포 후보)
+
+- 기존 v6 UI를 다시 그린 RAAS.LAB 홈·탐구·학습·임상 탐색을 신규 설계하고, 별도 브랜치에서 검증한 뒤 루트 `index.html`에 배치.
+- 원본 생리 계산·약물 적용/제거·9단계·그래프·16항목 교육 내용·ACEi 실습·CKD/HFrEF 정답/간호 행동/Lab 공개 조건은 수정하지 않음. 검증된 백업 `backups/v6.0-content-ia.html`을 동일 출처의 모델·임상 실행 컨텍스트로 로드.
+- 학습 심화 원문(의학적 의미·간호 사정·근거)을 별도 접기 영역으로 보존. 간편/기본 조작, 사용 안내와 따라하기, 새 레이아웃의 접근성과 중복 표시 보완.
+- 기존 Node 19개 역사적 회귀 PASS, v7 통합 Chromium 로컬 183개 PASS (390/1024/1440 CSS px). GitHub CI 결과는 관련 PR에서 별도 확인. 모바일 실기기/Safari/스크린리더/의학 전문가 검증은 미실시.
+- 기존 history·백업 보존. 테스트는 기존 v6 백업 복사본과 신규 v7 통합 E2E를 분리하여 수행한다.
+
+---
+
 ## Documentation policy — Educational UI/UX Design Standard v1.1 (2026-10-15)
 
 - **Scope: documentation only; risk L.** User conditionally requested adoption after compatibility evaluation across Ventilator, RAAS, and Cardiac. [v1.1](docs/EDUCATIONAL_UI_DESIGN_STANDARD_v1.1.md) is the active future-design standard; [v1.0](docs/EDUCATIONAL_UI_DESIGN_STANDARD_v1.0.md) is intact as earlier approved history.
